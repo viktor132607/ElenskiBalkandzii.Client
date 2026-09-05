@@ -3,14 +3,18 @@ export default function ProjectPage() {
     <section className="section page-hero">
       <div className="container">
         <div className="section-heading">
-          <span className="eyebrow">Техническа структура</span>
-          <h1>Проект</h1>
-          <p>Минимална, подредена основа за реална full-stack разработка.</p>
+          <span className="eyebrow">Продукти</span>
+          <h1>Подбрано за трапезата</h1>
+          <p>Примерна продуктова селекция, която може да се замени с реални артикули, цени и наличности.</p>
         </div>
-        <div className="card-grid">
-          <article className="card"><span>Frontend</span><h3>Next.js</h3><p>App Router, TypeScript, reusable UI компоненти и API конфигурация.</p></article>
-          <article className="card"><span>Backend</span><h3>ASP.NET Core</h3><p>.NET 10 Web API с отделни Domain и Data слоеве.</p></article>
-          <article className="card"><span>Database</span><h3>PostgreSQL</h3><p>Entity Framework Core, Npgsql и Docker Compose среда за локална разработка.</p></article>
+
+        <div className="card-grid product-grid">
+          <article className="card product-card"><span>Мезета</span><div className="product-icon" aria-hidden="true">✦</div><h3>Сушени меса</h3><p>Подходящи за плато, аперитив и споделяне.</p></article>
+          <article className="card product-card"><span>Класика</span><div className="product-icon" aria-hidden="true">◆</div><h3>Суджуци и луканки</h3><p>Категория за традиционни сухи колбаси и сезонни предложения.</p></article>
+          <article className="card product-card"><span>Месо</span><div className="product-icon" aria-hidden="true">✣</div><h3>Прясна селекция</h3><p>Място за актуални месни продукти и предложения от магазина.</p></article>
+          <article className="card product-card"><span>Плато</span><div className="product-icon" aria-hidden="true">✥</div><h3>Комбинирани селекции</h3><p>Готови комбинации от различни вкусове за гости и поводи.</p></article>
+          <article className="card product-card"><span>Подарък</span><div className="product-icon" aria-hidden="true">◇</div><h3>Подаръчни кутии</h3><p>Подбрани продукти в представителен формат за специален повод.</p></article>
+          <article className="card product-card"><span>Сезонно</span><div className="product-icon" aria-hidden="true">✤</div><h3>Нови предложения</h3><p>Свободно място за сезонни артикули, промоции и нови вкусове.</p></article>
         </div>
       </div>
     </section>
