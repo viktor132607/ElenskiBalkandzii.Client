@@ -6,8 +6,8 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Начало" },
+  { href: "/project", label: "Продукти" },
   { href: "/about", label: "За нас" },
-  { href: "/project", label: "Проект" },
   { href: "/contact", label: "Контакти" },
 ];
 
@@ -17,9 +17,10 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
+      <div className="folk-stripe" aria-hidden="true" />
       <div className="nav-shell">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
-          <span className="brand-mark">EB</span>
+          <span className="brand-mark">ЕБ</span>
           <span>Еленски Балканджии</span>
         </Link>
 
@@ -39,7 +40,7 @@ export default function Navbar() {
             target="_blank"
             rel="noreferrer"
           >
-            Портфолио
+            Изработка ↗
           </a>
         </nav>
 
@@ -73,7 +74,7 @@ export default function Navbar() {
             rel="noreferrer"
             onClick={() => setOpen(false)}
           >
-            Портфолио ↗
+            Изработка ↗
           </a>
         </nav>
       )}
