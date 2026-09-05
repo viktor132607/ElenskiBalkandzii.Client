@@ -3,53 +3,71 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      <section className="hero section">
+      <section className="hero section shop-hero">
         <div className="container hero-grid">
           <div>
-            <span className="eyebrow">Култура · Общност · Традиция</span>
-            <h1>Еленски Балканджии</h1>
+            <span className="eyebrow">Традиционни мезета · Български вкус</span>
+            <h1>Вкус от Еленския Балкан.</h1>
             <p className="hero-copy">
-              Съвременна дигитална основа за проект, посветен на хората, събитията и духа на Еленския Балкан.
+              Подбрани меса и мезета, представени с уважение към българската традиция и с изчистено модерно усещане.
             </p>
             <div className="actions">
-              <Link className="button button-dark" href="/about">За проекта</Link>
-              <a className="button button-light" href="https://viktor-iliev.site/portfolio/" target="_blank" rel="noreferrer">
-                Моето портфолио ↗
-              </a>
+              <Link className="button button-dark" href="/project">Разгледай продуктите</Link>
+              <Link className="button button-light" href="/about">Нашата история</Link>
             </div>
           </div>
-          <div className="hero-panel">
-            <span className="panel-label">Статус</span>
-            <strong>В активно развитие</strong>
-            <p>Next.js frontend, ASP.NET Core Web API и PostgreSQL архитектура.</p>
+
+          <div className="hero-panel product-feature">
+            <div className="product-seal" aria-hidden="true">ЕБ</div>
+            <span className="panel-label">Еленски Балканджии</span>
+            <strong>Месо. Мезета. Традиция.</strong>
+            <p>Селекция за трапезата, подарък или хубава вечер с приятели.</p>
           </div>
         </div>
       </section>
 
-      <section className="section section-muted">
+      <section className="section section-muted folk-section">
         <div className="container">
           <div className="section-heading">
-            <span className="eyebrow">Основа</span>
-            <h2>Основни направления</h2>
-            <p>Структурата е подготвена така, че съдържанието и функционалностите да се добавят постепенно.</p>
+            <span className="eyebrow">Селекция</span>
+            <h2>За всяка добра трапеза</h2>
+            <p>Категории, подредени ясно и без излишен шум — както в добрия магазин.</p>
           </div>
-          <div className="card-grid">
-            <article className="card"><span>01</span><h3>Събития</h3><p>Място за бъдещ календар, участия и актуална информация.</p></article>
-            <article className="card"><span>02</span><h3>Галерия</h3><p>Основа за снимки, истории и визуално съдържание.</p></article>
-            <article className="card"><span>03</span><h3>Общност</h3><p>Структура, която може да се разшири с профили, новини и членско съдържание.</p></article>
+
+          <div className="card-grid product-grid">
+            <article className="card product-card">
+              <span>01</span>
+              <div className="product-icon" aria-hidden="true">✦</div>
+              <h3>Сушени мезета</h3>
+              <p>Класически вкусове за аперитив, плато и споделена трапеза.</p>
+            </article>
+            <article className="card product-card">
+              <span>02</span>
+              <div className="product-icon" aria-hidden="true">◆</div>
+              <h3>Подбрани меса</h3>
+              <p>Продукти за домашната кухня, празничната маса и ежедневното меню.</p>
+            </article>
+            <article className="card product-card">
+              <span>03</span>
+              <div className="product-icon" aria-hidden="true">✣</div>
+              <h3>Подаръчни селекции</h3>
+              <p>Комбинации от мезета за гости, подарък или специален повод.</p>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section story-section">
         <div className="container split-block">
           <div>
-            <span className="eyebrow">Технологии</span>
-            <h2>Чист client-server подход</h2>
+            <span className="eyebrow">Български характер</span>
+            <h2>Традиция без претрупване</h2>
           </div>
           <div className="prose">
-            <p>Frontend-ът е отделен Next.js проект, а backend-ът е .NET 10 Web API с Entity Framework Core и PostgreSQL.</p>
-            <Link className="text-link" href="/project">Виж структурата →</Link>
+            <p>
+              Визията стъпва върху естествени земни тонове, българско зелено и червено и фини фолклорни мотиви, без да губи чистия и модерен характер на магазина.
+            </p>
+            <Link className="text-link" href="/project">Към продуктите →</Link>
           </div>
         </div>
       </section>
