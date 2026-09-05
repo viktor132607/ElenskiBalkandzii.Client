@@ -3,11 +3,15 @@ export default function ContactPage() {
     <section className="section page-hero">
       <div className="container narrow">
         <span className="eyebrow">Контакти</span>
-        <h1>Връзка с разработчика</h1>
-        <p className="hero-copy">За информация за проекта и останалите ми разработки използвай портфолиото или GitHub профила ми.</p>
-        <div className="actions">
-          <a className="button button-dark" href="https://viktor-iliev.site/portfolio/" target="_blank" rel="noreferrer">Портфолио ↗</a>
-          <a className="button button-light" href="https://github.com/viktor132607" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <h1>Поръчки и наличности</h1>
+        <p className="hero-copy">
+          Страницата е подготвена за реалните контакти на магазина, работно време, адрес и информация за поръчки.
+        </p>
+
+        <div className="info-list">
+          <div><strong>Телефон</strong><span>Предстои добавяне</span></div>
+          <div><strong>Адрес</strong><span>Предстои добавяне</span></div>
+          <div><strong>Работно време</strong><span>Предстои добавяне</span></div>
         </div>
       </div>
     </section>
