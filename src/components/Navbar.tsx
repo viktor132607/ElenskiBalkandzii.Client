@@ -38,12 +38,12 @@ export default function Navbar() {
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
-                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.035em] text-[#00c95a] [-webkit-text-stroke:0.55px_#000]"
+                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.45px_#000]"
               >
-                <span className="block whitespace-nowrap text-[clamp(40px,4.4vw,66px)] [transform:scaleX(.86)] max-[820px]:text-[clamp(28px,6.4vw,40px)] max-[520px]:text-[clamp(23px,7vw,31px)]">
+                <span className="block whitespace-nowrap text-[clamp(40px,4.1vw,62px)] max-[820px]:text-[clamp(28px,6.1vw,38px)] max-[520px]:text-[clamp(23px,6.7vw,30px)]">
                   ЕЛЕНСКИ
                 </span>
-                <span className="mt-[3px] block whitespace-nowrap text-[clamp(47px,5.25vw,78px)] [transform:scaleX(1.03)] max-[820px]:text-[clamp(32px,7.4vw,47px)] max-[520px]:text-[clamp(27px,8.1vw,36px)]">
+                <span className="mt-[3px] block whitespace-nowrap text-[clamp(47px,5vw,74px)] max-[820px]:text-[clamp(32px,7.1vw,45px)] max-[520px]:text-[clamp(27px,7.8vw,35px)]">
                   БАЛКАНДЖИИ
                 </span>
               </Link>
