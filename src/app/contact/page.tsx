@@ -1,6 +1,3 @@
-import { logoDataUri } from "@/lib/logoAsset";
-import { shopDataUri } from "@/lib/shopAsset";
-
 const workingHours = [
   ["Понеделник", "09:00–20:00"],
   ["Вторник", "09:00–20:00"],
@@ -18,7 +15,7 @@ export default function ContactPage() {
         <div className="flex flex-col justify-center">
           <div className="mb-8 flex items-center gap-5 max-[620px]:items-start">
             <img
-              src={logoDataUri}
+              src="/logo-elenski.jpg"
               alt="Еленски Балканджии"
               className="h-28 w-28 shrink-0 rounded-full border border-[#d9d1ca] bg-white object-cover max-[620px]:h-24 max-[620px]:w-24"
             />
@@ -69,7 +66,7 @@ export default function ContactPage() {
 
         <div className="overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef]">
           <img
-            src={shopDataUri}
+            src="/elenski-shop.jpg"
             alt="Магазин Еленски Балканджии в Русе"
             className="h-full min-h-[460px] w-full object-cover max-[820px]:min-h-[380px]"
           />
