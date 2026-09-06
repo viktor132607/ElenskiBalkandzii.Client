@@ -20,24 +20,34 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
-          borderRadius: "9999px",
-          background: "transparent",
+          backgroundColor: "rgba(0,0,0,0)",
         }}
       >
-        <img
-          src={logoUrl}
-          alt=""
-          width="128"
-          height="128"
+        <div
           style={{
-            width: "128px",
-            height: "128px",
-            objectFit: "cover",
+            width: "112px",
+            height: "112px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
             borderRadius: "9999px",
-            transform: "scale(1.08)",
+            backgroundColor: "#ffffff",
           }}
-        />
+        >
+          <img
+            src={logoUrl}
+            alt=""
+            width="112"
+            height="112"
+            style={{
+              width: "112px",
+              height: "112px",
+              objectFit: "cover",
+              transform: "scale(1.18)",
+            }}
+          />
+        </div>
       </div>
     ),
     {
