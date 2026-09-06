@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { logoDataUri } from "@/lib/logoAsset";
 
 const navItems = [
   { href: "/", label: "Начало" },
@@ -25,15 +26,12 @@ export default function Navbar() {
       <div className="border-b-[5px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_11px,#2a211d_11px,#2a211d_16px)]">
         <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[12px] max-[620px]:w-full">
           <div className="relative flex min-h-[112px] w-full items-center justify-center max-[820px]:min-h-[92px] max-[820px]:px-[52px] max-[520px]:min-h-[80px] max-[520px]:pl-0">
-            <div className="mx-auto inline-flex items-center justify-center gap-[22px] max-[820px]:gap-[13px] max-[520px]:gap-[9px]">
-              <div
-                className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full border-4 border-white bg-[conic-gradient(#0b9c4a_0_33%,#fff_33%_66%,#cf2428_66%_100%)] max-[820px]:h-[62px] max-[820px]:w-[62px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
-                aria-label="Място за лого"
-              >
-                <span className="grid h-[58px] w-[58px] place-items-center rounded-full bg-white text-[10px] font-black tracking-[0.04em] text-[#2d211b] max-[820px]:h-[42px] max-[820px]:w-[42px] max-[820px]:text-[8px] max-[520px]:h-[34px] max-[520px]:w-[34px]">
-                  ЛОГО
-                </span>
-              </div>
+            <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
+              <img
+                src={logoDataUri}
+                alt="Еленски Балканджии"
+                className="h-[86px] w-[86px] shrink-0 rounded-full border-2 border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
+              />
 
               <Link
                 href="/"
