@@ -76,23 +76,34 @@ export default function Navbar() {
         .nav-link:hover {
           transform: none !important;
         }
+
+        .sign-identity {
+          display: inline-flex !important;
+          width: auto !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 18px !important;
+          margin: 0 auto !important;
+        }
+
+        .logo-placeholder {
+          position: static !important;
+          flex: 0 0 auto !important;
+        }
+
+        @media (max-width: 620px) {
+          .sign-identity { gap: 10px !important; }
+        }
       `}</style>
 
       <div className="sign-board">
         <div className="nav-shell">
           <div className="sign-heading-row">
-            <div
-              className="sign-identity"
-              style={{
-                width: "100%",
-                position: "relative",
-                justifyContent: "center",
-              }}
-            >
+            <div className="sign-identity">
               <div
                 className="logo-placeholder"
                 aria-label="Място за лого"
-                style={{ position: "absolute", left: 0, boxShadow: "none" }}
+                style={{ boxShadow: "none" }}
               >
                 <span>ЛОГО</span>
               </div>
@@ -104,7 +115,6 @@ export default function Navbar() {
                 style={{
                   alignItems: "center",
                   textAlign: "center",
-                  margin: "0 auto",
                   fontFamily: navFont,
                   fontWeight: 800,
                   lineHeight: 0.94,
