@@ -1,17 +1,26 @@
 export default function AboutPage() {
+  const rows = [
+    ["Подбор", "Фокус върху ясна селекция от меса, мезета и продукти за споделена трапеза."],
+    ["Визия", "Естествени тонове, зелено и червено като акцент и фини български орнаменти."],
+    ["Усещане", "Традиционен характер, представен по чист, съвременен и лесен за използване начин."],
+  ];
+
   return (
-    <section className="section page-hero">
-      <div className="container narrow">
-        <span className="eyebrow">За нас</span>
-        <h1>Вкус с корен.</h1>
-        <p className="hero-copy">
+    <section className="min-h-[68vh] bg-white py-[92px] pt-[104px] max-[820px]:min-h-0 max-[820px]:pt-[76px] max-[620px]:py-[54px]">
+      <div className="mx-auto w-[min(820px,calc(100%_-_40px))] max-[620px]:w-[min(820px,calc(100%_-_28px))]">
+        <span className="mb-[18px] inline-block text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">За нас</span>
+        <h1 className="mb-6 text-[clamp(50px,7vw,88px)] font-black uppercase leading-[.95] tracking-[.01em] max-[620px]:text-[clamp(40px,13vw,62px)]">Вкус с корен.</h1>
+        <p className="mb-8 max-w-[760px] text-[clamp(18px,2vw,22px)] leading-[1.65] text-[#716861] max-[620px]:text-base">
           Еленски Балканджии е магазин за месо и мезета с визуален и продуктов характер, вдъхновен от българската трапеза и традициите на Балкана.
         </p>
 
-        <div className="info-list">
-          <div><strong>Подбор</strong><span>Фокус върху ясна селекция от меса, мезета и продукти за споделена трапеза.</span></div>
-          <div><strong>Визия</strong><span>Естествени тонове, зелено и червено като акцент и фини български орнаменти.</span></div>
-          <div><strong>Усещане</strong><span>Традиционен характер, представен по чист, съвременен и лесен за използване начин.</span></div>
+        <div className="mt-[52px] border-t border-[#e4ddd7] max-[620px]:mt-9">
+          {rows.map(([label, copy]) => (
+            <div key={label} className="grid grid-cols-[180px_minmax(0,1fr)] gap-7 border-b border-[#e4ddd7] py-6 max-[820px]:grid-cols-1 max-[820px]:gap-2">
+              <strong className="font-black uppercase text-[#08733a]">{label}</strong>
+              <span className="leading-[1.65] text-[#716861]">{copy}</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
