@@ -35,7 +35,7 @@ export default function Navbar() {
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
-                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.55px_#111] [paint-order:stroke_fill]"
+                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.75px_#111] [paint-order:stroke_fill]"
               >
                 <span className="block whitespace-nowrap text-[clamp(40px,4.1vw,62px)] max-[820px]:text-[clamp(28px,6.1vw,38px)] max-[520px]:text-[clamp(23px,6.7vw,30px)]">
                   ЕЛЕНСКИ
