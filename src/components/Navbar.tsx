@@ -22,20 +22,20 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white">
-      <div className="border-b-[5px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_11px,#2a211d_11px,#2a211d_16px)]">
-        <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[12px] max-[620px]:w-full">
-          <div className="relative flex min-h-[112px] w-full items-center justify-center max-[820px]:min-h-[92px] max-[820px]:px-[52px] max-[520px]:min-h-[80px] max-[520px]:pl-0">
+      <div className="border-b-[4px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_6px,#251c18_6px,#251c18_9px)]">
+        <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[10px] max-[620px]:w-full">
+          <div className="relative flex min-h-[108px] w-full items-center justify-center max-[820px]:min-h-[88px] max-[820px]:px-[52px] max-[520px]:min-h-[76px] max-[520px]:pl-0">
             <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
               <img
                 src="/logo-elenski.jpg"
                 alt="Еленски Балканджии"
-                className="h-[86px] w-[86px] shrink-0 rounded-full border-2 border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
+                className="h-[86px] w-[86px] shrink-0 rounded-full border border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
               />
 
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
-                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.45px_#000]"
+                className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.55px_#111] [paint-order:stroke_fill]"
               >
                 <span className="block whitespace-nowrap text-[clamp(40px,4.1vw,62px)] max-[820px]:text-[clamp(28px,6.1vw,38px)] max-[520px]:text-[clamp(23px,6.7vw,30px)]">
                   ЕЛЕНСКИ
