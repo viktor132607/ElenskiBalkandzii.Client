@@ -3,13 +3,15 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
+const logoIcon = "/588283015_25323651390578829_4300945585916792863_n.jpg?v=3";
+
 export const metadata: Metadata = {
   title: "Еленски Балканджии | Месо и мезета",
   description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/588283015_25323651390578829_4300945585916792863_n.jpg",
+    icon: [{ url: logoIcon, type: "image/jpeg" }],
+    shortcut: [{ url: logoIcon, type: "image/jpeg" }],
+    apple: [{ url: logoIcon, type: "image/jpeg" }],
   },
 };
 
