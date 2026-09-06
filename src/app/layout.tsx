@@ -6,6 +6,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Еленски Балканджии | Месо и мезета",
   description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
+  icons: {
+    icon: "/588283015_25323651390578829_4300945585916792863_n.jpg",
+    shortcut: "/588283015_25323651390578829_4300945585916792863_n.jpg",
+    apple: "/588283015_25323651390578829_4300945585916792863_n.jpg",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
