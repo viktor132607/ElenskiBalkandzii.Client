@@ -8,9 +8,6 @@ export default function Footer() {
       <div className="mx-auto grid w-[min(1180px,calc(100%_-_40px))] grid-cols-[1.6fr_1fr_1fr] gap-12 pt-[72px] max-[1100px]:grid-cols-[1.3fr_1fr_1fr] max-[1100px]:gap-8 max-[820px]:grid-cols-2 max-[820px]:gap-[34px] max-[620px]:w-[min(1180px,calc(100%_-_32px))] max-[620px]:grid-cols-1 max-[620px]:pt-14">
         <div className="max-[820px]:col-span-2 max-[620px]:col-span-1">
           <div className="text-[28px] font-black uppercase tracking-[-0.02em]">Еленски Балканджии</div>
-          <p className="mt-4 max-w-[360px] leading-7 text-[#d0c7c1]">
-            Магазин за месо, мезета и традиционни вкусове с характер от Еленския Балкан.
-          </p>
         </div>
 
         <div>
@@ -28,9 +25,6 @@ export default function Footer() {
           <div className="grid gap-3 text-sm text-[#efe9e5]">
             <Link className="hover:text-white" href="/about">За нас</Link>
             <Link className="hover:text-white" href="/contact">Контакти</Link>
-            <a className="break-words hover:text-white" href="https://github.com/viktor132607/ElenskiBalkandzii.Client" target="_blank" rel="noreferrer">
-              GitHub ↗
-            </a>
           </div>
         </div>
       </div>
