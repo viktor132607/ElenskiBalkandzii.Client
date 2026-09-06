@@ -13,12 +13,71 @@ const navItems = [
   { href: "/contact", label: "Контакти" },
 ];
 
+const navFont =
+  '"Arial Narrow", "Liberation Sans Narrow", "Nimbus Sans Narrow", Arial, Helvetica, sans-serif';
+
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="site-header">
+    <header className="site-header" style={{ boxShadow: "none" }}>
+      <style>{`
+        .site-header,
+        .site-header *,
+        .promo-board,
+        .promo-board *,
+        .card,
+        .card *,
+        .hero-panel,
+        .quality-seal {
+          box-shadow: none !important;
+          text-shadow: none !important;
+        }
+
+        .brand-sign {
+          font-family: ${navFont} !important;
+          font-weight: 800 !important;
+          font-stretch: condensed;
+          letter-spacing: 0.045em !important;
+          line-height: 0.94 !important;
+          -webkit-text-stroke: 0 !important;
+          text-shadow: none !important;
+        }
+
+        .brand-sign span:first-child {
+          font-size: clamp(31px, 3.5vw, 50px) !important;
+        }
+
+        .brand-sign span:last-child {
+          font-size: clamp(35px, 4vw, 57px) !important;
+        }
+
+        .nav-link,
+        .mobile-nav a,
+        .menu-button {
+          box-shadow: none !important;
+        }
+
+        .nav-link,
+        .mobile-nav a {
+          font-family: ${navFont} !important;
+          font-weight: 800 !important;
+          letter-spacing: 0.055em !important;
+        }
+
+        .nav-link {
+          border-width: 1px !important;
+          border-radius: 3px !important;
+          font-size: 14px !important;
+          padding: 10px 17px 9px !important;
+        }
+
+        .nav-link:hover {
+          transform: none !important;
+        }
+      `}</style>
+
       <div className="sign-board">
         <div className="nav-shell">
           <div className="sign-heading-row">
@@ -33,7 +92,7 @@ export default function Navbar() {
               <div
                 className="logo-placeholder"
                 aria-label="Място за лого"
-                style={{ position: "absolute", left: 0 }}
+                style={{ position: "absolute", left: 0, boxShadow: "none" }}
               >
                 <span>ЛОГО</span>
               </div>
@@ -46,15 +105,12 @@ export default function Navbar() {
                   alignItems: "center",
                   textAlign: "center",
                   margin: "0 auto",
-                  fontFamily:
-                    '"Arial Narrow", "Liberation Sans Narrow", "Nimbus Sans Narrow", Arial, sans-serif',
-                  fontWeight: 900,
-                  fontStretch: "condensed",
-                  lineHeight: 0.88,
-                  letterSpacing: "0.01em",
-                  WebkitTextStroke: "0.65px #092417",
-                  textShadow:
-                    "0 2px 0 #092417, 0 4px 8px rgba(0, 0, 0, .22)",
+                  fontFamily: navFont,
+                  fontWeight: 800,
+                  lineHeight: 0.94,
+                  letterSpacing: "0.045em",
+                  WebkitTextStroke: "0",
+                  textShadow: "none",
                 }}
               >
                 <span>ЕЛЕНСКИ</span>
@@ -68,6 +124,7 @@ export default function Navbar() {
               aria-label="Отвори меню"
               aria-expanded={open}
               onClick={() => setOpen((value) => !value)}
+              style={{ boxShadow: "none" }}
             >
               <span />
               <span />
