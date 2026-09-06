@@ -15,7 +15,7 @@ export default function ContactPage() {
         <div className="flex flex-col justify-center">
           <div className="mb-8 flex items-center gap-5 max-[620px]:items-start">
             <img
-              src="/logo-elenski.jpg"
+              src="/588283015_25323651390578829_4300945585916792863_n.jpg"
               alt="Еленски Балканджии"
               className="h-28 w-28 shrink-0 rounded-full border border-[#d9d1ca] bg-white object-cover max-[620px]:h-24 max-[620px]:w-24"
             />
