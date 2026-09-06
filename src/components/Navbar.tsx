@@ -89,7 +89,7 @@ export default function Navbar() {
           letter-spacing: -0.035em !important;
           text-align: center !important;
           color: #00c95a !important;
-          -webkit-text-stroke: 0 !important;
+          -webkit-text-stroke: 0.55px #000 !important;
           text-shadow: none !important;
         }
 
