@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { logoDataUri } from "@/lib/logoAsset";
 
 const navItems = [
   { href: "/", label: "Начало" },
@@ -28,7 +27,7 @@ export default function Navbar() {
           <div className="relative flex min-h-[112px] w-full items-center justify-center max-[820px]:min-h-[92px] max-[820px]:px-[52px] max-[520px]:min-h-[80px] max-[520px]:pl-0">
             <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
               <img
-                src={logoDataUri}
+                src="/logo-elenski.jpg"
                 alt="Еленски Балканджии"
                 className="h-[86px] w-[86px] shrink-0 rounded-full border-2 border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
               />
