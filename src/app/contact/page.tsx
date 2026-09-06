@@ -11,8 +11,8 @@ const workingHours = [
 export default function ContactPage() {
   return (
     <section className="min-h-[68vh] bg-white py-[72px] max-[620px]:py-[48px]">
-      <div className="mx-auto grid w-[min(1420px,calc(100%_-_40px))] gap-10 lg:grid-cols-[minmax(0,1fr)_688px] max-[620px]:w-[min(100%_-_28px,1420px)]">
-        <div className="flex flex-col justify-center">
+      <div className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-10 lg:grid-cols-[minmax(0,1fr)_728px] max-[620px]:w-[min(100%_-_28px,1460px)]">
+        <div className="flex flex-col pt-6 max-[1100px]:pt-0">
           <div className="mb-8 flex items-center gap-5 max-[620px]:items-start">
             <img
               src="/588283015_25323651390578829_4300945585916792863_n.jpg"
@@ -64,7 +64,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="h-[688px] w-[688px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-square">
+        <div className="h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]">
           <img
             src="/713204707_122129263227145268_2373551330353913854_n.jpg"
             alt="Магазин Еленски Балканджии в Русе"
