@@ -27,7 +27,7 @@ export default function Navbar() {
           <div className="relative flex min-h-[108px] w-full items-center justify-center max-[820px]:min-h-[88px] max-[820px]:px-[52px] max-[520px]:min-h-[76px] max-[520px]:pl-0">
             <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
               <img
-                src="/logo-elenski.jpg"
+                src="/588283015_25323651390578829_4300945585916792863_n.jpg"
                 alt="Еленски Балканджии"
                 className="h-[86px] w-[86px] shrink-0 rounded-full border border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
               />
