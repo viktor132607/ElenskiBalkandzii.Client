@@ -6,7 +6,6 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Начало" },
-  { href: "/project", label: "Продукти" },
   { href: "/project#meso", label: "Месо", category: true },
   { href: "/project#mezeta", label: "Мезета", category: true },
   { href: "/project#sirena", label: "Сирена", category: true },
@@ -93,14 +92,6 @@ export default function Navbar() {
               </Link>
             );
           })}
-          <a
-            className="nav-link nav-portfolio"
-            href="https://viktor-iliev.site/portfolio/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Изработка ↗
-          </a>
         </nav>
       </div>
 
@@ -120,14 +111,6 @@ export default function Navbar() {
               </Link>
             );
           })}
-          <a
-            href="https://viktor-iliev.site/portfolio/"
-            target="_blank"
-            rel="noreferrer"
-            onClick={() => setOpen(false)}
-          >
-            Изработка ↗
-          </a>
         </nav>
       )}
     </header>
