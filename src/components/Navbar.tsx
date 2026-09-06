@@ -23,12 +23,41 @@ export default function Navbar() {
       <div className="sign-board">
         <div className="nav-shell">
           <div className="sign-heading-row">
-            <div className="sign-identity">
-              <div className="logo-placeholder" aria-label="Място за лого">
+            <div
+              className="sign-identity"
+              style={{
+                width: "100%",
+                position: "relative",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                className="logo-placeholder"
+                aria-label="Място за лого"
+                style={{ position: "absolute", left: 0 }}
+              >
                 <span>ЛОГО</span>
               </div>
 
-              <Link href="/" className="brand-sign" onClick={() => setOpen(false)}>
+              <Link
+                href="/"
+                className="brand-sign"
+                onClick={() => setOpen(false)}
+                style={{
+                  alignItems: "center",
+                  textAlign: "center",
+                  margin: "0 auto",
+                  fontFamily:
+                    '"Arial Narrow", "Liberation Sans Narrow", "Nimbus Sans Narrow", Arial, sans-serif',
+                  fontWeight: 900,
+                  fontStretch: "condensed",
+                  lineHeight: 0.88,
+                  letterSpacing: "0.01em",
+                  WebkitTextStroke: "0.65px #092417",
+                  textShadow:
+                    "0 2px 0 #092417, 0 4px 8px rgba(0, 0, 0, .22)",
+                }}
+              >
                 <span>ЕЛЕНСКИ</span>
                 <span>БАЛКАНДЖИИ</span>
               </Link>
