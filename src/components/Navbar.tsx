@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white">
       <div className="border-b-[5px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_11px,#2a211d_11px,#2a211d_16px)]">
-        <div className="mx-auto w-[min(1320px,calc(100%-40px))] px-[18px] py-[12px] max-[620px]:w-full">
+        <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[12px] max-[620px]:w-full">
           <div className="relative flex min-h-[112px] w-full items-center justify-center max-[820px]:min-h-[92px] max-[820px]:px-[52px] max-[520px]:min-h-[80px] max-[520px]:pl-0">
             <div className="mx-auto inline-flex items-center justify-center gap-[22px] max-[820px]:gap-[13px] max-[520px]:gap-[9px]">
               <div
@@ -65,7 +65,7 @@ export default function Navbar() {
       </div>
 
       <div className="border-b border-[#ddd7d1] bg-[#faf9f7] max-[820px]:hidden">
-        <nav className="mx-auto flex w-[min(1320px,calc(100%-40px))] flex-wrap items-center justify-center gap-[9px] px-5 py-[10px]" aria-label="Основна навигация">
+        <nav className="mx-auto flex w-[min(1320px,calc(100%_-_40px))] flex-wrap items-center justify-center gap-[9px] px-5 py-[10px]" aria-label="Основна навигация">
           {navItems.map((item) => {
             const active = !item.category && pathname === item.href;
             return (
