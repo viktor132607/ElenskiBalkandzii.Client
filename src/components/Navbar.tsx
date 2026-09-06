@@ -17,12 +17,25 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
-      <div className="folk-stripe" aria-hidden="true" />
       <div className="nav-shell">
-        <Link href="/" className="brand" onClick={() => setOpen(false)}>
-          <span className="brand-mark">ЕБ</span>
-          <span>Еленски Балканджии</span>
-        </Link>
+        <div className="sign-heading-row">
+          <Link href="/" className="brand-sign" onClick={() => setOpen(false)}>
+            <span>ЕЛЕНСКИ</span>
+            <span>БАЛКАНДЖИИ</span>
+          </Link>
+
+          <button
+            type="button"
+            className="menu-button"
+            aria-label="Отвори меню"
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
 
         <nav className="desktop-nav" aria-label="Основна навигация">
           {navItems.map((item) => (
@@ -35,7 +48,7 @@ export default function Navbar() {
             </Link>
           ))}
           <a
-            className="nav-portfolio"
+            className="nav-link nav-portfolio"
             href="https://viktor-iliev.site/portfolio/"
             target="_blank"
             rel="noreferrer"
@@ -43,17 +56,6 @@ export default function Navbar() {
             Изработка ↗
           </a>
         </nav>
-
-        <button
-          type="button"
-          className="menu-button"
-          aria-label="Отвори меню"
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
       </div>
 
       {open && (
