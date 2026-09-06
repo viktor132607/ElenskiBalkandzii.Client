@@ -66,7 +66,7 @@ export default function ContactPage() {
 
         <div className="overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef]">
           <img
-            src="/elenski-shop.jpg"
+            src="/713204707_122129263227145268_2373551330353913854_n.jpg"
             alt="Магазин Еленски Балканджии в Русе"
             className="h-full min-h-[460px] w-full object-cover max-[820px]:min-h-[380px]"
           />
