@@ -5,26 +5,28 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Начало" },
-  { href: "/project#meso", label: "Месо", category: true },
-  { href: "/project#mezeta", label: "Мезета", category: true },
-  { href: "/project#sirena", label: "Сирена", category: true },
-  { href: "/about", label: "За нас" },
-  { href: "/contact", label: "Контакти" },
+  { href: "/", bg: "Начало", en: "Home" },
+  { href: "/project#meso", bg: "Месо", en: "Meat" },
+  { href: "/project#mezeta", bg: "Мезета", en: "Delicacies" },
+  { href: "/project#sirena", bg: "Сирена", en: "Cheese" },
+  { href: "/about", bg: "За нас", en: "About us" },
+  { href: "/contact", bg: "Контакти", en: "Contacts" },
 ];
-
-const navLinkBase =
-  "min-w-[96px] border border-[#2b211c] bg-white px-[17px] py-[9px] text-center text-sm font-extrabold uppercase tracking-[0.045em] text-[#2d211b] transition-colors hover:border-[#08733a] hover:text-[#08733a]";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [language, setLanguage] = useState<"bg" | "en">("bg");
+
+  const toggleLanguage = () => {
+    setLanguage((current) => (current === "bg" ? "en" : "bg"));
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white">
       <div className="border-b-[4px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_6px,#251c18_6px,#251c18_9px)]">
         <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[10px] max-[620px]:w-full">
-          <div className="relative flex min-h-[108px] w-full items-center justify-center max-[820px]:min-h-[88px] max-[820px]:px-[52px] max-[520px]:min-h-[76px] max-[520px]:pl-0">
+          <div className="relative flex min-h-[108px] w-full items-center justify-center pr-[132px] max-[820px]:min-h-[88px] max-[820px]:pr-[116px] max-[520px]:min-h-[76px] max-[520px]:pl-0 max-[520px]:pr-[100px]">
             <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
               <img
                 src="/588283015_25323651390578829_4300945585916792863_n.jpg"
@@ -46,56 +48,54 @@ export default function Navbar() {
               </Link>
             </div>
 
-            <button
-              type="button"
-              aria-label="Отвори меню"
-              aria-expanded={open}
-              onClick={() => setOpen((value) => !value)}
-              className="absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 flex-col items-center justify-center gap-[5px] rounded-[8px] border border-[#17120f] bg-white max-[820px]:flex max-[520px]:h-10 max-[520px]:w-10"
-            >
-              <span className="h-0.5 w-5 bg-[#2d211b]" />
-              <span className="h-0.5 w-5 bg-[#2d211b]" />
-              <span className="h-0.5 w-5 bg-[#2d211b]" />
-            </button>
+            <div className="absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-3 max-[520px]:gap-2">
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="h-11 min-w-11 rounded-[14px] border border-[#d7d2cc] bg-white px-3 text-[15px] font-extrabold uppercase text-[#201914] transition-colors hover:border-[#08733a] hover:text-[#08733a] max-[520px]:h-10 max-[520px]:min-w-10 max-[520px]:px-2 max-[520px]:text-[14px]"
+                aria-label="Смени езика"
+              >
+                {language === "bg" ? "EN" : "BG"}
+              </button>
+
+              <button
+                type="button"
+                aria-label={open ? "Затвори меню" : "Отвори меню"}
+                aria-expanded={open}
+                onClick={() => setOpen((value) => !value)}
+                className="flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-[14px] border border-[#d7d2cc] bg-white transition-colors hover:border-[#08733a] max-[520px]:h-10 max-[520px]:w-10"
+              >
+                <span className="h-0.5 w-5 bg-[#2d211b]" />
+                <span className="h-0.5 w-5 bg-[#2d211b]" />
+                <span className="h-0.5 w-5 bg-[#2d211b]" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="border-b border-[#ddd7d1] bg-[#faf9f7] max-[820px]:hidden">
-        <nav className="mx-auto flex w-[min(1320px,calc(100%_-_40px))] flex-wrap items-center justify-center gap-[9px] px-5 py-[10px]" aria-label="Основна навигация">
-          {navItems.map((item) => {
-            const active = !item.category && pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${navLinkBase} ${item.category ? "text-[#08733a]" : ""} ${active ? "border-[#0b9c4a] text-[#08733a]" : ""}`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
       {open && (
         <nav
-          className="hidden max-h-[calc(100vh-100px)] grid-cols-2 gap-[9px] overflow-y-auto border-b border-[#ddd8d2] bg-[#f7f7f5] px-[18px] py-[14px] max-[820px]:grid max-[420px]:grid-cols-1 max-[420px]:px-3"
-          aria-label="Мобилна навигация"
+          className="border-b border-[#dedad5] bg-white"
+          aria-label="Основна навигация"
         >
-          {navItems.map((item) => {
-            const active = !item.category && pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`border border-[#2b211c] bg-white px-[10px] py-[11px] text-center text-[15px] font-extrabold uppercase tracking-[0.04em] text-[#2d211b] ${item.category ? "text-[#08733a]" : ""} ${active ? "border-[#0b9c4a] text-[#08733a]" : ""}`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          <div className="mx-auto w-[min(1320px,calc(100%_-_64px))] max-[620px]:w-[calc(100%_-_40px)]">
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`flex min-h-[74px] items-center border-b border-[#e2dfdb] px-0 text-[24px] font-bold text-[#36322f] transition-colors last:border-b-0 hover:text-[#08733a] max-[620px]:min-h-[64px] max-[620px]:text-[20px] ${
+                    active ? "text-[#08733a]" : ""
+                  }`}
+                >
+                  {language === "bg" ? item.bg : item.en}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
       )}
     </header>
