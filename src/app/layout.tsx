@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="bg">
       <body className="m-0 min-h-screen overflow-x-hidden bg-white font-sans text-[#211915] antialiased">
-        <Navbar />
-        <main className="min-h-[calc(100vh-320px)]">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Navbar />
+          <main className="min-h-[calc(100vh-320px)]">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );
