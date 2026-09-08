@@ -29,7 +29,7 @@ export default function Navbar() {
               <img
                 src="/588283015_25323651390578829_4300945585916792863_n.jpg"
                 alt="Еленски Балканджии"
-                className="h-[86px] w-[86px] shrink-0 rounded-full border border-white bg-white object-cover max-[820px]:h-[64px] max-[820px]:w-[64px] max-[520px]:h-[50px] max-[520px]:w-[50px]"
+                className="h-[96px] w-[96px] shrink-0 rounded-full border border-white bg-white object-cover max-[820px]:h-[76px] max-[820px]:w-[76px] max-[520px]:h-[66px] max-[520px]:w-[66px]"
               />
 
               <Link
