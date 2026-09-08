@@ -51,7 +51,7 @@ export default function Navbar() {
               aria-label="Отвори меню"
               aria-expanded={open}
               onClick={() => setOpen((value) => !value)}
-              className="absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 flex-col items-center justify-center gap-[5px] border border-[#17120f] bg-white max-[820px]:flex max-[520px]:h-10 max-[520px]:w-10"
+              className="absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 flex-col items-center justify-center gap-[5px] rounded-[8px] border border-[#17120f] bg-white max-[820px]:flex max-[520px]:h-10 max-[520px]:w-10"
             >
               <span className="h-0.5 w-5 bg-[#2d211b]" />
               <span className="h-0.5 w-5 bg-[#2d211b]" />
