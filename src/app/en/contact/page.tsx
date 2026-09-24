@@ -91,6 +91,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contacts | Elenski Balkandzhii",
+    description: "Contact details and opening hours for the Elenski Balkandzhii store in Ruse, Bulgaria.",
+    images: ["/elenski-balkandzhii-store-ruse.jpg"],
+  },
 };
 
 export default function EnglishContactPage() {

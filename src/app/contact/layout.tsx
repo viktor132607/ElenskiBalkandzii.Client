@@ -89,6 +89,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Контакти | Еленски Балканджии",
+    description: "Контакти и работно време на магазин Еленски Балканджии в Русе — адрес, телефон и информация за посещение.",
+    images: ["/elenski-balkandzhii-store-ruse.jpg"],
+  },
 };
 
 export default function ContactLayout({ children }: Readonly<{ children: React.ReactNode }>) {

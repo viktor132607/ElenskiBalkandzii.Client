@@ -71,6 +71,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Еленски Балканджии | Месо и мезета",
+    description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
+    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

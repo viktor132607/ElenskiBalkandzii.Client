@@ -49,6 +49,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Products | Elenski Balkandzhii",
+    description: "Explore Elenski Balkandzhii products — meat, dried delicacies and cheese with traditional Bulgarian flavour.",
+    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+  },
 };
 
 export default function EnglishProductsPage() {

@@ -49,6 +49,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "About us | Elenski Balkandzhii",
+    description: "Learn more about Elenski Balkandzhii — products from the Elena Balkan region made with Bulgarian meat and natural spices.",
+    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+  },
 };
 
 export default function EnglishAboutPage() {

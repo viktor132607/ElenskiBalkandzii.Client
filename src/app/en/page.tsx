@@ -27,6 +27,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elenski Balkandzhii | Meat and Delicacies",
+    description: "Elenski Balkandzhii — meat, delicacies, cheese and traditional Bulgarian flavours.",
+    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+  },
 };
 
 export default function EnglishHomePage() {

@@ -47,6 +47,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Продукти | Еленски Балканджии",
+    description: "Разгледайте продуктите на Еленски Балканджии — месо, мезета, сушени деликатеси и сирена с традиционен български вкус.",
+    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+  },
 };
 
 export default function ProductsLayout({ children }: Readonly<{ children: React.ReactNode }>) {
