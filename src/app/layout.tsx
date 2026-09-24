@@ -32,6 +32,16 @@ const structuredData = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  applicationName: "Еленски Балканджии",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Еленски Балканджии",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/elenski-balkandzhii-logo.jpg",
+  },
   title: "Еленски Балканджии | Месо и мезета",
   description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
   alternates: {

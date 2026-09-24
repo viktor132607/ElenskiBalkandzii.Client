@@ -10,7 +10,7 @@ export const size = {
 export const contentType = "image/png";
 
 const logoUrl =
-  "https://raw.githubusercontent.com/viktor132607/ElenskiBalkandzii.Client/main/public/588283015_25323651390578829_4300945585916792863_n.jpg";
+  "https://raw.githubusercontent.com/viktor132607/ElenskiBalkandzii.Client/main/public/elenski-balkandzhii-logo.jpg";
 
 export default function Icon() {
   return new ImageResponse(
