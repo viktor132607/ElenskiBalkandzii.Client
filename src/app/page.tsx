@@ -5,6 +5,8 @@ import { useLanguage } from "@/components/LanguageProvider";
 
 export default function Home() {
   const { language } = useLanguage();
+  const productsPath = language === "en" ? "/en/products" : "/products";
+
   const t = language === "bg" ? {
     eyebrow: "Еленски Балканджии",
     title: "Вкусът на Балкана",
@@ -29,9 +31,9 @@ export default function Home() {
           <h1 className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">{t.title}</h1>
         </div>
         <div className="grid grid-cols-3 gap-[18px] max-[1100px]:grid-cols-2 max-[820px]:grid-cols-1">
-          <Link href="/products#meso" className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#cf2428] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#cf2428]">{t.meat}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.meat}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
-          <Link href="/products#mezeta" className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#0b9c4a] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#08733a]">{t.delicacies}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.delicacies}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
-          <Link href="/products#sirena" className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#d4b36d] bg-[#fffdf7] p-7 transition-transform hover:-translate-y-[3px] max-[1100px]:col-span-2 max-[820px]:col-span-1"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#8b692c]">{t.cheese}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.cheese}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
+          <Link href={`${productsPath}#meso`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#cf2428] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#cf2428]">{t.meat}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.meat}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
+          <Link href={`${productsPath}#mezeta`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#0b9c4a] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#08733a]">{t.delicacies}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.delicacies}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
+          <Link href={`${productsPath}#sirena`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#d4b36d] bg-[#fffdf7] p-7 transition-transform hover:-translate-y-[3px] max-[1100px]:col-span-2 max-[820px]:col-span-1"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#8b692c]">{t.cheese}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.cheese}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
         </div>
       </div>
     </section>

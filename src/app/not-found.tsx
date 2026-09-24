@@ -6,6 +6,9 @@ import { useLanguage } from "@/components/LanguageProvider";
 export default function NotFound() {
   const { language } = useLanguage();
 
+  const homePath = language === "en" ? "/en" : "/";
+  const productsPath = language === "en" ? "/en/products" : "/products";
+
   const t = language === "bg"
     ? {
         eyebrow: "404",
@@ -36,13 +39,13 @@ export default function NotFound() {
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Link
-            href="/"
+            href={homePath}
             className="rounded-[14px] bg-[#08733a] px-6 py-3 font-bold text-white transition-opacity hover:opacity-90"
           >
             {t.home}
           </Link>
           <Link
-            href="/products"
+            href={productsPath}
             className="rounded-[14px] border border-[#d7d2cc] bg-white px-6 py-3 font-bold text-[#211915] transition-colors hover:border-[#08733a] hover:text-[#08733a]"
           >
             {t.products}
