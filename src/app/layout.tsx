@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   icons: {
     apple: "/elenski-balkandzhii-logo.jpg",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   title: "Еленски Балканджии | Месо и мезета",
   description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
   alternates: {
