@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+.deferred-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}

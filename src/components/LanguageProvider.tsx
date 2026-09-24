@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, startTransition, useContext, useEffect, useState } from "react";
 
 type Language = "bg" | "en";
 
@@ -17,16 +17,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("language");
-    if (saved === "bg" || saved === "en") setLanguageState(saved);
+
+    if (saved === "bg" || saved === "en") {
+      document.documentElement.lang = saved;
+      startTransition(() => setLanguageState(saved));
+    }
   }, []);
 
-  useEffect(() => {
-    document.documentElement.lang = language;
-    window.localStorage.setItem("language", language);
-  }, [language]);
+  const applyLanguage = (value: Language) => {
+    document.documentElement.lang = value;
+    window.localStorage.setItem("language", value);
+    startTransition(() => setLanguageState(value));
+  };
 
-  const setLanguage = (value: Language) => setLanguageState(value);
-  const toggleLanguage = () => setLanguageState((current) => (current === "bg" ? "en" : "bg"));
+  const setLanguage = (value: Language) => applyLanguage(value);
+  const toggleLanguage = () => applyLanguage(language === "bg" ? "en" : "bg");
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage }}>

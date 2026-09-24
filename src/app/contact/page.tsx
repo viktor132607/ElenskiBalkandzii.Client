@@ -38,7 +38,7 @@ export default function ContactPage() {
             </div>
           </dl>
         </article>
-        <figure className="m-0 h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]"><img src="/elenski-balkandzhii-store-ruse.jpg" alt={t.alt} width={728} height={688} loading="lazy" decoding="async" className="h-full w-full object-cover" /></figure>
+        <figure className="m-0 h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]"><img src="/elenski-balkandzhii-store-ruse.jpg" alt={t.alt} width={728} height={688} loading="eager" fetchPriority="high" decoding="async" className="h-full w-full object-cover" /></figure>
       </div>
     </section>
   );
