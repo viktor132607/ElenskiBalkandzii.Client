@@ -16,20 +16,29 @@ export default function ContactPage() {
   };
 
   return (
-    <section className="min-h-[68vh] bg-white py-[72px] max-[620px]:py-[48px]">
+    <section className="min-h-[68vh] bg-white py-[72px] max-[620px]:py-[48px]" aria-labelledby="contact-heading">
       <div className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-10 lg:grid-cols-[minmax(0,1fr)_728px] max-[620px]:w-[min(100%_-_28px,1460px)]">
-        <div className="flex flex-col pt-6 max-[1100px]:pt-0">
+        <article className="flex flex-col pt-6 max-[1100px]:pt-0">
           <div className="mb-8 flex items-center gap-5 max-[620px]:items-start">
             <img src="/588283015_25323651390578829_4300945585916792863_n.jpg" alt="Еленски Балканджии" className="h-28 w-28 shrink-0 rounded-full border border-[#d9d1ca] bg-white object-cover max-[620px]:h-24 max-[620px]:w-24" />
-            <div><span className="mb-2 inline-block text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">{t.contacts}</span><h1 className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">Еленски Балканджии</h1></div>
+            <div><span className="mb-2 inline-block text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">{t.contacts}</span><h1 id="contact-heading" className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">{language === "bg" ? "Еленски Балканджии — Контакти" : "Elenski Balkandzhii — Contacts"}</h1></div>
           </div>
-          <div className="divide-y divide-[#e4ddd7] border-y border-[#e4ddd7]">
-            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2"><strong className="font-black uppercase text-[#08733a]">{t.address}</strong><span className="text-lg leading-[1.65] text-[#514943]">{t.addressText}</span></div>
-            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2"><strong className="font-black uppercase text-[#08733a]">{t.phone}</strong><a href="tel:+359878788897" className="text-lg font-bold text-[#211915] transition-colors hover:text-[#08733a]">087 878 8897</a></div>
-            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-3"><strong className="font-black uppercase text-[#08733a]">{t.hours}</strong><div className="space-y-2 text-[#514943]">{workingHours.map(([day, hours]) => <div key={day} className="flex max-w-[360px] items-center justify-between gap-6 border-b border-[#eee9e4] pb-2 last:border-0 last:pb-0"><span>{day}</span><span className="font-semibold text-[#211915]">{hours}</span></div>)}<p className="pt-2 text-sm text-[#8a817a]">{t.note}</p></div></div>
-          </div>
-        </div>
-        <div className="h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]"><img src="/713204707_122129263227145268_2373551330353913854_n.jpg" alt={t.alt} className="h-full w-full object-cover" /></div>
+          <dl className="divide-y divide-[#e4ddd7] border-y border-[#e4ddd7]">
+            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2">
+              <dt className="font-black uppercase text-[#08733a]">{t.address}</dt>
+              <dd className="m-0"><address className="not-italic text-lg leading-[1.65] text-[#514943]">{t.addressText}</address></dd>
+            </div>
+            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2">
+              <dt className="font-black uppercase text-[#08733a]">{t.phone}</dt>
+              <dd className="m-0"><a href="tel:+359878788897" className="text-lg font-bold text-[#211915] transition-colors hover:text-[#08733a]" aria-label={language === "bg" ? "Обадете се на Еленски Балканджии на 087 878 8897" : "Call Elenski Balkandzhii at 087 878 8897"}>087 878 8897</a></dd>
+            </div>
+            <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-3">
+              <dt className="font-black uppercase text-[#08733a]">{t.hours}</dt>
+              <dd className="m-0 space-y-2 text-[#514943]">{workingHours.map(([day, hours]) => <div key={day} className="flex max-w-[360px] items-center justify-between gap-6 border-b border-[#eee9e4] pb-2 last:border-0 last:pb-0"><span>{day}</span><time>{hours}</time></div>)}<p className="pt-2 text-sm text-[#8a817a]">{t.note}</p></dd>
+            </div>
+          </dl>
+        </article>
+        <figure className="m-0 h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]"><img src="/713204707_122129263227145268_2373551330353913854_n.jpg" alt={t.alt} className="h-full w-full object-cover" /></figure>
       </div>
     </section>
   );
