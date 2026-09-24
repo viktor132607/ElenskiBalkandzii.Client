@@ -1,4 +1,26 @@
 import type { Metadata } from "next";
+import StructuredData from "@/components/StructuredData";
+
+const siteUrl = "https://elenskibalkandzii-client.onrender.com";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Начало",
+      item: siteUrl,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Продукти",
+      item: `${siteUrl}/project`,
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Продукти | Еленски Балканджии",
@@ -9,5 +31,10 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <StructuredData data={structuredData} />
+      {children}
+    </>
+  );
 }

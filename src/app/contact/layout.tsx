@@ -1,4 +1,68 @@
 import type { Metadata } from "next";
+import StructuredData from "@/components/StructuredData";
+
+const siteUrl = "https://elenskibalkandzii-client.onrender.com";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Начало",
+          item: siteUrl,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Контакти",
+          item: `${siteUrl}/contact`,
+        },
+      ],
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": `${siteUrl}/contact#store`,
+      name: "Еленски Балканджии",
+      url: `${siteUrl}/contact`,
+      image: `${siteUrl}/713204707_122129263227145268_2373551330353913854_n.jpg`,
+      telephone: "+359878788897",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "ул. „Шипка“ 12, ж.к. Родина 3",
+        postalCode: "7012",
+        addressLocality: "Русе",
+        addressCountry: "BG",
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "20:00",
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: "Saturday",
+          opens: "09:00",
+          closes: "18:00",
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: "Sunday",
+          opens: "09:00",
+          closes: "14:00",
+        },
+      ],
+      parentOrganization: {
+        "@id": `${siteUrl}/#organization`,
+      },
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Контакти | Еленски Балканджии",
@@ -9,5 +73,10 @@ export const metadata: Metadata = {
 };
 
 export default function ContactLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <StructuredData data={structuredData} />
+      {children}
+    </>
+  );
 }
