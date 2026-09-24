@@ -37,6 +37,20 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Еленски Балканджии",
+    title: "Еленски Балканджии | Месо и мезета",
+    description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
+    url: "/",
+    images: [
+      {
+        url: "/elenski-balkandzhii-traditional-products.jpg",
+        alt: "Традиционни продукти на Еленски Балканджии",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

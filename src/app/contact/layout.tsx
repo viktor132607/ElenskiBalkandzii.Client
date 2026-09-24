@@ -70,6 +70,20 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/contact",
   },
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Еленски Балканджии",
+    title: "Контакти | Еленски Балканджии",
+    description: "Контакти и работно време на магазин Еленски Балканджии в Русе — адрес, телефон и информация за посещение.",
+    url: "/contact",
+    images: [
+      {
+        url: "/elenski-balkandzhii-store-ruse.jpg",
+        alt: "Магазин Еленски Балканджии в Русе",
+      },
+    ],
+  },
 };
 
 export default function ContactLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -28,6 +28,20 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/about",
   },
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Еленски Балканджии",
+    title: "За нас | Еленски Балканджии",
+    description: "Научете повече за Еленски Балканджии — продукти от Еленския Балкан, приготвени с българско месо и натурални подправки.",
+    url: "/about",
+    images: [
+      {
+        url: "/elenski-balkandzhii-traditional-products.jpg",
+        alt: "Традиционни продукти на Еленски Балканджии",
+      },
+    ],
+  },
 };
 
 export default function AboutLayout({ children }: Readonly<{ children: React.ReactNode }>) {
