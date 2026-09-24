@@ -18,7 +18,7 @@ export default function Footer() {
         <div className="max-[820px]:col-span-2 max-[620px]:col-span-1"><div className="text-[28px] font-black uppercase tracking-[-0.02em]">Еленски Балканджии</div></div>
         <nav aria-label={language === "bg" ? "Навигация във футъра" : "Footer navigation"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.nav}</div>
-          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href="/">{t.home}</Link><Link className="hover:text-white" href="/project#meso">{t.meat}</Link><Link className="hover:text-white" href="/project#mezeta">{t.delicacies}</Link><Link className="hover:text-white" href="/project#sirena">{t.cheese}</Link></div>
+          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href="/">{t.home}</Link><Link className="hover:text-white" href="/products#meso">{t.meat}</Link><Link className="hover:text-white" href="/products#mezeta">{t.delicacies}</Link><Link className="hover:text-white" href="/products#sirena">{t.cheese}</Link></div>
         </nav>
         <nav aria-label={language === "bg" ? "Информационни страници" : "Information pages"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>

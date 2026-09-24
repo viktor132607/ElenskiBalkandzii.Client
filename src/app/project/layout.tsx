@@ -1,40 +1,16 @@
 import type { Metadata } from "next";
-import StructuredData from "@/components/StructuredData";
-
-const siteUrl = "https://elenskibalkandzii-client.onrender.com";
-
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    {
-      "@type": "ListItem",
-      position: 1,
-      name: "Начало",
-      item: siteUrl,
-    },
-    {
-      "@type": "ListItem",
-      position: 2,
-      name: "Продукти",
-      item: `${siteUrl}/project`,
-    },
-  ],
-};
 
 export const metadata: Metadata = {
   title: "Продукти | Еленски Балканджии",
-  description: "Разгледайте продуктите на Еленски Балканджии — месо, мезета, сушени деликатеси и сирена с традиционен български вкус.",
   alternates: {
-    canonical: "/project",
+    canonical: "/products",
+  },
+  robots: {
+    index: false,
+    follow: true,
   },
 };
 
-export default function ProjectLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <>
-      <StructuredData data={structuredData} />
-      {children}
-    </>
-  );
+export default function LegacyProjectLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return children;
 }

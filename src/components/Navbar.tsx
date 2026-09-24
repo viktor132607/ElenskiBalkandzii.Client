@@ -7,9 +7,9 @@ import { useLanguage } from "@/components/LanguageProvider";
 
 const navItems = [
   { href: "/", bg: "Начало", en: "Home" },
-  { href: "/project#meso", bg: "Месо", en: "Meat" },
-  { href: "/project#mezeta", bg: "Мезета", en: "Delicacies" },
-  { href: "/project#sirena", bg: "Сирена", en: "Cheese" },
+  { href: "/products#meso", bg: "Месо", en: "Meat" },
+  { href: "/products#mezeta", bg: "Мезета", en: "Delicacies" },
+  { href: "/products#sirena", bg: "Сирена", en: "Cheese" },
   { href: "/about", bg: "За нас", en: "About us" },
   { href: "/contact", bg: "Контакти", en: "Contacts" },
 ];
