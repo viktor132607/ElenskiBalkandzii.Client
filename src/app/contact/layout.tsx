@@ -28,7 +28,7 @@ const structuredData = {
       "@id": `${siteUrl}/contact#store`,
       name: "Еленски Балканджии",
       url: `${siteUrl}/contact`,
-      image: `${siteUrl}/713204707_122129263227145268_2373551330353913854_n.jpg`,
+      image: `${siteUrl}/elenski-balkandzhii-store-ruse.jpg`,
       telephone: "+359878788897",
       address: {
         "@type": "PostalAddress",

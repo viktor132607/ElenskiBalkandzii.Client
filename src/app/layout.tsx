@@ -15,7 +15,7 @@ const structuredData = {
       "@id": `${siteUrl}/#organization`,
       name: "Еленски Балканджии",
       url: siteUrl,
-      logo: `${siteUrl}/588283015_25323651390578829_4300945585916792863_n.jpg`,
+      logo: `${siteUrl}/elenski-balkandzhii-logo.jpg`,
     },
     {
       "@type": "WebSite",
