@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   description: "Разгледайте продуктите на Еленски Балканджии — месо, мезета, сушени деликатеси и сирена с традиционен български вкус.",
   alternates: {
     canonical: "/products",
+    languages: {
+      "bg-BG": "/products",
+      en: "/en/products",
+      "x-default": "/products",
+    },
   },
   openGraph: {
     type: "website",

@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   description: "Научете повече за Еленски Балканджии — продукти от Еленския Балкан, приготвени с българско месо и натурални подправки.",
   alternates: {
     canonical: "/about",
+    languages: {
+      "bg-BG": "/about",
+      en: "/en/about",
+      "x-default": "/about",
+    },
   },
   openGraph: {
     type: "website",

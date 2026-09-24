@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import StructuredData from "@/components/StructuredData";
@@ -50,6 +51,11 @@ export const metadata: Metadata = {
   description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
   alternates: {
     canonical: "/",
+    languages: {
+      "bg-BG": "/",
+      en: "/en",
+      "x-default": "/",
+    },
   },
   openGraph: {
     type: "website",
@@ -71,6 +77,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="bg">
       <body className="m-0 min-h-screen overflow-x-hidden bg-white font-sans text-[#211915] antialiased">
+        <Script id="route-language" strategy="beforeInteractive">{`document.documentElement.lang = location.pathname === "/en" || location.pathname.startsWith("/en/") ? "en" : "bg";`}</Script>
         <StructuredData data={structuredData} />
         <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
         <LanguageProvider>

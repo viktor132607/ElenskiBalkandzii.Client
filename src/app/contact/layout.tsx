@@ -69,6 +69,11 @@ export const metadata: Metadata = {
   description: "Контакти и работно време на магазин Еленски Балканджии в Русе — адрес, телефон и информация за посещение.",
   alternates: {
     canonical: "/contact",
+    languages: {
+      "bg-BG": "/contact",
+      en: "/en/contact",
+      "x-default": "/contact",
+    },
   },
   openGraph: {
     type: "website",
