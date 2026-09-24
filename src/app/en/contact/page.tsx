@@ -26,11 +26,19 @@ const structuredData = {
     },
     {
       "@type": "LocalBusiness",
-      "@id": `${siteUrl}/en/contact#store`,
-      name: "Elenski Balkandzhii",
-      url: `${siteUrl}/en/contact`,
+      "@id": `${siteUrl}/contact#store`,
+      name: "Еленски Балканджии",
+      alternateName: "Elenski Balkandzhii",
+      url: `${siteUrl}/contact`,
       image: `${siteUrl}/elenski-balkandzhii-store-ruse.jpg`,
       telephone: "+359878788897",
+      sameAs: [
+        "https://wolt.com/bg/bgr/ruse/venue/elenski-balkanjii",
+      ],
+      areaServed: {
+        "@type": "City",
+        name: "Ruse",
+      },
       address: {
         "@type": "PostalAddress",
         streetAddress: "12 Shipka St., Rodina 3",

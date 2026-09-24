@@ -18,6 +18,21 @@ const structuredData = {
       name: "Еленски Балканджии",
       url: siteUrl,
       logo: `${siteUrl}/elenski-balkandzhii-logo.jpg`,
+      alternateName: "Elenski Balkandzhii",
+      telephone: "+359878788897",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "ул. „Шипка“ 12, ж.к. Родина 3",
+        postalCode: "7012",
+        addressLocality: "Русе",
+        addressCountry: "BG",
+      },
+      location: {
+        "@id": `${siteUrl}/contact#store`,
+      },
+      sameAs: [
+        "https://wolt.com/bg/bgr/ruse/venue/elenski-balkanjii",
+      ],
     },
     {
       "@type": "WebSite",
