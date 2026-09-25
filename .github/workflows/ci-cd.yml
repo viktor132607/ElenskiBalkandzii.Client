@@ -51,6 +51,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: SEO regression check
+        run: npm run seo:check
+
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
