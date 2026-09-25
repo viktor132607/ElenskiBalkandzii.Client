@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ElenskiBalkandzii.Client
+    runtime: static
+    repo: https://github.com/viktor132607/ElenskiBalkandzii.Client
+    branch: main
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    staticPublishPath: ./out
+    routes:
+      - type: redirect
+        source: /project
+        destination: /products

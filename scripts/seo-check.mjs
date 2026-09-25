@@ -280,18 +280,26 @@ for (const page of pages) {
   }
 }
 
-const legacyHtml = await readRouteHtml("/project");
-const legacyCanonical = findLink(legacyHtml, (attrs) => attrs.rel === "canonical");
-assert(
-  legacyCanonical?.href === toAbsolute("/products"),
-  `/project: canonical must point to ${toAbsolute("/products")}`,
-);
+const legacyCandidates = [
+  path.join(outDir, "project.html"),
+  path.join(outDir, "project", "index.html"),
+];
 
-const legacyRobots = findMeta(legacyHtml, (attrs) => attrs.name === "robots");
-assert(legacyRobots, "/project: robots meta is missing");
+for (const candidate of legacyCandidates) {
+  try {
+    await access(candidate);
+    throw new Error(`/project must not be emitted as a static HTML route: ${candidate}`);
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("/project must not")) {
+      throw error;
+    }
+  }
+}
+
+const renderBlueprint = await readFile(path.resolve("render.yaml"), "utf8");
 assert(
-  legacyRobots.content.toLowerCase().includes("noindex"),
-  "/project: legacy page must remain noindex",
+  /type:\s*redirect[\s\S]*source:\s*\/project[\s\S]*destination:\s*\/products/.test(renderBlueprint),
+  "render.yaml: missing permanent /project -> /products redirect rule",
 );
 
 const robotsText = await readFile(path.join(outDir, "robots.txt"), "utf8");
@@ -309,5 +317,5 @@ for (const page of pages) {
 }
 
 console.log(
-  `SEO QA passed: ${pages.length} public routes validated for metadata, social cards, hreflang, JSON-LD, sitemap and legacy noindex.`,
+  `SEO QA passed: ${pages.length} public routes validated for metadata, social cards, hreflang, JSON-LD, sitemap and production redirect configuration.`,
 );
