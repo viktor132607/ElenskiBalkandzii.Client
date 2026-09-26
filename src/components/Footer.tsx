@@ -17,9 +17,33 @@ export default function Footer() {
   };
 
   const t = language === "bg" ? {
-    nav: "Навигация", info: "Информация", home: "Начало", meat: "Месо", delicacies: "Мезета", cheese: "Сирена", about: "За нас", contacts: "Контакти"
+    nav: "Навигация",
+    info: "Информация",
+    home: "Начало",
+    meat: "Месо",
+    delicacies: "Мезета",
+    cheese: "Сирена",
+    about: "За нас",
+    contacts: "Контакти",
+    privacy: "Политика за поверителност",
+    terms: "Общи условия",
+    cookies: "Бисквитки",
+    rights: "Всички права запазени.",
+    createdBy: "Сайтът е създаден от",
   } : {
-    nav: "Navigation", info: "Information", home: "Home", meat: "Meat", delicacies: "Delicacies", cheese: "Cheese", about: "About us", contacts: "Contacts"
+    nav: "Navigation",
+    info: "Information",
+    home: "Home",
+    meat: "Meat",
+    delicacies: "Delicacies",
+    cheese: "Cheese",
+    about: "About us",
+    contacts: "Contacts",
+    privacy: "Privacy policy",
+    terms: "Terms and conditions",
+    cookies: "Cookies",
+    rights: "All rights reserved.",
+    createdBy: "Site created by",
   };
 
   return (
@@ -33,10 +57,19 @@ export default function Footer() {
         </nav>
         <nav aria-label={language === "bg" ? "Информационни страници" : "Information pages"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>
-          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href={localizedHref("/about")}>{t.about}</Link><Link className="hover:text-white" href={localizedHref("/contact")}>{t.contacts}</Link></div>
+          <div className="grid gap-3 text-sm text-[#efe9e5]">
+            <Link className="hover:text-white" href={localizedHref("/about")}>{t.about}</Link>
+            <Link className="hover:text-white" href={localizedHref("/contact")}>{t.contacts}</Link>
+            <Link className="hover:text-white" href={localizedHref("/privacy")}>{t.privacy}</Link>
+            <Link className="hover:text-white" href={localizedHref("/terms")}>{t.terms}</Link>
+            <Link className="hover:text-white" href={localizedHref("/cookies")}>{t.cookies}</Link>
+          </div>
         </nav>
       </div>
-      <div className="mx-auto mt-14 w-[min(1180px,calc(100%_-_40px))] border-t border-[#463a33] pt-[22px] text-xs text-[#a99d95] max-[620px]:w-[min(1180px,calc(100%_-_32px))] max-[620px]:mt-[38px]">© {new Date().getFullYear()} Еленски Балканджии</div>
+      <div className="mx-auto mt-14 flex w-[min(1180px,calc(100%_-_40px))] flex-col gap-2 border-t border-[#463a33] pt-[22px] text-xs text-[#a99d95] sm:flex-row sm:items-center sm:justify-between max-[620px]:mt-[38px] max-[620px]:w-[min(1180px,calc(100%_-_32px))]">
+        <span>© {new Date().getFullYear()} Еленски Балканджии. {t.rights}</span>
+        <span>{t.createdBy} <a href="https://viktor-iliev.site/portfolio/" target="_blank" rel="noreferrer" className="font-bold text-[#efe9e5] hover:text-white hover:underline">Viktor Iliev</a></span>
+      </div>
     </footer>
   );
 }
