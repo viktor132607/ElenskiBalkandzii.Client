@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { apiUrl } from '@/lib/api';
-import { defaults, validContent, type SiteContent } from '@/lib/content';
+import { defaults, normalizeContent, type SiteContent } from '@/lib/content';
 
 const ContentContext = createContext<SiteContent>(defaults);
 
@@ -12,7 +12,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
     const controller = new AbortController();
     fetch(apiUrl('/api/content'), { signal: controller.signal, cache: 'no-store' })
       .then(r => r.ok ? r.json() : null)
-      .then(value => { if (validContent(value)) setContent(value); })
+      .then(value => { const parsed = normalizeContent(value); if (parsed) setContent(parsed); })
       .catch(() => {});
     return () => controller.abort();
   }, []);

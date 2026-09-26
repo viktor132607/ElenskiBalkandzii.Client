@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { apiUrl } from '@/lib/api';
-import { defaults, validContent, type SiteContent } from '@/lib/content';
+import { defaults, normalizeContent, type SiteContent } from '@/lib/content';
 
 type Lang = 'bg' | 'en';
 const tokenKey = 'elenski-admin-session';
 
 export default function SiteControl() {
   const [token, setToken] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
   const [draft, setDraft] = useState<SiteContent>(defaults);
   const [language, setLanguage] = useState<Lang>('bg');
   const [section, setSection] = useState<'home' | 'products' | 'about' | 'contact' | 'images'>('home');
@@ -19,32 +21,20 @@ export default function SiteControl() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem(tokenKey);
-    if (!saved) { queueMicrotask(() => setReady(true)); return; }
+    if (!saved) { router.replace('/adminlogin'); queueMicrotask(() => setReady(true)); return; }
     fetch(apiUrl('/api/admin/session'), { headers: { Authorization: `Bearer ${saved}` }, cache: 'no-store' })
-      .then(r => { if (r.ok) setToken(saved); else sessionStorage.removeItem(tokenKey); })
+      .then(r => { if (r.ok) setToken(saved); else { sessionStorage.removeItem(tokenKey); router.replace('/adminlogin'); } })
       .catch(() => setMessage('API не е достъпен.'))
       .finally(() => setReady(true));
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!token) return;
     fetch(apiUrl('/api/content'), { cache: 'no-store' })
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (validContent(data)) setDraft(data); })
+      .then(data => { const parsed = normalizeContent(data); if (parsed) setDraft(parsed); })
       .catch(() => setMessage('Съдържанието не се зареди. Проверете връзката с API.'));
   }, [token]);
-
-  async function login(event: React.FormEvent) {
-    event.preventDefault(); setBusy(true); setMessage('');
-    try {
-      const response = await fetch(apiUrl('/api/admin/login'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
-      if (!response.ok) { setMessage(response.status === 429 ? 'Твърде много опити. Опитайте след 15 минути.' : response.status === 503 ? 'Админ достъпът не е конфигуриран на сървъра.' : 'Грешна парола.'); return; }
-      const data = await response.json();
-      sessionStorage.setItem(tokenKey, data.token);
-      setToken(data.token); setPassword('');
-    } catch { setMessage('API не е достъпен.'); }
-    finally { setBusy(false); }
-  }
 
   function change(update: (copy: SiteContent) => void) {
     setDraft(current => { const copy = structuredClone(current); update(copy); return copy; });
@@ -55,24 +45,47 @@ export default function SiteControl() {
     setBusy(true); setMessage('');
     try {
       const response = await fetch(apiUrl('/api/admin/content'), { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(draft) });
-      if (response.status === 401) { sessionStorage.removeItem(tokenKey); setToken(''); setMessage('Сесията изтече. Влезте отново.'); }
+      if (response.status === 401) { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); setMessage('Сесията изтече. Влезте отново.'); }
       else setMessage(response.ok ? 'Промените са записани. Опреснете сайта, за да ги видите.' : 'Записът не успя. Проверете полетата и API.');
     } catch { setMessage('API не е достъпен.'); }
     finally { setBusy(false); }
   }
 
-  async function upload(key: 'logo' | 'store' | 'products', file: File) {
+  async function upload(file: File, apply: (draft: SiteContent, url: string) => void) {
     setBusy(true); setMessage('');
     try {
       const data = new FormData(); data.append('file', file);
       const response = await fetch(apiUrl('/api/images'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: data });
       if (!response.ok) { setMessage(response.status === 401 ? 'Сесията изтече. Влезте отново.' : 'Качването не успя. Изберете JPEG, PNG или WebP до 5 MB.'); return; }
       const result = await response.json();
-      change(d => d.media[key] = result.url);
+      change(d => apply(d, result.url));
       setMessage('Снимката е качена. Натиснете „Запази промените“, за да я покажете на сайта.');
     } catch { setMessage('API не е достъпен.'); }
     finally { setBusy(false); }
   }
+
+  function moveCategory(index: number, delta: number) {
+    change(d => { for (const lang of ['bg', 'en'] as const) {
+      const categories = d[lang].products.categories;
+      const [category] = categories.splice(index, 1);
+      categories.splice(index + delta, 0, category);
+    }});
+  }
+
+  function moveProduct(categoryId: string, index: number, delta: number) {
+    change(d => { for (const lang of ['bg', 'en'] as const) {
+      const items = d[lang].products.categories.find(c => c.id === categoryId)!.items;
+      const [product] = items.splice(index, 1);
+      items.splice(index + delta, 0, product);
+    }});
+  }
+
+  const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false) => <div>
+    <label className="mb-2 block text-sm font-bold">{label}</label>
+    {path && <Image src={path.startsWith('/api/') ? apiUrl(path) : path} alt="Преглед" width={160} height={112} unoptimized className="mb-3 h-28 max-w-full rounded-lg object-contain" />}
+    <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} aria-label={label} onChange={event => { const file = event.target.files?.[0]; if (file) void upload(file, apply); event.target.value = ''; }} className="block w-full text-sm" />
+    {path && removable && <button type="button" onClick={() => change(d => apply(d, ''))} className="mt-2 text-sm font-bold text-[#8d2e2b]">Премахни снимката</button>}
+  </div>;
 
   const field = (label: string, value: string, onChange: (value: string) => void, multiline = false) => (
     <label className="block text-sm font-bold text-[#332923]" key={label}>
@@ -88,14 +101,10 @@ export default function SiteControl() {
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
     <div className="mx-auto max-w-5xl rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
-      {!ready ? <p className="mt-6">Проверка на достъпа…</p> : !token ?
-        <form onSubmit={login} className="mt-8 max-w-sm space-y-5">
-          <label className="block font-bold">Парола<input type="password" required autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-[#d8d0c8] p-3" /></label>
-          <button disabled={busy} className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white disabled:opacity-50">Вход</button>
-        </form> : <>
+      {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
           <div className="mt-7 flex flex-wrap gap-3 border-b border-[#e4ddd7] pb-6">
             {(['home','products','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
-            <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
+            <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
           </div>
           <div className="mt-6 flex gap-3">{(['bg','en'] as const).map(lang => <button type="button" key={lang} onClick={() => setLanguage(lang)} aria-pressed={language === lang} className={`rounded-xl px-4 py-2 font-bold ${language === lang ? 'bg-[#211914] text-white' : 'bg-[#f1ede9]'}`}>{lang === 'bg' ? 'BG' : 'EN'}</button>)}</div>
           <h2 className="my-6 text-xl font-black">{sections[section]} · {name}</h2>
@@ -105,12 +114,35 @@ export default function SiteControl() {
               {field('Заглавие', c.home.title, v => change(d => d[language].home.title = v))}
               {field('Текст на линка', c.home.view, v => change(d => d[language].home.view = v))}
             </>}
-            {section === 'products' && c.products.categories.map((category, index) => <div key={index} className="space-y-4 rounded-xl border p-5">
-              <h3 className="font-black">Категория {index + 1}</h3>
-              {field('Име', category.title, v => change(d => d[language].products.categories[index].title = v))}
-              {category.items.map((item, itemIndex) => <div key={itemIndex} className="flex items-end gap-2"> <div className="flex-1">{field(`Продукт ${itemIndex + 1}`, item, v => change(d => d[language].products.categories[index].items[itemIndex] = v))}</div><button type="button" aria-label={`Премахни продукт ${itemIndex + 1}`} onClick={() => change(d => d[language].products.categories[index].items.splice(itemIndex, 1))} className="rounded-xl border px-4 py-3">✕</button></div>)}
-              <button type="button" onClick={() => change(d => d[language].products.categories[index].items.push('Нов продукт'))} className="rounded-xl border border-[#08733a] px-4 py-2 font-bold text-[#08733a]">Добави продукт</button>
-            </div>)}
+            {section === 'products' && <>
+              <p className="text-sm leading-relaxed text-[#625851]">Категориите и продуктите се подреждат еднакво за BG и EN. Редактирайте имената и описанията на двата езика. Няма количка, плащания или онлайн поръчки.</p>
+              {c.products.categories.map((category, index) => <div key={category.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="mr-auto text-lg font-black uppercase">{category.title || `Категория ${index + 1}`}</h3>
+                  <button type="button" disabled={index === 0} onClick={() => moveCategory(index, -1)} className="rounded-lg border px-3 py-2 disabled:opacity-30" aria-label="Премести категория нагоре">↑</button>
+                  <button type="button" disabled={index === c.products.categories.length - 1} onClick={() => moveCategory(index, 1)} className="rounded-lg border px-3 py-2 disabled:opacity-30" aria-label="Премести категория надолу">↓</button>
+                  <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.visible = !category.visible; })} className="rounded-lg border px-3 py-2">{category.visible ? 'Скрий' : 'Покажи'}</button>
+                  <button type="button" onClick={() => { if (window.confirm('Да изтрия ли категорията и продуктите ѝ?')) change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories = d[lang].products.categories.filter(item => item.id !== category.id); }); }} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button>
+                </div>
+                {field('Име на категорията', category.title, v => change(d => d[language].products.categories[index].title = v))}
+                {field('Описание на категорията', category.description, v => change(d => d[language].products.categories[index].description = v), true)}
+                {imagePicker('Снимка на категорията', category.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.image = url; }, true)}
+                <h4 className="border-t pt-5 font-black uppercase">Продукти ({category.items.length})</h4>
+                {category.items.map((product, itemIndex) => <div key={product.id} className="space-y-3 rounded-xl border border-[#e4ddd7] bg-white p-4">
+                  <div className="flex flex-wrap items-center gap-2"><strong className="mr-auto">{product.title || `Продукт ${itemIndex + 1}`}</strong>
+                    <button type="button" disabled={itemIndex === 0} onClick={() => moveProduct(category.id, itemIndex, -1)} className="rounded-lg border px-3 py-1 disabled:opacity-30" aria-label="Премести продукт нагоре">↑</button>
+                    <button type="button" disabled={itemIndex === category.items.length - 1} onClick={() => moveProduct(category.id, itemIndex, 1)} className="rounded-lg border px-3 py-1 disabled:opacity-30" aria-label="Премести продукт надолу">↓</button>
+                    <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.visible = !product.visible; })} className="rounded-lg border px-3 py-1">{product.visible ? 'Скрий' : 'Покажи'}</button>
+                    <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) { const items = d[lang].products.categories.find(item => item.id === category.id)!.items; items.splice(items.findIndex(item => item.id === product.id), 1); } })} className="rounded-lg border border-[#c88982] px-3 py-1 text-[#8d2e2b]" aria-label={`Изтрий ${product.title}`}>Изтрий</button>
+                  </div>
+                  {field('Име на продукта', product.title, v => change(d => d[language].products.categories[index].items[itemIndex].title = v))}
+                  {field('Описание (по избор)', product.description, v => change(d => d[language].products.categories[index].items[itemIndex].description = v), true)}
+                  {imagePicker(`Снимка на ${product.title}`, product.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.image = url; }, true)}
+                </div>)}
+                <button type="button" onClick={() => change(d => { const id = crypto.randomUUID(); for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.push({ id, title: lang === 'bg' ? 'Нов продукт' : 'New product', description: '', image: '', visible: true }); })} className="rounded-xl border border-[#08733a] px-4 py-2 font-bold text-[#08733a]">+ Добави продукт</button>
+              </div>)}
+              <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
+            </>}
             {section === 'about' && <>
               {field('Надпис', c.about.eyebrow, v => change(d => d[language].about.eyebrow = v))}
               {field('Заглавие', c.about.title, v => change(d => d[language].about.title = v))}
@@ -129,9 +161,7 @@ export default function SiteControl() {
             </>}
             {section === 'images' && (['logo', 'store', 'products'] as const).map(key => <div key={key} className="rounded-xl border p-5">
               <h3 className="mb-3 font-black">{{logo:'Лого',store:'Снимка на магазина',products:'Снимка на продуктите'}[key]}</h3>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={draft.media[key].startsWith('/api/') ? apiUrl(draft.media[key]) : draft.media[key]} alt="Преглед" className="mb-4 h-36 max-w-full rounded-xl object-contain" />
-              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} aria-label={`Качи ${key}`} onChange={event => { const file = event.target.files?.[0]; if (file) void upload(key, file); event.target.value = ''; }} className="block w-full text-sm" />
+              {imagePicker(`Качи ${key}`, draft.media[key], (d, url) => { d.media[key] = url; })}
             </div>)}
           </div>
           <button type="button" disabled={busy} onClick={save} className="mt-8 rounded-xl bg-[#08733a] px-7 py-3 font-black text-white disabled:opacity-50">Запази промените</button>

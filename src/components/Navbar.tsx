@@ -8,11 +8,8 @@ import { useState } from "react";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 
-const navItems = [
+const standardLinks = [
   { href: "/", bg: "Начало", en: "Home" },
-  { href: "/products#meso", bg: "Месо", en: "Meat" },
-  { href: "/products#mezeta", bg: "Мезета", en: "Delicacies" },
-  { href: "/products#sirena", bg: "Сирена", en: "Cheese" },
   { href: "/about", bg: "За нас", en: "About us" },
   { href: "/contact", bg: "Контакти", en: "Contacts" },
 ];
@@ -20,6 +17,7 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const content = useSiteContent();
+  const navItems = [standardLinks[0], ...content.bg.products.categories.filter(category => category.visible).map(category => ({ href: `/products#${category.id}`, bg: category.title, en: content.en.products.categories.find(item => item.id === category.id)?.title ?? category.title })), ...standardLinks.slice(1)];
   const [open, setOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
@@ -63,12 +61,12 @@ export default function Navbar() {
       {open && (
         <nav className="border-b border-[#dedad5] bg-white" aria-label={language === "bg" ? "Основна навигация" : "Main navigation"}>
           <div className="mx-auto w-[min(1320px,calc(100%_-_64px))] max-[620px]:w-[calc(100%_-_40px)]">
-            {navItems.map((item, index) => {
+            {navItems.map((item) => {
               const href = localizedHref(item.href);
               const active = pathname === href.split("#")[0];
               return (
                 <Link key={item.href} href={href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`flex min-h-[74px] items-center border-b border-[#e2dfdb] px-0 text-[24px] font-bold text-[#36322f] transition-colors last:border-b-0 hover:text-[#08733a] max-[620px]:min-h-[64px] max-[620px]:text-[20px] ${active ? "text-[#08733a]" : ""}`}>
-                  {index >= 1 && index <= 3 ? content[language].products.categories[index - 1].title : language === "bg" ? item.bg : item.en}
+                  {language === "bg" ? item.bg : item.en}
                 </Link>
               );
             })}

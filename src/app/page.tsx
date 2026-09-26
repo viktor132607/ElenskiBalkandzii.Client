@@ -9,7 +9,9 @@ export default function Home() {
   const productsPath = language === "en" ? "/en/products" : "/products";
 
   const content = useSiteContent()[language];
-  const t = { ...content.home, meat: content.products.categories[0].title, delicacies: content.products.categories[1].title, cheese: content.products.categories[2].title };
+  const t = content.home;
+  const categories = content.products.categories.filter(category => category.visible);
+  const accents = ['#cf2428', '#0b9c4a', '#d4b36d'];
 
   return (
     <section className="bg-white py-[92px] max-[1100px]:py-20 max-[820px]:py-[68px] max-[620px]:py-[54px]">
@@ -19,9 +21,10 @@ export default function Home() {
           <h1 className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">{t.title}</h1>
         </div>
         <div className="grid grid-cols-3 gap-[18px] max-[1100px]:grid-cols-2 max-[820px]:grid-cols-1">
-          <Link href={`${productsPath}#meso`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#cf2428] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#cf2428]">{t.meat}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.meat}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
-          <Link href={`${productsPath}#mezeta`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#0b9c4a] bg-white p-7 transition-transform hover:-translate-y-[3px]"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#08733a]">{t.delicacies}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.delicacies}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
-          <Link href={`${productsPath}#sirena`} className="relative min-h-[210px] overflow-hidden border border-[#e4ddd7] border-t-[6px] border-t-[#d4b36d] bg-[#fffdf7] p-7 transition-transform hover:-translate-y-[3px] max-[1100px]:col-span-2 max-[820px]:col-span-1"><span className="mb-9 inline-block text-xs font-black uppercase tracking-[.12em] text-[#8b692c]">{t.cheese}</span><h2 className="text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{t.cheese}</h2><b className="mt-8 inline-block text-[13px] uppercase">{t.view}</b></Link>
+          {categories.map((category, index) => <Link key={category.id} href={`${productsPath}#${category.id}`} className="group flex min-h-[210px] flex-col justify-between overflow-hidden rounded-2xl border border-[#e4ddd7] border-t-[6px] bg-white p-7 transition-transform hover:-translate-y-[3px]" style={{ borderTopColor: accents[index % accents.length] }}>
+            <div><span className="text-xs font-black uppercase tracking-[.12em] text-[#08733a]">{t.eyebrow}</span><h2 className="mt-7 text-[30px] font-black uppercase tracking-[.02em] max-[620px]:text-[24px]">{category.title}</h2>{category.description && <p className="mt-3 text-sm leading-relaxed text-[#625851]">{category.description}</p>}</div>
+            <b className="mt-8 inline-block text-[13px] uppercase text-[#08733a]">{t.view}</b>
+          </Link>)}
         </div>
       </div>
     </section>
