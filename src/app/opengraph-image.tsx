@@ -77,9 +77,9 @@ export default function OpenGraphImage() {
               <div
                 style={{
                   color: "#08733a",
-                  fontSize: "20px",
+                  fontSize: "16px",
                   fontWeight: 800,
-                  letterSpacing: "4px",
+                  letterSpacing: "2px",
                   textTransform: "uppercase",
                   marginBottom: "10px",
                 }}
@@ -88,6 +88,8 @@ export default function OpenGraphImage() {
               </div>
               <div
                 style={{
+                  display: "flex",
+                  flexDirection: "column",
                   fontSize: "66px",
                   lineHeight: 0.9,
                   fontWeight: 900,
@@ -95,9 +97,8 @@ export default function OpenGraphImage() {
                   letterSpacing: "-2px",
                 }}
               >
-                Еленски
-                <br />
-                Балканджии
+                <span>Еленски</span>
+                <span>Балканджии</span>
               </div>
             </div>
           </div>
