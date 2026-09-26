@@ -6,6 +6,9 @@ services:
     branch: main
     buildCommand: npm install --no-audit --no-fund && npm run build
     staticPublishPath: ./out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
     routes:
       - type: redirect
         source: /project

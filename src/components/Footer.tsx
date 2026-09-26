@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export default function Footer() {
   const { language } = useLanguage();
+  const categories = useSiteContent()[language].products.categories;
   const localizedHref = (href: string) => {
     const [path, hash] = href.split("#");
     const localizedPath = language === "en"
@@ -27,7 +29,7 @@ export default function Footer() {
         <div className="max-[820px]:col-span-2 max-[620px]:col-span-1"><Link href={localizedHref("/")} className="inline-block text-[28px] font-black uppercase tracking-[-0.02em] hover:text-white" aria-label={language === "bg" ? "Еленски Балканджии — Начало" : "Elenski Balkandzhii — Home"}>Еленски Балканджии</Link></div>
         <nav aria-label={language === "bg" ? "Навигация във футъра" : "Footer navigation"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.nav}</div>
-          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link><Link className="hover:text-white" href={localizedHref("/products#meso")}>{t.meat}</Link><Link className="hover:text-white" href={localizedHref("/products#mezeta")}>{t.delicacies}</Link><Link className="hover:text-white" href={localizedHref("/products#sirena")}>{t.cheese}</Link></div>
+          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link><Link className="hover:text-white" href={localizedHref("/products#meso")}>{categories[0].title}</Link><Link className="hover:text-white" href={localizedHref("/products#mezeta")}>{categories[1].title}</Link><Link className="hover:text-white" href={localizedHref("/products#sirena")}>{categories[2].title}</Link></div>
         </nav>
         <nav aria-label={language === "bg" ? "Информационни страници" : "Information pages"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>

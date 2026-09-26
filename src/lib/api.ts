@@ -4,3 +4,7 @@ export const API_URL =
 export function apiUrl(path: string): string {
   return `${API_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
+
+export function imageUrl(path: string): string {
+  return path.startsWith('/api/images/') ? apiUrl(path) : path;
+}

@@ -1,18 +1,11 @@
 "use client";
 
+import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export default function ProductsPage() {
   const { language } = useLanguage();
-  const categories = language === "bg" ? [
-    { id: "meso", title: "Месо", ribbon: "bg-[#cf2428] text-white", items: ["Свинско месо", "Кюфтета и кебапчета", "Наденички"] },
-    { id: "mezeta", title: "Мезета", ribbon: "bg-[#0b9c4a] text-white", items: ["Суджуци и луканки", "Сушени меса", "Мезе плата"] },
-    { id: "sirena", title: "Сирена", ribbon: "bg-[#d8b66b] text-[#2b211c]", items: ["Бяло сирене", "Кашкавал", "Сирена за плато"] },
-  ] : [
-    { id: "meso", title: "Meat", ribbon: "bg-[#cf2428] text-white", items: ["Pork", "Meatballs and kebapche", "Sausages"] },
-    { id: "mezeta", title: "Delicacies", ribbon: "bg-[#0b9c4a] text-white", items: ["Sudzhuk and lukanka", "Dried meats", "Delicacy platters"] },
-    { id: "sirena", title: "Cheese", ribbon: "bg-[#d8b66b] text-[#2b211c]", items: ["White brined cheese", "Kashkaval", "Cheese for platters"] },
-  ];
+  const categories = useSiteContent()[language].products.categories.map((category, index) => ({ ...category, id: ["meso", "mezeta", "sirena"][index], ribbon: ["bg-[#cf2428] text-white", "bg-[#0b9c4a] text-white", "bg-[#d8b66b] text-[#2b211c]"][index] }));
 
   return (
     <section className="min-h-[68vh] bg-white py-[92px] pt-[104px] max-[1100px]:py-20 max-[820px]:min-h-0 max-[820px]:py-[68px] max-[820px]:pt-[76px] max-[620px]:py-[54px]" aria-labelledby="products-heading">

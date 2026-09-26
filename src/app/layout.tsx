@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import StructuredData from "@/components/StructuredData";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { ContentProvider } from "@/components/ContentProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
 
@@ -102,9 +103,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <StructuredData data={structuredData} />
         <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
         <LanguageProvider>
+          <ContentProvider>
           <Navbar />
           <main className="min-h-[calc(100vh-320px)]">{children}</main>
           <Footer />
+        </ContentProvider>
         </LanguageProvider>
       </body>
     </html>

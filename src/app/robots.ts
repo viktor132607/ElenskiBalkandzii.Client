@@ -7,6 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: "/site-control",
     },
     sitemap: "https://elenskibalkandzii-client.onrender.com/sitemap.xml",
     host: "https://elenskibalkandzii-client.onrender.com",

@@ -1,27 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export default function Home() {
   const { language } = useLanguage();
   const productsPath = language === "en" ? "/en/products" : "/products";
 
-  const t = language === "bg" ? {
-    eyebrow: "Еленски Балканджии",
-    title: "Вкусът на Балкана",
-    meat: "Месо",
-    delicacies: "Мезета",
-    cheese: "Сирена",
-    view: "Виж продуктите →",
-  } : {
-    eyebrow: "Elenski Balkandzhii",
-    title: "The taste of the Balkan",
-    meat: "Meat",
-    delicacies: "Delicacies",
-    cheese: "Cheese",
-    view: "View products →",
-  };
+  const content = useSiteContent()[language];
+  const t = { ...content.home, meat: content.products.categories[0].title, delicacies: content.products.categories[1].title, cheese: content.products.categories[2].title };
 
   return (
     <section className="bg-white py-[92px] max-[1100px]:py-20 max-[820px]:py-[68px] max-[620px]:py-[54px]">
