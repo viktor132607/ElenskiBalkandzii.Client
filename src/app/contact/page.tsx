@@ -37,8 +37,8 @@ export default function ContactPage() {
             </div>
           </dl>
         </article>
-        <div className="w-[728px] max-[1100px]:w-full">
-          <figure className="m-0 h-[638px] w-full overflow-hidden rounded-t-2xl border border-b-0 border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:aspect-[728/638]">
+        <div className="flex w-[728px] flex-col gap-[20px] max-[1100px]:w-full">
+          <figure className="m-0 h-[588px] w-full overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:aspect-[728/588]">
             <Image
               src={imageUrl(media.store)}
               alt={t.alt}
@@ -46,14 +46,14 @@ export default function ContactPage() {
               height={688}
               priority
               sizes="(max-width: 1100px) calc(100vw - 40px), 728px"
-              className="h-full w-full object-cover"
+              className="h-[calc(100%_+_50px)] w-full translate-y-[-20px] object-cover"
               style={{ objectPosition: "center 40%" }}
             />
           </figure>
           <iframe
             title={language === "bg" ? "Google карта — Еленски Балканджии, Русе" : "Google Map — Elenski Balkandzhii, Ruse"}
             src="https://www.google.com/maps?q=%D0%B6.%D0%BA.%20%D0%A0%D0%BE%D0%B4%D0%B8%D0%BD%D0%B0%203%2C%20%D1%83%D0%BB.%20%D0%A8%D0%B8%D0%BF%D0%BA%D0%B0%2012%2C%207012%20%D0%A0%D1%83%D1%81%D0%B5&output=embed"
-            className="block h-[260px] w-full rounded-b-2xl border border-[#e4ddd7]"
+            className="block h-[260px] w-full rounded-2xl border border-[#e4ddd7]"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
