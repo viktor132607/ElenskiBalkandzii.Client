@@ -94,8 +94,10 @@ export const metadata: Metadata = {
     url: "/en/contact",
     images: [
       {
-        url: "/elenski-balkandzhii-store-ruse.jpg",
-        alt: "Elenski Balkandzhii store in Ruse",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Еленски Балканджии — месо, мезета и сирена",
       },
     ],
   },
@@ -103,7 +105,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contacts | Elenski Balkandzhii",
     description: "Contact details and opening hours for the Elenski Balkandzhii store in Ruse, Bulgaria.",
-    images: ["/elenski-balkandzhii-store-ruse.jpg"],
+    images: ["/twitter-image"],
   },
 };
 

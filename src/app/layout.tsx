@@ -58,7 +58,9 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    apple: "/elenski-balkandzhii-logo.jpg",
+    icon: [{ url: "/icon", type: "image/png" }],
+    shortcut: [{ url: "/icon", type: "image/png" }],
+    apple: [{ url: "/elenski-balkandzhii-logo.jpg", type: "image/jpeg" }],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
@@ -82,8 +84,10 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/elenski-balkandzhii-traditional-products.jpg",
-        alt: "Традиционни продукти на Еленски Балканджии",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Еленски Балканджии — месо, мезета и сирена",
       },
     ],
   },
@@ -91,7 +95,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Еленски Балканджии | Месо и мезета",
     description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
-    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+    images: ["/twitter-image"],
   },
 };
 

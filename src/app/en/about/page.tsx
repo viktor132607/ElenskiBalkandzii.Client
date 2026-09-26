@@ -44,8 +44,10 @@ export const metadata: Metadata = {
     url: "/en/about",
     images: [
       {
-        url: "/elenski-balkandzhii-traditional-products.jpg",
-        alt: "Traditional products from Elenski Balkandzhii",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Еленски Балканджии — месо, мезета и сирена",
       },
     ],
   },
@@ -53,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About us | Elenski Balkandzhii",
     description: "Learn more about Elenski Balkandzhii — products from the Elena Balkan region made with Bulgarian meat and natural spices.",
-    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+    images: ["/twitter-image"],
   },
 };
 

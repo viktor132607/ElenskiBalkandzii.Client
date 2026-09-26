@@ -92,8 +92,10 @@ export const metadata: Metadata = {
     url: "/contact",
     images: [
       {
-        url: "/elenski-balkandzhii-store-ruse.jpg",
-        alt: "Магазин Еленски Балканджии в Русе",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Еленски Балканджии — месо, мезета и сирена",
       },
     ],
   },
@@ -101,7 +103,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Контакти | Еленски Балканджии",
     description: "Контакти и работно време на магазин Еленски Балканджии в Русе — адрес, телефон и информация за посещение.",
-    images: ["/elenski-balkandzhii-store-ruse.jpg"],
+    images: ["/twitter-image"],
   },
 };
 

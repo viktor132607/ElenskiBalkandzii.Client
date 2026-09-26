@@ -42,8 +42,10 @@ export const metadata: Metadata = {
     url: "/about",
     images: [
       {
-        url: "/elenski-balkandzhii-traditional-products.jpg",
-        alt: "Традиционни продукти на Еленски Балканджии",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Еленски Балканджии — месо, мезета и сирена",
       },
     ],
   },
@@ -51,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "За нас | Еленски Балканджии",
     description: "Научете повече за Еленски Балканджии — продукти от Еленския Балкан, приготвени с българско месо и натурални подправки.",
-    images: ["/elenski-balkandzhii-traditional-products.jpg"],
+    images: ["/twitter-image"],
   },
 };
 

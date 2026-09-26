@@ -9,8 +9,7 @@ export const size = {
 
 export const contentType = "image/png";
 
-const logoUrl =
-  "https://raw.githubusercontent.com/viktor132607/ElenskiBalkandzii.Client/main/public/elenski-balkandzhii-logo.jpg";
+const logoUrl = "https://elenskibalkandzii-client.onrender.com/elenski-balkandzhii-logo.jpg";
 
 export default function Icon() {
   return new ImageResponse(
@@ -22,13 +21,13 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0,0,0,0)",
+          backgroundColor: "transparent",
         }}
       >
         <div
           style={{
-            width: "112px",
-            height: "112px",
+            width: "118px",
+            height: "118px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -40,20 +39,18 @@ export default function Icon() {
           <img
             src={logoUrl}
             alt=""
-            width="112"
-            height="112"
+            width="118"
+            height="118"
             style={{
-              width: "112px",
-              height: "112px",
+              width: "118px",
+              height: "118px",
               objectFit: "cover",
-              transform: "scale(1.18)",
+              borderRadius: "9999px",
             }}
           />
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }
