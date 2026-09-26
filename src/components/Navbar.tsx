@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { imageUrl } from "@/lib/api";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { imageUrl } from "@/lib/api";
 
-const standardLinks = [
+const links = [
   { href: "/", bg: "Начало", en: "Home" },
+  { href: "/products", bg: "Асортимент", en: "Products" },
   { href: "/about", bg: "За нас", en: "About us" },
   { href: "/contact", bg: "Контакти", en: "Contacts" },
 ];
@@ -17,60 +18,78 @@ const standardLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const content = useSiteContent();
-  const navItems = [standardLinks[0], ...content.bg.products.categories.filter(category => category.visible).map(category => ({ href: `/products#${category.id}`, bg: category.title, en: content.en.products.categories.find(item => item.id === category.id)?.title ?? category.title })), ...standardLinks.slice(1)];
-  const [open, setOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
-
-  const localizedHref = (href: string) => {
-    const [path, hash] = href.split("#");
-    const localizedPath = language === "en"
-      ? path === "/" ? "/en" : `/en${path}`
-      : path;
-
-    return `${localizedPath}${hash ? `#${hash}` : ""}`;
-  };
+  const [open, setOpen] = useState(false);
+  const categories = content[language].products.categories.filter((category) => category.visible);
+  const phone = content[language].contact.phone;
+  const localizedHref = (href: string) => language === "en" ? (href === "/" ? "/en" : `/en${href}`) : href;
+  const isActive = (href: string) => pathname === localizedHref(href);
+  const closeMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white">
-      <div className="border-b-[4px] border-[#15100d] bg-[repeating-linear-gradient(to_bottom,#8b4b2c_0px,#8b4b2c_6px,#251c18_6px,#251c18_9px)]">
-        <div className="mx-auto w-[min(1320px,calc(100%_-_40px))] px-[18px] py-[10px] max-[620px]:w-full">
-          <div className="relative flex min-h-[108px] w-full items-center justify-center pr-[132px] max-[820px]:min-h-[88px] max-[820px]:pr-[116px] max-[520px]:min-h-[76px] max-[520px]:pl-0 max-[520px]:pr-[100px]">
-            <div className="mx-auto inline-flex items-center justify-center gap-[18px] max-[820px]:gap-[12px] max-[520px]:gap-[8px]">
-              <Image src={imageUrl(content.media.logo)} alt={language === "bg" ? "Лого на Еленски Балканджии" : "Elenski Balkandzhii logo"} width={96} height={96} priority className="h-[96px] w-[96px] shrink-0 rounded-full border border-white bg-white object-cover max-[820px]:h-[76px] max-[820px]:w-[76px] max-[520px]:h-[66px] max-[520px]:w-[66px]" />
-              <Link href={localizedHref("/")} onClick={() => setOpen(false)} aria-label={language === "bg" ? "Еленски Балканджии — Начало" : "Elenski Balkandzhii — Home"} className="flex flex-col items-center justify-center text-center font-['Arial_Black','Franklin_Gothic_Heavy',Arial,Helvetica,sans-serif] font-black uppercase leading-[0.88] tracking-[-0.025em] text-[#00c95a] antialiased [-webkit-text-stroke:0.75px_#111] [paint-order:stroke_fill]">
-                <span className="block whitespace-nowrap text-[clamp(40px,4.1vw,62px)] max-[820px]:text-[clamp(28px,6.1vw,38px)] max-[520px]:text-[clamp(23px,6.7vw,30px)]">ЕЛЕНСКИ</span>
-                <span className="mt-[3px] block whitespace-nowrap text-[clamp(47px,5vw,74px)] max-[820px]:text-[clamp(32px,7.1vw,45px)] max-[520px]:text-[clamp(27px,7.8vw,35px)]">БАЛКАНДЖИИ</span>
-              </Link>
-            </div>
+    <header className="sticky top-0 z-50 border-b border-[#a27b56]/50 text-[#f5eee3] shadow-[0_5px_20px_rgba(19,12,8,0.23)]">
+      <div className="bg-[#251a14]">
+        <div className="mx-auto flex h-8 max-w-[1240px] items-center justify-between gap-4 px-6 text-[11px] font-medium tracking-[0.08em] text-[#dfcbb6] max-[640px]:h-7 max-[640px]:px-4 max-[640px]:text-[10px]">
+          <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white">☎ {phone}</a>
+          <Link href={localizedHref("/contact")} className="truncate hover:text-white">
+            {language === "bg" ? "Магазин в Русе · Адрес и работно време" : "Store in Ruse · Address & hours"}
+          </Link>
+        </div>
+      </div>
 
-            <div className="absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-3 max-[520px]:gap-2">
-              <button type="button" onClick={toggleLanguage} className="h-11 min-w-11 rounded-[14px] border border-[#d7d2cc] bg-white px-3 text-[15px] font-extrabold uppercase text-[#201914] transition-colors hover:border-[#08733a] hover:text-[#08733a] max-[520px]:h-10 max-[520px]:min-w-10 max-[520px]:px-2 max-[520px]:text-[14px]" aria-label={language === "bg" ? "Switch to English" : "Превключи на български"}>
-                {language === "bg" ? "EN" : "BG"}
-              </button>
+      <div className="bg-[linear-gradient(90deg,rgba(34,22,15,.96),rgba(49,31,20,.95),rgba(34,22,15,.96)),repeating-linear-gradient(0deg,#5b3926_0px,#5b3926_4px,#2b1b14_5px,#2b1b14_8px)]">
+        <div className="mx-auto flex h-[84px] max-w-[1240px] items-center justify-between gap-5 px-6 max-[640px]:h-[70px] max-[640px]:px-4">
+          <Link href={localizedHref("/")} onClick={closeMenu} aria-label={language === "bg" ? "Еленски Балканджии — начало" : "Elenski Balkandzhii — home"} className="flex min-w-0 shrink-0 items-center gap-3.5 max-[640px]:gap-2.5">
+            <Image src={imageUrl(content.media.logo)} alt="" width={62} height={62} priority className="h-[62px] w-[62px] rounded-full border-2 border-[#c4a87b] bg-white object-cover max-[640px]:h-[50px] max-[640px]:w-[50px]" />
+            <span className="flex flex-col font-serif text-[21px] font-bold uppercase leading-[1.05] tracking-[0.06em] text-[#f7f0e5] max-[640px]:text-[15px]">
+              <span>Еленски</span><span>Балканджии</span>
+            </span>
+          </Link>
 
-              <button type="button" aria-label={open ? (language === "bg" ? "Затвори меню" : "Close menu") : (language === "bg" ? "Отвори меню" : "Open menu")} aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-[14px] border border-[#d7d2cc] bg-white transition-colors hover:border-[#08733a] max-[520px]:h-10 max-[520px]:w-10">
-                <span className="h-0.5 w-5 bg-[#2d211b]" />
-                <span className="h-0.5 w-5 bg-[#2d211b]" />
-                <span className="h-0.5 w-5 bg-[#2d211b]" />
-              </button>
-            </div>
+          <nav aria-label={language === "bg" ? "Основна навигация" : "Main navigation"} className="flex h-full items-center gap-8 max-[1060px]:gap-5 max-[900px]:hidden">
+            {links.map((item) => (
+              <div key={item.href} className="group relative flex h-full items-center">
+                <Link href={localizedHref(item.href)} aria-current={isActive(item.href) ? "page" : undefined} className={`relative flex h-full items-center whitespace-nowrap text-[13px] font-semibold uppercase tracking-[0.1em] transition-colors hover:text-[#e6bd7e] after:absolute after:bottom-[19px] after:left-0 after:h-[2px] after:w-full after:bg-[#d5a65f] after:transition-opacity ${isActive(item.href) ? "text-[#e6bd7e] after:opacity-100" : "text-[#f4ebe0] after:opacity-0 group-hover:after:opacity-100"}`}>
+                  {language === "bg" ? item.bg : item.en}
+                </Link>
+                {item.href === "/products" && categories.length > 0 && (
+                  <div className="invisible absolute left-[-16px] top-[calc(100%-3px)] min-w-[230px] border-t-2 border-[#d5a65f] bg-[#2e2018] py-2 opacity-0 shadow-xl transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    {categories.map((category) => (
+                      <Link key={category.id} href={`${localizedHref("/products")}#${category.id}`} className="block px-4 py-2.5 text-[13px] text-[#eee2d3] hover:bg-[#493124] hover:text-white">
+                        {category.title}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-2.5">
+            <button type="button" onClick={toggleLanguage} className="flex h-9 min-w-10 items-center justify-center border border-[#987d62] px-2 text-xs font-bold tracking-[0.08em] transition-colors hover:border-[#e0b780] hover:text-[#e0b780]" aria-label={language === "bg" ? "Switch to English" : "Превключи на български"}>
+              {language === "bg" ? "EN" : "BG"}
+            </button>
+            <button type="button" aria-label={open ? (language === "bg" ? "Затвори меню" : "Close menu") : (language === "bg" ? "Отвори меню" : "Open menu")} aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="hidden h-9 w-10 flex-col items-center justify-center gap-[5px] border border-[#987d62] max-[900px]:flex">
+              <span className="h-[2px] w-5 bg-[#f4ebe0]" /><span className="h-[2px] w-5 bg-[#f4ebe0]" /><span className="h-[2px] w-5 bg-[#f4ebe0]" />
+            </button>
           </div>
         </div>
       </div>
 
       {open && (
-        <nav className="border-b border-[#dedad5] bg-white" aria-label={language === "bg" ? "Основна навигация" : "Main navigation"}>
-          <div className="mx-auto w-[min(1320px,calc(100%_-_64px))] max-[620px]:w-[calc(100%_-_40px)]">
-            {navItems.map((item) => {
-              const href = localizedHref(item.href);
-              const active = pathname === href.split("#")[0];
-              return (
-                <Link key={item.href} href={href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`flex min-h-[74px] items-center border-b border-[#e2dfdb] px-0 text-[24px] font-bold text-[#36322f] transition-colors last:border-b-0 hover:text-[#08733a] max-[620px]:min-h-[64px] max-[620px]:text-[20px] ${active ? "text-[#08733a]" : ""}`}>
-                  {language === "bg" ? item.bg : item.en}
+        <nav id="mobile-navigation" aria-label={language === "bg" ? "Мобилна навигация" : "Mobile navigation"} className="hidden border-t border-[#795b42] bg-[#2e2018] px-4 pb-3 max-[900px]:block">
+          {links.map((item) => (
+            <div key={item.href}>
+              <Link href={localizedHref(item.href)} onClick={closeMenu} aria-current={isActive(item.href) ? "page" : undefined} className={`block border-b border-[#5e4432] py-3 text-[14px] font-semibold uppercase tracking-[0.08em] ${isActive(item.href) ? "text-[#e6bd7e]" : "text-[#f4ebe0]"}`}>
+                {language === "bg" ? item.bg : item.en}
+              </Link>
+              {item.href === "/products" && categories.map((category) => (
+                <Link key={category.id} href={`${localizedHref("/products")}#${category.id}`} onClick={closeMenu} className="block border-b border-[#4e382a] py-2.5 pl-5 text-[13px] text-[#ddc7ad]">
+                  {category.title}
                 </Link>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ))}
         </nav>
       )}
     </header>
