@@ -13,9 +13,3 @@ services:
       - type: redirect
         source: /project
         destination: /
-      - type: redirect
-        source: /products
-        destination: /
-      - type: redirect
-        source: /en/products
-        destination: /en

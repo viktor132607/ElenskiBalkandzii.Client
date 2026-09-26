@@ -22,7 +22,7 @@ function stripLocale(pathname: string) {
 function localizePath(pathname: string, language: Language) {
   let basePath = stripLocale(pathname);
 
-  if (basePath === "/project" || basePath === "/products") {
+  if (basePath === "/project") {
     basePath = "/";
   }
 

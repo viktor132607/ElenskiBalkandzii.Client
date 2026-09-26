@@ -1,5 +1,5 @@
-import ProductsPage from "@/components/catalog/ProductsPage";
+import InformationHome from "@/components/InformationHome";
 
 export default function Home() {
-  return <ProductsPage />;
+  return <InformationHome />;
 }

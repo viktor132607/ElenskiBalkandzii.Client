@@ -14,7 +14,7 @@ export default function SiteControl() {
   const router = useRouter();
   const [draft, setDraft] = useState<SiteContent>(defaults);
   const [language, setLanguage] = useState<Lang>('bg');
-  const [section, setSection] = useState<'products' | 'about' | 'contact' | 'images'>('products');
+  const [section, setSection] = useState<'home' | 'products' | 'feed' | 'about' | 'contact' | 'images'>('home');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
@@ -42,6 +42,10 @@ export default function SiteControl() {
   }
 
   async function save() {
+    if (draft.feed.some(item => item.visible && (!item.titleBg.trim() || !item.titleEn.trim() || !item.bodyBg.trim() || !item.bodyEn.trim() || !item.date))) {
+      setMessage('За публикуваните записи попълнете дата, заглавие и текст на двата езика.');
+      return;
+    }
     setBusy(true); setMessage('');
     try {
       const response = await fetch(apiUrl('/api/admin/content'), { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(draft) });
@@ -96,24 +100,26 @@ export default function SiteControl() {
   );
   const c = draft[language];
   const name = language === 'bg' ? 'Български' : 'English';
-  const sections = { products: 'Начало и асортимент', about: 'За нас', contact: 'Контакти', images: 'Изображения' };
+  const sections = { home: 'Начало', products: 'Асортимент', feed: 'Новини, събития и томболи', about: 'За нас', contact: 'Контакти', images: 'Изображения' };
 
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
     <div className="mx-auto max-w-5xl rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
       {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
           <div className="mt-7 flex flex-wrap gap-3 border-b border-[#e4ddd7] pb-6">
-            {(['products','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
+            {(['home','products','feed','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
             <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
           </div>
           <div className="mt-6 flex gap-3">{(['bg','en'] as const).map(lang => <button type="button" key={lang} onClick={() => setLanguage(lang)} aria-pressed={language === lang} className={`rounded-xl px-4 py-2 font-bold ${language === lang ? 'bg-[#211914] text-white' : 'bg-[#f1ede9]'}`}>{lang === 'bg' ? 'BG' : 'EN'}</button>)}</div>
           <h2 className="my-6 text-xl font-black">{sections[section]} · {name}</h2>
           <div className="grid gap-5">
-            {section === 'products' && <>
+            {section === 'home' && <>
               {field('Надпис', c.home.eyebrow, v => change(d => d[language].home.eyebrow = v))}
               {field('Заглавие', c.home.title, v => change(d => d[language].home.title = v))}
+              <p className="text-sm text-[#625851]">Слайдшоуто използва избраните публикации със снимка; когато няма такива, показва снимките на магазина и продуктите от „Изображения“.</p>
+            </>}
+            {section === 'products' && <>
               {field('Текст на бутона към категориите', c.home.view, v => change(d => d[language].home.view = v))}
-
               <p className="text-sm leading-relaxed text-[#625851]">Категориите и продуктите се подреждат еднакво за BG и EN. Редактирайте имената и описанията на двата езика. Няма количка, плащания или онлайн поръчки.</p>
               {c.products.categories.map((category, index) => <div key={category.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2">
@@ -141,6 +147,25 @@ export default function SiteControl() {
                 <button type="button" onClick={() => change(d => { const id = crypto.randomUUID(); for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.push({ id, title: lang === 'bg' ? 'Нов продукт' : 'New product', description: '', image: '', visible: true }); })} className="rounded-xl border border-[#08733a] px-4 py-2 font-bold text-[#08733a]">+ Добави продукт</button>
               </div>)}
               <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
+            </>}
+            {section === 'feed' && <>
+              <p className="text-sm leading-relaxed text-[#625851]">Новините, събитията и томболите се показват на началната страница по дата. Избраните за слайдшоу записи със снимка се редуват автоматично. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
+              {[...draft.feed].sort((a, b) => b.date.localeCompare(a.date)).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
+                <div className="flex flex-wrap items-center gap-2"><h3 className="mr-auto text-lg font-black">{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'}</h3>
+                  <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.visible = !item.visible; })} className="rounded-lg border px-3 py-2">{item.visible ? 'Публикувана · скрий' : 'Чернова · публикувай'}</button>
+                  <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.featured = !item.featured; })} className="rounded-lg border px-3 py-2">{item.featured ? 'В слайдшоу ✓' : 'Добави в слайдшоу'}</button>
+                  <button type="button" onClick={() => { if (window.confirm('Да изтрия ли публикацията?')) change(d => { d.feed = d.feed.filter(post => post.id !== item.id); }); }} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button>
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <label className="text-sm font-bold">Вид<select value={item.type} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.type = event.target.value as typeof item.type; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] bg-white p-3"><option value="news">Новина</option><option value="event">Събитие</option><option value="raffle">Томбола</option></select></label>
+                  <label className="text-sm font-bold">Дата<input type="date" value={item.date} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.date = event.target.value; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] p-3" /></label>
+                  {item.type === 'raffle' && <label className="text-sm font-bold">Край на томболата<input type="date" value={item.endDate} min={item.date} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.endDate = event.target.value; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] p-3" /></label>}
+                </div>
+                {field(`Заглавие · ${name}`, language === 'bg' ? item.titleBg : item.titleEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'titleBg' : 'titleEn'] = value; }))}
+                {field(`Текст · ${name}`, language === 'bg' ? item.bodyBg : item.bodyEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'bodyBg' : 'bodyEn'] = value; }), true)}
+                {imagePicker('Снимка за публикацията и слайдшоуто', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
+              </div>)}
+              <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
             </>}
             {section === 'about' && <>
               {field('Надпис', c.about.eyebrow, v => change(d => d[language].about.eyebrow = v))}

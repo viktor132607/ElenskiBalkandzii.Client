@@ -12,7 +12,8 @@ const pages = [
     en: "/en",
     title: "Еленски Балканджии | Месо и мезета",
     description: "Еленски Балканджии — магазин за месо, мезета и традиционни български вкусове.",
-    image: "elenski-balkandzhii-traditional-products.jpg",
+    image: "opengraph-image",
+    twitterImage: "twitter-image",
     schema: ["Organization", "WebSite"],
   },
   {
@@ -22,7 +23,8 @@ const pages = [
     en: "/en/about",
     title: "За нас | Еленски Балканджии",
     description: "Научете повече за Еленски Балканджии — продукти от Еленския Балкан, приготвени с българско месо и натурални подправки.",
-    image: "elenski-balkandzhii-traditional-products.jpg",
+    image: "opengraph-image",
+    twitterImage: "twitter-image",
     schema: ["Organization", "WebSite", "BreadcrumbList"],
   },
   {
@@ -32,7 +34,8 @@ const pages = [
     en: "/en/contact",
     title: "Контакти | Еленски Балканджии",
     description: "Контакти и работно време на магазин Еленски Балканджии в Русе — адрес, телефон и информация за посещение.",
-    image: "elenski-balkandzhii-store-ruse.jpg",
+    image: "opengraph-image",
+    twitterImage: "twitter-image",
     schema: ["Organization", "WebSite", "BreadcrumbList", "LocalBusiness"],
   },
   {
@@ -52,7 +55,8 @@ const pages = [
     en: "/en/about",
     title: "About us | Elenski Balkandzhii",
     description: "Learn more about Elenski Balkandzhii — products from the Elena Balkan region made with Bulgarian meat and natural spices.",
-    image: "elenski-balkandzhii-traditional-products.jpg",
+    image: "opengraph-image",
+    twitterImage: "twitter-image",
     schema: ["Organization", "WebSite", "BreadcrumbList"],
   },
   {
@@ -62,9 +66,20 @@ const pages = [
     en: "/en/contact",
     title: "Contacts | Elenski Balkandzhii",
     description: "Contact details and opening hours for the Elenski Balkandzhii store in Ruse, Bulgaria.",
-    image: "elenski-balkandzhii-store-ruse.jpg",
+    image: "opengraph-image",
+    twitterImage: "twitter-image",
     schema: ["Organization", "WebSite", "BreadcrumbList", "LocalBusiness"],
   },
+  ...[
+    ["/products", "/en/products", "Асортимент | Еленски Балканджии", "Разгледайте месо, мезета и сирена от Еленски Балканджии в Русе."],
+    ["/news", "/en/news", "Новини, събития и томболи | Еленски Балканджии", "Последни новини, предстоящи събития и томболи от Еленски Балканджии в Русе."],
+    ["/en/products", "/products", "Selection | Elenski Balkandzhii", "Explore meat, delicacies and cheese at Elenski Balkandzhii in Ruse."],
+    ["/en/news", "/news", "News, events and raffles | Elenski Balkandzhii", "Latest news, upcoming events and raffles from Elenski Balkandzhii in Ruse."],
+  ].map(([route, alternate, title, description]) => ({
+    route, canonical: route, bg: route.startsWith("/en/") ? alternate : route,
+    en: route.startsWith("/en/") ? route : alternate,
+    title, description, image: "opengraph-image", twitterImage: "twitter-image", schema: ["Organization", "WebSite"],
+  })),
 ];
 
 const toAbsolute = (route) => route === "/" ? siteUrl : `${siteUrl}${route}`;
@@ -238,7 +253,7 @@ for (const page of pages) {
   assert(twitterCard?.content === "summary_large_image", `${page.route}: Twitter card type mismatch`);
   assert(twitterTitle?.content === page.title, `${page.route}: Twitter title mismatch`);
   assert(twitterDescription?.content === page.description, `${page.route}: Twitter description mismatch`);
-  assert(twitterImage?.content?.includes(page.image), `${page.route}: Twitter image mismatch`);
+  assert(twitterImage?.content?.includes(page.twitterImage ?? page.image), `${page.route}: Twitter image mismatch`);
 
   const schemaDocuments = getJsonLd(html);
   assert(schemaDocuments.length > 0, `${page.route}: JSON-LD is missing`);
@@ -261,10 +276,6 @@ for (const page of pages) {
 }
 
 const legacyCandidates = [
-  path.join(outDir, "products.html"),
-  path.join(outDir, "products", "index.html"),
-  path.join(outDir, "en", "products.html"),
-  path.join(outDir, "en", "products", "index.html"),
   path.join(outDir, "project.html"),
   path.join(outDir, "project", "index.html"),
 ];
@@ -281,7 +292,7 @@ for (const candidate of legacyCandidates) {
 }
 
 const renderBlueprint = await readFile(path.resolve("render.yaml"), "utf8");
-for (const [source, destination] of [["/project", "/"], ["/products", "/"], ["/en/products", "/en"]]) {
+for (const [source, destination] of [["/project", "/"]]) {
   assert(
     renderBlueprint.includes(`source: ${source}\n        destination: ${destination}`),
     `render.yaml: missing ${source} -> ${destination} redirect rule`,

@@ -24,12 +24,12 @@ export default function ProductsPage() {
   return <div className="bg-[#faf8f5] text-[#211915]">
     <section id="categories" aria-labelledby="products-heading" className="scroll-mt-24 border-b border-[#e7ded5] bg-white px-5 py-8 md:py-10">
       <div className="mx-auto max-w-[1180px]">
-        <h1 id="products-heading" className="sr-only">{content.home.title}</h1>
+        <h1 id="products-heading" className="sr-only">{language === "bg" ? "Асортимент" : "Selection"}</h1>
         <div className="flex flex-wrap gap-3 border-b border-[#e7ded5] pb-7">
           <a href="#selection" className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white transition-colors hover:bg-[#0b8d47]">{content.home.view}</a>
           <Link href={contactPath} className="rounded-xl border border-[#a79a90] px-6 py-3 font-bold text-[#211915] transition-colors hover:border-[#08733a] hover:text-[#08733a]">{t.contact}</Link>
         </div>
-        <nav aria-label={content.home.title} className="flex flex-wrap gap-3 pt-7">
+        <nav aria-label={language === "bg" ? "Категории в асортимента" : "Selection categories"} className="flex flex-wrap gap-3 pt-7">
           {categories.map((category, index) => <a key={category.id} href={`#${category.id}`} className="rounded-full border border-[#e4ddd7] px-5 py-2 text-sm font-black uppercase tracking-wide hover:border-[#08733a] hover:text-[#08733a]" style={{ borderLeft: `5px solid ${accents[index % accents.length]}` }}>{category.title}</a>)}
         </nav>
       </div>
