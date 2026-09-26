@@ -14,9 +14,9 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "bg",
     icons: [
       {
-        src: "/elenski-balkandzhii-logo.jpg",
-        sizes: "any",
-        type: "image/jpeg",
+        src: "/elenski-icon.png",
+        sizes: "512x512",
+        type: "image/png",
         purpose: "any",
       },
     ],

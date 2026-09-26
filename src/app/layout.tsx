@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: [{ url: "/icon", type: "image/png" }],
-    shortcut: [{ url: "/icon", type: "image/png" }],
-    apple: [{ url: "/elenski-balkandzhii-logo.jpg", type: "image/jpeg" }],
+    icon: [{ url: "/elenski-icon.png?v=2", type: "image/png", sizes: "512x512" }],
+    shortcut: [{ url: "/elenski-favicon.ico?v=2", type: "image/x-icon" }],
+    apple: [{ url: "/elenski-icon.png?v=2", type: "image/png", sizes: "512x512" }],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
