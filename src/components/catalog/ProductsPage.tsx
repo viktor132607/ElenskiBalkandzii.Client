@@ -14,31 +14,29 @@ export default function ProductsPage() {
   const categories = content.products.categories.filter(category => category.visible);
   const contactPath = language === "en" ? "/en/contact" : "/contact";
   const t = language === "bg" ? {
-    eyebrow: "Еленски Балканджии · Русе", title: "Нашият асортимент",
     lead: "Разгледайте продуктите, които представяме в магазина. За актуален асортимент и информация се свържете с нас или ни посетете на място.",
-    view: "Разгледай асортимента", contact: "Адрес и контакти", products: "В тази категория", visit: "Открийте ни в магазина",
+    contact: "Адрес и контакти", products: "В тази категория", visit: "Открийте ни в магазина",
     disclaimer: "Асортиментът може да се променя. Попитайте ни за актуална информация.", empty: "Скоро ще добавим продукти в тази категория.",
   } : {
-    eyebrow: "Elenski Balkandzhii · Ruse", title: "Our selection",
     lead: "Explore the products featured in our store. Contact us or visit for information on the current selection.",
-    view: "Explore the selection", contact: "Address and contacts", products: "In this category", visit: "Visit our store",
+    contact: "Address and contacts", products: "In this category", visit: "Visit our store",
     disclaimer: "The selection may change. Contact us for current information.", empty: "Products will be added to this category soon.",
   };
 
   return <div className="bg-[#faf8f5] text-[#211915]">
     <section className="border-b border-[#e7ded5] bg-[#211914] px-5 py-16 text-white md:py-24" aria-labelledby="products-heading">
       <div className="mx-auto max-w-[1180px]">
-        <span className="text-xs font-bold uppercase tracking-[.18em] text-[#82d69e]">{t.eyebrow}</span>
-        <h1 id="products-heading" className="mt-5 max-w-[850px] text-[clamp(44px,6vw,78px)] font-black uppercase leading-[.98]">{t.title}</h1>
+        <span className="text-xs font-bold uppercase tracking-[.18em] text-[#82d69e]">{content.home.eyebrow}</span>
+        <h1 id="products-heading" className="mt-5 max-w-[850px] text-[clamp(44px,6vw,78px)] font-black uppercase leading-[.98]">{content.home.title}</h1>
         <p className="mt-6 max-w-[700px] text-lg leading-relaxed text-[#e4dcd5]">{t.lead}</p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <a href="#categories" className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white hover:bg-[#0b8d47]">{t.view}</a>
+          <a href="#categories" className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white hover:bg-[#0b8d47]">{content.home.view}</a>
           <Link href={contactPath} className="rounded-xl border border-[#a79a90] px-6 py-3 font-bold text-white hover:border-white">{t.contact}</Link>
         </div>
       </div>
     </section>
 
-    <nav id="categories" aria-label={t.title} className="scroll-mt-24 border-b border-[#e7ded5] bg-white px-5 py-5">
+    <nav id="categories" aria-label={content.home.title} className="scroll-mt-24 border-b border-[#e7ded5] bg-white px-5 py-5">
       <div className="mx-auto flex max-w-[1180px] flex-wrap gap-3">{categories.map((category, index) => <a key={category.id} href={`#${category.id}`} className="rounded-full border border-[#e4ddd7] px-5 py-2 text-sm font-black uppercase tracking-wide hover:border-[#08733a] hover:text-[#08733a]" style={{ borderLeft: `5px solid ${accents[index % accents.length]}` }}>{category.title}</a>)}</div>
     </nav>
 

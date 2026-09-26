@@ -11,7 +11,7 @@ export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo:
 export const defaults: SiteContent = {
   media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg' },
   bg: {
-    home: { eyebrow: 'Еленски Балканджии', title: 'Вкусът на Балкана', view: 'Виж продуктите →' },
+    home: { eyebrow: 'Еленски Балканджии', title: 'Нашият асортимент', view: 'Разгледай асортимента' },
     about: { eyebrow: 'За нас', title: 'Вкус с корен.', copy: 'Магазини "Еленски Балканджии" предлагат на своите клиенти продукти от Еленския Балкан, съдържащи само натурални подправки. За направата им се използва единствено българско месо.', rows: [{ label: 'Произход', copy: 'Продукти от Еленския Балкан.' }, { label: 'Подправки', copy: 'За направата им се използват само натурални подправки.' }, { label: 'Месо', copy: 'Използва се единствено българско месо.' }] },
     contact: { heading: 'Еленски Балканджии — Контакти', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}] },
     products: { categories: [
@@ -30,7 +30,7 @@ export const defaults: SiteContent = {
     ] }
   },
   en: {
-    home: { eyebrow: 'Elenski Balkandzhii', title: 'The taste of the Balkan', view: 'View products →' },
+    home: { eyebrow: 'Elenski Balkandzhii', title: 'Our selection', view: 'Explore the selection' },
     about: { eyebrow: 'About us', title: 'Taste with roots.', copy: 'Elenski Balkandzhii stores offer products from the Elena Balkan region, made only with natural spices. Only Bulgarian meat is used in their preparation.', rows: [{label:'Origin',copy:'Products from the Elena Balkan region.'},{label:'Spices',copy:'Only natural spices are used in their preparation.'},{label:'Meat',copy:'Only Bulgarian meat is used.'}] },
     contact: { heading: 'Elenski Balkandzhii — Contacts', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}] },
     products: { categories: [
@@ -59,6 +59,13 @@ export function normalizeContent(value: unknown): SiteContent | null {
       const section = site[lang];
       if (typeof section.home.title !== 'string' || typeof section.about.copy !== 'string' ||
           !Array.isArray(section.contact.hours) || !Array.isArray(section.products.categories)) return null;
+    }
+    // Use the selection heading for stored content that still has the original home heading.
+    if (site.bg.home.title === "Вкусът на Балкана" || site.en.home.title === "The taste of the Balkan") {
+      const migrated = structuredClone(site);
+      if (site.bg.home.title === "Вкусът на Балкана") migrated.bg.home.title = defaults.bg.home.title;
+      if (site.en.home.title === "The taste of the Balkan") migrated.en.home.title = defaults.en.home.title;
+      return normalizeContent(migrated);
     }
     // Convert content saved before product details were introduced.
     if (site.bg.products.categories.some(category => !category.id)) {

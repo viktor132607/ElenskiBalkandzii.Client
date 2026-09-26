@@ -29,7 +29,7 @@ export default function Footer() {
         <div className="max-[820px]:col-span-2 max-[620px]:col-span-1"><Link href={localizedHref("/")} className="inline-block text-[28px] font-black uppercase tracking-[-0.02em] hover:text-white" aria-label={language === "bg" ? "Еленски Балканджии — Начало" : "Elenski Balkandzhii — Home"}>Еленски Балканджии</Link></div>
         <nav aria-label={language === "bg" ? "Навигация във футъра" : "Footer navigation"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.nav}</div>
-          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link>{categories.map(category => <Link key={category.id} className="hover:text-white" href={localizedHref(`/products#${category.id}`)}>{category.title}</Link>)}</div>
+          <div className="grid gap-3 text-sm text-[#efe9e5]"><Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link>{categories.map(category => <Link key={category.id} className="hover:text-white" href={localizedHref(`/#${category.id}`)}>{category.title}</Link>)}</div>
         </nav>
         <nav aria-label={language === "bg" ? "Информационни страници" : "Information pages"}>
           <div className="mb-[18px] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>

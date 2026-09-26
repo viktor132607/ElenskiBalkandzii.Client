@@ -7,7 +7,6 @@ export default function NotFound() {
   const { language } = useLanguage();
 
   const homePath = language === "en" ? "/en" : "/";
-  const productsPath = language === "en" ? "/en/products" : "/products";
 
   const t = language === "bg"
     ? {
@@ -45,7 +44,7 @@ export default function NotFound() {
             {t.home}
           </Link>
           <Link
-            href={productsPath}
+            href={`${homePath}#categories`}
             className="rounded-[14px] border border-[#d7d2cc] bg-white px-6 py-3 font-bold text-[#211915] transition-colors hover:border-[#08733a] hover:text-[#08733a]"
           >
             {t.products}

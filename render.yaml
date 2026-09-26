@@ -12,4 +12,10 @@ services:
     routes:
       - type: redirect
         source: /project
-        destination: /products
+        destination: /
+      - type: redirect
+        source: /products
+        destination: /
+      - type: redirect
+        source: /en/products
+        destination: /en

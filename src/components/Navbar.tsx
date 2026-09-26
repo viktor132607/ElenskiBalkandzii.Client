@@ -10,7 +10,6 @@ import { imageUrl } from "@/lib/api";
 
 const links = [
   { href: "/", bg: "Начало", en: "Home" },
-  { href: "/products", bg: "Асортимент", en: "Products" },
   { href: "/about", bg: "За нас", en: "About us" },
   { href: "/contact", bg: "Контакти", en: "Contacts" },
 ];
@@ -42,10 +41,10 @@ export default function Navbar() {
                 <Link href={localizedHref(item.href)} aria-current={isActive(item.href) ? "page" : undefined} className={`relative flex h-full items-center whitespace-nowrap text-[13px] font-semibold uppercase tracking-[0.1em] transition-colors hover:text-[#e6bd7e] after:absolute after:bottom-[19px] after:left-0 after:h-[2px] after:w-full after:bg-[#d5a65f] after:transition-opacity ${isActive(item.href) ? "text-[#e6bd7e] after:opacity-100" : "text-[#f4ebe0] after:opacity-0 group-hover:after:opacity-100"}`}>
                   {language === "bg" ? item.bg : item.en}
                 </Link>
-                {item.href === "/products" && categories.length > 0 && (
+                {item.href === "/" && categories.length > 0 && (
                   <div className="invisible absolute left-[-16px] top-[calc(100%-3px)] min-w-[230px] border-t-2 border-[#d5a65f] bg-[#2e2018] py-2 opacity-0 shadow-xl transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                     {categories.map((category) => (
-                      <Link key={category.id} href={`${localizedHref("/products")}#${category.id}`} className="block px-4 py-2.5 text-[13px] text-[#eee2d3] hover:bg-[#493124] hover:text-white">
+                      <Link key={category.id} href={`${localizedHref("/")}#${category.id}`} className="block px-4 py-2.5 text-[13px] text-[#eee2d3] hover:bg-[#493124] hover:text-white">
                         {category.title}
                       </Link>
                     ))}
@@ -73,8 +72,8 @@ export default function Navbar() {
               <Link href={localizedHref(item.href)} onClick={closeMenu} aria-current={isActive(item.href) ? "page" : undefined} className={`block border-b border-[#5e4432] py-3 text-[14px] font-semibold uppercase tracking-[0.08em] ${isActive(item.href) ? "text-[#e6bd7e]" : "text-[#f4ebe0]"}`}>
                 {language === "bg" ? item.bg : item.en}
               </Link>
-              {item.href === "/products" && categories.map((category) => (
-                <Link key={category.id} href={`${localizedHref("/products")}#${category.id}`} onClick={closeMenu} className="block border-b border-[#4e382a] py-2.5 pl-5 text-[13px] text-[#ddc7ad]">
+              {item.href === "/" && categories.map((category) => (
+                <Link key={category.id} href={`${localizedHref("/")}#${category.id}`} onClick={closeMenu} className="block border-b border-[#4e382a] py-2.5 pl-5 text-[13px] text-[#ddc7ad]">
                   {category.title}
                 </Link>
               ))}

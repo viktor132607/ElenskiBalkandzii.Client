@@ -14,7 +14,7 @@ export default function SiteControl() {
   const router = useRouter();
   const [draft, setDraft] = useState<SiteContent>(defaults);
   const [language, setLanguage] = useState<Lang>('bg');
-  const [section, setSection] = useState<'home' | 'products' | 'about' | 'contact' | 'images'>('home');
+  const [section, setSection] = useState<'products' | 'about' | 'contact' | 'images'>('products');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
@@ -96,25 +96,24 @@ export default function SiteControl() {
   );
   const c = draft[language];
   const name = language === 'bg' ? 'Български' : 'English';
-  const sections = { home: 'Начало', products: 'Продукти', about: 'За нас', contact: 'Контакти', images: 'Изображения' };
+  const sections = { products: 'Начало и асортимент', about: 'За нас', contact: 'Контакти', images: 'Изображения' };
 
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
     <div className="mx-auto max-w-5xl rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
       {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
           <div className="mt-7 flex flex-wrap gap-3 border-b border-[#e4ddd7] pb-6">
-            {(['home','products','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
+            {(['products','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
             <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
           </div>
           <div className="mt-6 flex gap-3">{(['bg','en'] as const).map(lang => <button type="button" key={lang} onClick={() => setLanguage(lang)} aria-pressed={language === lang} className={`rounded-xl px-4 py-2 font-bold ${language === lang ? 'bg-[#211914] text-white' : 'bg-[#f1ede9]'}`}>{lang === 'bg' ? 'BG' : 'EN'}</button>)}</div>
           <h2 className="my-6 text-xl font-black">{sections[section]} · {name}</h2>
           <div className="grid gap-5">
-            {section === 'home' && <>
+            {section === 'products' && <>
               {field('Надпис', c.home.eyebrow, v => change(d => d[language].home.eyebrow = v))}
               {field('Заглавие', c.home.title, v => change(d => d[language].home.title = v))}
-              {field('Текст на линка', c.home.view, v => change(d => d[language].home.view = v))}
-            </>}
-            {section === 'products' && <>
+              {field('Текст на бутона към категориите', c.home.view, v => change(d => d[language].home.view = v))}
+
               <p className="text-sm leading-relaxed text-[#625851]">Категориите и продуктите се подреждат еднакво за BG и EN. Редактирайте имената и описанията на двата езика. Няма количка, плащания или онлайн поръчки.</p>
               {c.products.categories.map((category, index) => <div key={category.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2">

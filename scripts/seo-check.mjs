@@ -16,16 +16,6 @@ const pages = [
     schema: ["Organization", "WebSite"],
   },
   {
-    route: "/products",
-    canonical: "/products",
-    bg: "/products",
-    en: "/en/products",
-    title: "Продукти | Еленски Балканджии",
-    description: "Разгледайте продуктите на Еленски Балканджии — месо, мезета, сушени деликатеси и сирена с традиционен български вкус.",
-    image: "elenski-balkandzhii-traditional-products.jpg",
-    schema: ["Organization", "WebSite", "BreadcrumbList"],
-  },
-  {
     route: "/about",
     canonical: "/about",
     bg: "/about",
@@ -54,16 +44,6 @@ const pages = [
     description: "Elenski Balkandzhii — meat, delicacies, cheese and traditional Bulgarian flavours.",
     image: "elenski-balkandzhii-traditional-products.jpg",
     schema: ["Organization", "WebSite"],
-  },
-  {
-    route: "/en/products",
-    canonical: "/en/products",
-    bg: "/products",
-    en: "/en/products",
-    title: "Products | Elenski Balkandzhii",
-    description: "Explore Elenski Balkandzhii products — meat, dried delicacies and cheese with traditional Bulgarian flavour.",
-    image: "elenski-balkandzhii-traditional-products.jpg",
-    schema: ["Organization", "WebSite", "BreadcrumbList"],
   },
   {
     route: "/en/about",
@@ -281,6 +261,10 @@ for (const page of pages) {
 }
 
 const legacyCandidates = [
+  path.join(outDir, "products.html"),
+  path.join(outDir, "products", "index.html"),
+  path.join(outDir, "en", "products.html"),
+  path.join(outDir, "en", "products", "index.html"),
   path.join(outDir, "project.html"),
   path.join(outDir, "project", "index.html"),
 ];
@@ -288,19 +272,21 @@ const legacyCandidates = [
 for (const candidate of legacyCandidates) {
   try {
     await access(candidate);
-    throw new Error(`/project must not be emitted as a static HTML route: ${candidate}`);
+    throw new Error(`Retired route must not be emitted as static HTML: ${candidate}`);
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith("/project must not")) {
+    if (error instanceof Error && error.message.startsWith("Retired route must not")) {
       throw error;
     }
   }
 }
 
 const renderBlueprint = await readFile(path.resolve("render.yaml"), "utf8");
-assert(
-  /type:\s*redirect[\s\S]*source:\s*\/project[\s\S]*destination:\s*\/products/.test(renderBlueprint),
-  "render.yaml: missing permanent /project -> /products redirect rule",
-);
+for (const [source, destination] of [["/project", "/"], ["/products", "/"], ["/en/products", "/en"]]) {
+  assert(
+    renderBlueprint.includes(`source: ${source}\n        destination: ${destination}`),
+    `render.yaml: missing ${source} -> ${destination} redirect rule`,
+  );
+}
 
 const robotsText = await readFile(path.join(outDir, "robots.txt"), "utf8");
 assert(
