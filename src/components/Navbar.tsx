@@ -21,22 +21,12 @@ export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const categories = content[language].products.categories.filter((category) => category.visible);
-  const phone = content[language].contact.phone;
   const localizedHref = (href: string) => language === "en" ? (href === "/" ? "/en" : `/en${href}`) : href;
   const isActive = (href: string) => pathname === localizedHref(href);
   const closeMenu = () => setOpen(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#a27b56]/50 text-[#f5eee3] shadow-[0_5px_20px_rgba(19,12,8,0.23)]">
-      <div className="bg-[#251a14]">
-        <div className="mx-auto flex h-8 max-w-[1240px] items-center justify-between gap-4 px-6 text-[11px] font-medium tracking-[0.08em] text-[#dfcbb6] max-[640px]:h-7 max-[640px]:px-4 max-[640px]:text-[10px]">
-          <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white">☎ {phone}</a>
-          <Link href={localizedHref("/contact")} className="truncate hover:text-white">
-            {language === "bg" ? "Магазин в Русе · Адрес и работно време" : "Store in Ruse · Address & hours"}
-          </Link>
-        </div>
-      </div>
-
       <div className="bg-[linear-gradient(90deg,rgba(34,22,15,.96),rgba(49,31,20,.95),rgba(34,22,15,.96)),repeating-linear-gradient(0deg,#5b3926_0px,#5b3926_4px,#2b1b14_5px,#2b1b14_8px)]">
         <div className="mx-auto flex h-[84px] max-w-[1240px] items-center justify-between gap-5 px-6 max-[640px]:h-[70px] max-[640px]:px-4">
           <Link href={localizedHref("/")} onClick={closeMenu} aria-label={language === "bg" ? "Еленски Балканджии — начало" : "Elenski Balkandzhii — home"} className="flex min-w-0 shrink-0 items-center gap-3.5 max-[640px]:gap-2.5">
