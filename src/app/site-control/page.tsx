@@ -122,7 +122,7 @@ export default function SiteControl() {
             {section === 'home' && <>
               {field('Надпис', c.home.eyebrow, v => change(d => d[language].home.eyebrow = v))}
               {field('Заглавие', c.home.title, v => change(d => d[language].home.title = v))}
-              <p className="text-sm text-[#625851]">Слайдшоуто използва избраните публикации със снимка; когато няма такива, показва снимките на магазина и продуктите от „Изображения“.</p>
+              <p className="text-sm text-[#625851]">Управлявайте началното слайдшоу с бутона „Добави в слайдшоу“ при публикациите. Ако публикацията има няколко снимки, всяка става отделен слайд. Без избрани публикации се показват снимките на магазина и продуктите от „Изображения“.</p>
             </>}
             {section === 'products' && <>
               {field('Текст на бутона към категориите', c.home.view, v => change(d => d[language].home.view = v))}
