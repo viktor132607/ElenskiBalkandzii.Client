@@ -25,9 +25,10 @@ export default function InformationHome() {
     const photos = feedMediaType(item) === "slideshow" ? item.images || [] : feedMediaType(item) === "image" && item.image ? [item.image] : [];
     return photos.filter(Boolean).map(image => ({ image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg }));
   });
+  const intro = content.about.copy.match(/^.*?[.!?](?=\s|$)/u)?.[0] || content.about.copy;
   const slides = featuredSlides.length ? featuredSlides : [
-    { image: site.media.store, title: content.home.title, description: content.about.copy.slice(0, 190) + "…" },
-    { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: content.about.copy.slice(0, 190) + "…" },
+    { image: site.media.store, title: content.home.title, description: intro },
+    { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: intro },
   ];
   const slide = slides[activeSlide % slides.length];
   const [previousSlide, setPreviousSlide] = useState<typeof slide | null>(null);
@@ -59,9 +60,11 @@ export default function InformationHome() {
     <section className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-0 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12 max-[620px]:w-[min(100%_-_28px,1460px)]">
       <div className="flex min-h-[370px] min-w-0 flex-col justify-center bg-white p-8 md:p-12 lg:min-h-[524px] lg:rounded-l-[24px] lg:p-14">
         <span className="text-xs font-black uppercase tracking-[.2em] text-[#08733a]">{content.home.eyebrow}</span>
-        <div key={`${activeSlide}-${language}`} className="hero-copy-fade">
-          <h1 className="mt-5 line-clamp-3 min-h-[3.09em] text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{slide.title}</h1>
-          <p className="mt-6 line-clamp-4 min-h-[6.5em] max-w-xl text-lg leading-relaxed text-[#625851]">{slide.description}</p>
+        <div className="grid w-full">
+          {slides.map((entry, index) => <div key={`${index}-${entry.image}-${language}`} aria-hidden={index !== activeSlide % slides.length} className={`col-start-1 row-start-1 ${index === activeSlide % slides.length ? "hero-copy-fade" : "invisible"}`}>
+            <h1 className="mt-5 text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{entry.title}</h1>
+            <p className="mt-6 max-w-xl whitespace-pre-line text-lg leading-relaxed text-[#625851]">{entry.description}</p>
+          </div>)}
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href={language === "bg" ? "/about" : "/en/about"} className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white hover:bg-[#0b8d47]">{language === "bg" ? "За нас" : "About us"}</Link>
