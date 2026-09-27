@@ -18,7 +18,8 @@ export default function Footer() {
 
   const t = language === "bg" ? {
     nav: "Страници",
-    info: "Контакти",
+    info: "Информация",
+    contactTitle: "Контакти",
     home: "Начало",
     products: "Асортимент",
     news: "Новини",
@@ -35,7 +36,8 @@ export default function Footer() {
     createdBy: "Сайтът е създаден от",
   } : {
     nav: "Pages",
-    info: "Contact",
+    info: "Information",
+    contactTitle: "Contact",
     home: "Home",
     products: "Selection",
     news: "News",
@@ -55,33 +57,39 @@ export default function Footer() {
   return (
     <footer className="bg-[#211914] pb-5 text-white">
       <div className="h-[5px] bg-[linear-gradient(90deg,#0b9c4a_0_33.333%,#fff_33.333%_66.666%,#cf2428_66.666%_100%)]" aria-hidden="true" />
-      <div className="mx-auto grid w-[min(1180px,calc(100%_-_40px))] grid-cols-[1.35fr_1fr_1fr] gap-10 pt-10 max-[900px]:gap-6 max-[700px]:grid-cols-2 max-[620px]:w-[min(1180px,calc(100%_-_32px))] max-[620px]:grid-cols-1 max-[620px]:gap-8">
-        <div className="max-[700px]:col-span-2 max-[620px]:col-span-1">
+      <div className="mx-auto w-[min(1180px,calc(100%_-_40px))] pt-9 max-[620px]:w-[min(1180px,calc(100%_-_32px))]">
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
           <Link href={localizedHref("/")} className="inline-block text-[clamp(20px,2.3vw,28px)] font-black uppercase leading-tight tracking-[-0.02em] hover:text-white" aria-label={language === "bg" ? "Еленски Балканджии — Начало" : "Elenski Balkandzhii — Home"}>Еленски Балканджии</Link>
-          <p className="mt-3 max-w-[300px] text-sm leading-6 text-[#c5b9b0]">{language === "bg" ? "Традиционни вкусове от Еленския Балкан — прясно месо, мезета и местни специалитети." : "Traditional flavours from the Elena Balkan — fresh meat, delicacies and local specialities."}</p>
-          <a href="https://www.facebook.com/100057496117481/" target="_blank" rel="noopener noreferrer" aria-label={t.facebook} title={t.facebook} className="mt-4 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#211914] transition-colors hover:bg-[#e6bd7e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+          <a href="https://www.facebook.com/100057496117481/" target="_blank" rel="noopener noreferrer" aria-label={t.facebook} title={t.facebook} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#211914] transition-colors hover:bg-[#e6bd7e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
             <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.51 1.5-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.45 2.89h-2.33v6.99A10 10 0 0 0 22 12Z" /></svg>
           </a>
         </div>
-        <nav aria-label={language === "bg" ? "Навигация във футъра" : "Footer navigation"}>
-          <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.nav}</div>
-          <div className="grid gap-2.5 text-sm text-[#efe9e5]">
-            <Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link>
-            <Link className="hover:text-white" href={localizedHref("/products")}>{t.products}</Link>
-            <Link className="hover:text-white" href={localizedHref("/news")}>{t.news}</Link>
-            <Link className="hover:text-white" href={localizedHref("/about")}>{t.about}</Link>
-            <Link className="hover:text-white" href={localizedHref("/contact")}>{t.contacts}</Link>
-            <Link className="hover:text-white" href={localizedHref("/privacy")}>{t.privacy}</Link>
-            <Link className="hover:text-white" href={localizedHref("/terms")}>{t.terms}</Link>
-            <Link className="hover:text-white" href={localizedHref("/cookies")}>{t.cookies}</Link>
+        <div className="mt-7 grid grid-cols-3 gap-8 max-[700px]:grid-cols-2 max-[620px]:grid-cols-1 max-[620px]:gap-7">
+          <nav aria-label={language === "bg" ? "Навигация във футъра" : "Footer navigation"}>
+            <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.nav}</div>
+            <div className="grid gap-2.5 text-sm text-[#efe9e5]">
+              <Link className="hover:text-white" href={localizedHref("/")}>{t.home}</Link>
+              <Link className="hover:text-white" href={localizedHref("/products")}>{t.products}</Link>
+              <Link className="hover:text-white" href={localizedHref("/news")}>{t.news}</Link>
+              <Link className="hover:text-white" href={localizedHref("/about")}>{t.about}</Link>
+              <Link className="hover:text-white" href={localizedHref("/contact")}>{t.contacts}</Link>
+            </div>
+          </nav>
+          <nav aria-label={language === "bg" ? "Информация във футъра" : "Footer information"}>
+            <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>
+            <div className="grid gap-2.5 text-sm text-[#efe9e5]">
+              <Link className="hover:text-white" href={localizedHref("/privacy")}>{t.privacy}</Link>
+              <Link className="hover:text-white" href={localizedHref("/terms")}>{t.terms}</Link>
+              <Link className="hover:text-white" href={localizedHref("/cookies")}>{t.cookies}</Link>
+            </div>
+          </nav>
+          <div className="max-[700px]:col-span-2 max-[620px]:col-span-1">
+            <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.contactTitle}</div>
+            <address className="grid gap-3 text-sm not-italic leading-6 text-[#efe9e5]">
+              <a href="https://www.google.com/maps/search/?api=1&query=%D1%83%D0%BB.+%D0%A8%D0%B8%D0%BF%D0%BA%D0%B0+12%2C+%D0%A0%D1%83%D1%81%D0%B5" target="_blank" rel="noopener noreferrer" className="hover:text-white">{contact.address}</a>
+              <a href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`} className="hover:text-white">{contact.phone}</a>
+            </address>
           </div>
-        </nav>
-        <div>
-          <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#a99d95]">{t.info}</div>
-          <address className="grid gap-3 text-sm not-italic leading-6 text-[#efe9e5]">
-            <a href="https://www.google.com/maps/search/?api=1&query=%D1%83%D0%BB.+%D0%A8%D0%B8%D0%BF%D0%BA%D0%B0+12%2C+%D0%A0%D1%83%D1%81%D0%B5" target="_blank" rel="noopener noreferrer" className="hover:text-white">{contact.address}</a>
-            <a href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`} className="hover:text-white">{contact.phone}</a>
-          </address>
         </div>
       </div>
       <div className="mx-auto mt-8 flex w-[min(1180px,calc(100%_-_40px))] flex-col gap-2 border-t border-[#463a33] pt-4 text-xs text-[#a99d95] sm:flex-row sm:items-center sm:justify-between max-[620px]:w-[min(1180px,calc(100%_-_32px))]">
