@@ -8,7 +8,7 @@ export type LocaleContent = {
   contact: { heading: string; address: string; phone: string; note: string; hours: { day: string; hours: string }[] };
   products: { categories: CatalogCategory[] };
 };
-export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; seedVersion?: number; aboutCopyVersion?: number };
+export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
 const aboutText = {
   bg: {
     copy: 'Фабриката на „Еленски Балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производството на висококачествени местни продукти по стари домашни рецепти от Еленския край. За специалитетите се използва само висококачествено незамразено българско месо. В магазините наред с прясното месо и свинските, телешките и биволските мезета се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и вино със собствена марка.',
@@ -66,6 +66,7 @@ export const defaults: SiteContent = {
   feed: structuredClone(seededFeed),
   seedVersion: 1,
   aboutCopyVersion: 1,
+  catalogVersion: 1,
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
     about: { eyebrow: 'За нас', title: 'Вкус с корен.', ...aboutText.bg },
@@ -73,7 +74,8 @@ export const defaults: SiteContent = {
     products: { categories: [
       { id: 'meso', title: 'Месо', description: 'Разгледайте асортимента от месо в нашия магазин.', image: '', visible: true, items: [
         { id: 'pork', title: 'Свинско месо', description: '', image: '', visible: true },
-        { id: 'meatballs', title: 'Кюфтета и кебапчета', description: '', image: '', visible: true },
+        { id: 'meatballs', title: 'Кюфтета', description: '', image: '', visible: true },
+        { id: 'kebapche', title: 'Кебапчета', description: '', image: '', visible: true },
         { id: 'sausages', title: 'Наденички', description: '', image: '', visible: true },
         { id: 'pork-neck-boneless', title: 'Свински врат без кост', description: '', image: '', visible: true },
         { id: 'pork-ribs', title: 'Свински ребра', description: '', image: '', visible: true },
@@ -97,7 +99,8 @@ export const defaults: SiteContent = {
     products: { categories: [
       { id: 'meso', title: 'Meat', description: 'Explore the selection of meat in our store.', image: '', visible: true, items: [
         { id: 'pork', title: 'Pork', description: '', image: '', visible: true },
-        { id: 'meatballs', title: 'Meatballs and kebapche', description: '', image: '', visible: true },
+        { id: 'meatballs', title: 'Meatballs', description: '', image: '', visible: true },
+        { id: 'kebapche', title: 'Kebapcheta', description: '', image: '', visible: true },
         { id: 'sausages', title: 'Sausages', description: '', image: '', visible: true },
         { id: 'pork-neck-boneless', title: 'Boneless pork neck', description: '', image: '', visible: true },
         { id: 'pork-ribs', title: 'Pork ribs', description: '', image: '', visible: true },
@@ -174,6 +177,24 @@ export function normalizeContent(value: unknown): SiteContent | null {
       }
       if (typeof updated.media.about !== 'string') updated.media.about = defaults.media.about;
       return normalizeContent(updated);
+    }
+    if (site.catalogVersion !== 1) {
+      const updated = structuredClone(site);
+      const bgItems = updated.bg.products.categories.find(category => category.id === 'meso')?.items;
+      const enItems = updated.en.products.categories.find(category => category.id === 'meso')?.items;
+      const bgIndex = bgItems?.findIndex(product => product.id === 'meatballs') ?? -1;
+      const enIndex = enItems?.findIndex(product => product.id === 'meatballs') ?? -1;
+      if (bgItems && enItems && bgIndex >= 0 && enIndex >= 0 &&
+          bgItems[bgIndex].title === 'Кюфтета и кебапчета' &&
+          enItems[enIndex].title === 'Meatballs and kebapche' &&
+          !bgItems.some(product => product.id === 'kebapche') && !enItems.some(product => product.id === 'kebapche')) {
+        bgItems[bgIndex].title = 'Кюфтета';
+        enItems[enIndex].title = 'Meatballs';
+        bgItems.splice(bgIndex + 1, 0, { id: 'kebapche', title: 'Кебапчета', description: '', image: '', visible: true });
+        enItems.splice(enIndex + 1, 0, { id: 'kebapche', title: 'Kebapcheta', description: '', image: '', visible: true });
+      }
+      updated.catalogVersion = 1;
+      return seedPublishedContent(updated);
     }
     return seedPublishedContent(site);
   } catch { return null; }
