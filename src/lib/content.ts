@@ -8,10 +8,45 @@ export type LocaleContent = {
   contact: { heading: string; address: string; phone: string; note: string; hours: { day: string; hours: string }[] };
   products: { categories: CatalogCategory[] };
 };
-export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string }; feed: FeedItem[] };
+export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string }; feed: FeedItem[]; seedVersion?: number };
+const seededFeed: FeedItem[] = [
+  { id: 'urban-wine-fest-ruse-2026', type: 'event', date: '2026-10-02', endDate: '2026-10-03', image: '', visible: true, featured: false,
+    titleBg: 'Urban Wine Fest – Русе 2026', titleEn: 'Urban Wine Fest – Ruse 2026',
+    bodyBg: 'На 2 и 3 октомври Еленски Балканджии са сред участниците в Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира българско вино, музика и кулинарни щандове. Входът е свободен; консумацията се заплаща на място. Програма: 2 октомври, 14:00–22:00 ч.; 3 октомври, 12:00–22:00 ч. Източник: Туристически информационен център – Русе (visitruse.bg/location/1305).',
+    bodyEn: 'Elenski Balkandzhii is among the participants at Urban Wine Fest in Ruse, on Freedom Square, October 2–3. The festival features Bulgarian wine, music and food stands. Entry is free; food and drinks are paid for on site. Hours: October 2, 14:00–22:00; October 3, 12:00–22:00. Source: Ruse Tourist Information Centre (visitruse.bg/location/1305).' },
+  { id: 'third-store-veliko-tarnovo-2025', type: 'news', date: '2025-03-10', endDate: '', image: '', visible: true, featured: false,
+    titleBg: 'Трети магазин във Велико Търново', titleEn: 'Third store opens in Veliko Tarnovo',
+    bodyBg: 'В публично съобщение от 10 март 2025 г. „Еленски Балканджии“ обявяват откриването на третия си магазин във Велико Търново — на Централния кооперативен пазар. Това е новина от архива на марката, не ново откриване в Русе. Източник: публичната публикация на „Еленски Балканджии“ (findglocal.com/BG/Elena/100648771375825/).',
+    bodyEn: 'In a public announcement dated March 10, 2025, Elenski Balkandzhii reported the opening of its third store in Veliko Tarnovo at the Central Cooperative Market. This is an archived brand update, not a new opening in Ruse. Source: the public Elenski Balkandzhii post (findglocal.com/BG/Elena/100648771375825/).' },
+];
+const seededProducts = [
+  { category: 'meso', id: 'pork-neck-boneless', bg: 'Свински врат без кост', en: 'Boneless pork neck' },
+  { category: 'meso', id: 'pork-ribs', bg: 'Свински ребра', en: 'Pork ribs' },
+  { category: 'meso', id: 'grill-sausage', bg: 'Балканджийска грил наденица', en: 'Balkandzhii grill sausage' },
+  { category: 'meso', id: 'minced-sausage', bg: 'Кълцана наденица', en: 'Coarsely minced sausage' },
+  { category: 'mezeta', id: 'homemade-sudzhuk', bg: 'Домашен суджук', en: 'Homemade sudzhuk' },
+];
+
+function seedPublishedContent(site: SiteContent): SiteContent {
+  if (site.seedVersion !== undefined) return site;
+  const copy = structuredClone(site);
+  copy.seedVersion = 1;
+  for (const entry of seededFeed) {
+    if (copy.feed.length < 30 && !copy.feed.some(item => item.id === entry.id)) copy.feed.push(structuredClone(entry));
+  }
+  for (const item of seededProducts) {
+    const bg = copy.bg.products.categories.find(category => category.id === item.category);
+    const en = copy.en.products.categories.find(category => category.id === item.category);
+    if (!bg || !en || bg.items.some(product => product.id === item.id) || en.items.some(product => product.id === item.id)) continue;
+    bg.items.push({ id: item.id, title: item.bg, description: '', image: '', visible: true });
+    en.items.push({ id: item.id, title: item.en, description: '', image: '', visible: true });
+  }
+  return copy;
+}
 export const defaults: SiteContent = {
   media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg' },
-  feed: [],
+  feed: structuredClone(seededFeed),
+  seedVersion: 1,
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
     about: { eyebrow: 'За нас', title: 'Вкус с корен.', copy: 'Магазини "Еленски Балканджии" предлагат на своите клиенти продукти от Еленския Балкан, съдържащи само натурални подправки. За направата им се използва единствено българско месо.', rows: [{ label: 'Произход', copy: 'Продукти от Еленския Балкан.' }, { label: 'Подправки', copy: 'За направата им се използват само натурални подправки.' }, { label: 'Месо', copy: 'Използва се единствено българско месо.' }] },
@@ -20,11 +55,16 @@ export const defaults: SiteContent = {
       { id: 'meso', title: 'Месо', description: 'Разгледайте асортимента от месо в нашия магазин.', image: '', visible: true, items: [
         { id: 'pork', title: 'Свинско месо', description: '', image: '', visible: true },
         { id: 'meatballs', title: 'Кюфтета и кебапчета', description: '', image: '', visible: true },
-        { id: 'sausages', title: 'Наденички', description: '', image: '', visible: true }] },
+        { id: 'sausages', title: 'Наденички', description: '', image: '', visible: true },
+        { id: 'pork-neck-boneless', title: 'Свински врат без кост', description: '', image: '', visible: true },
+        { id: 'pork-ribs', title: 'Свински ребра', description: '', image: '', visible: true },
+        { id: 'grill-sausage', title: 'Балканджийска грил наденица', description: '', image: '', visible: true },
+        { id: 'minced-sausage', title: 'Кълцана наденица', description: '', image: '', visible: true }] },
       { id: 'mezeta', title: 'Мезета', description: 'Традиционни мезета и сушени месни продукти.', image: '', visible: true, items: [
         { id: 'sudzhuk', title: 'Суджуци и луканки', description: '', image: '', visible: true },
         { id: 'dried', title: 'Сушени меса', description: '', image: '', visible: true },
-        { id: 'platters', title: 'Мезе плата', description: '', image: '', visible: true }] },
+        { id: 'platters', title: 'Мезе плата', description: '', image: '', visible: true },
+        { id: 'homemade-sudzhuk', title: 'Домашен суджук', description: '', image: '', visible: true }] },
       { id: 'sirena', title: 'Сирена', description: 'Сирена и кашкавал за вашата трапеза.', image: '', visible: true, items: [
         { id: 'white', title: 'Бяло сирене', description: '', image: '', visible: true },
         { id: 'kashkaval', title: 'Кашкавал', description: '', image: '', visible: true },
@@ -39,11 +79,16 @@ export const defaults: SiteContent = {
       { id: 'meso', title: 'Meat', description: 'Explore the selection of meat in our store.', image: '', visible: true, items: [
         { id: 'pork', title: 'Pork', description: '', image: '', visible: true },
         { id: 'meatballs', title: 'Meatballs and kebapche', description: '', image: '', visible: true },
-        { id: 'sausages', title: 'Sausages', description: '', image: '', visible: true }] },
+        { id: 'sausages', title: 'Sausages', description: '', image: '', visible: true },
+        { id: 'pork-neck-boneless', title: 'Boneless pork neck', description: '', image: '', visible: true },
+        { id: 'pork-ribs', title: 'Pork ribs', description: '', image: '', visible: true },
+        { id: 'grill-sausage', title: 'Balkandzhii grill sausage', description: '', image: '', visible: true },
+        { id: 'minced-sausage', title: 'Coarsely minced sausage', description: '', image: '', visible: true }] },
       { id: 'mezeta', title: 'Delicacies', description: 'Traditional delicacies and cured meats.', image: '', visible: true, items: [
         { id: 'sudzhuk', title: 'Sudzhuk and lukanka', description: '', image: '', visible: true },
         { id: 'dried', title: 'Dried meats', description: '', image: '', visible: true },
-        { id: 'platters', title: 'Delicacy platters', description: '', image: '', visible: true }] },
+        { id: 'platters', title: 'Delicacy platters', description: '', image: '', visible: true },
+        { id: 'homemade-sudzhuk', title: 'Homemade sudzhuk', description: '', image: '', visible: true }] },
       { id: 'sirena', title: 'Cheese', description: 'Cheese and kashkaval for your table.', image: '', visible: true, items: [
         { id: 'white', title: 'White brined cheese', description: '', image: '', visible: true },
         { id: 'kashkaval', title: 'Kashkaval', description: '', image: '', visible: true },
@@ -99,7 +144,7 @@ export function normalizeContent(value: unknown): SiteContent | null {
         if (bg.items[item].id !== en.items[item].id || typeof bg.items[item].title !== 'string' || typeof en.items[item].title !== 'string') return null;
       }
     }
-    return site;
+    return seedPublishedContent(site);
   } catch { return null; }
 }
 

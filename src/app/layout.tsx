@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import StructuredData from "@/components/StructuredData";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { CookieConsentProvider } from "@/components/CookieConsent";
 import { ContentProvider } from "@/components/ContentProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="m-0 min-h-screen overflow-x-hidden bg-white font-sans text-[#211915] antialiased">
         <Script id="route-language" strategy="beforeInteractive">{`document.documentElement.lang = location.pathname === "/en" || location.pathname.startsWith("/en/") ? "en" : "bg";`}</Script>
         <StructuredData data={structuredData} />
+        <CookieConsentProvider>
         <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
         <LanguageProvider>
           <ContentProvider>
@@ -113,6 +115,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Footer />
         </ContentProvider>
         </LanguageProvider>
+        </CookieConsentProvider>
       </body>
     </html>
   );

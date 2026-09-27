@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { CookieSettingsButton } from "@/components/CookieConsent";
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -68,6 +69,7 @@ export default function Footer() {
             <Link className="hover:text-white" href={localizedHref("/privacy")}>{t.privacy}</Link>
             <Link className="hover:text-white" href={localizedHref("/terms")}>{t.terms}</Link>
             <Link className="hover:text-white" href={localizedHref("/cookies")}>{t.cookies}</Link>
+            <CookieSettingsButton className="text-left hover:text-white" />
           </div>
         </nav>
       </div>

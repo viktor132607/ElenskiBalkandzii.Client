@@ -14,7 +14,7 @@ export default function SiteControl() {
   const router = useRouter();
   const [draft, setDraft] = useState<SiteContent>(defaults);
   const [language, setLanguage] = useState<Lang>('bg');
-  const [section, setSection] = useState<'home' | 'products' | 'feed' | 'about' | 'contact' | 'images'>('home');
+  const [section, setSection] = useState<'home' | 'products' | 'feed' | 'about' | 'contact' | 'images' | 'stats'>('home');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
@@ -100,19 +100,24 @@ export default function SiteControl() {
   );
   const c = draft[language];
   const name = language === 'bg' ? 'Български' : 'English';
-  const sections = { home: 'Начало', products: 'Асортимент', feed: 'Новини, събития и томболи', about: 'За нас', contact: 'Контакти', images: 'Изображения' };
+  const sections = { home: 'Начало', products: 'Асортимент', feed: 'Новини, събития и томболи', about: 'За нас', contact: 'Контакти', images: 'Изображения', stats: 'Статистика' };
 
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
     <div className="mx-auto max-w-5xl rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
       {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
           <div className="mt-7 flex flex-wrap gap-3 border-b border-[#e4ddd7] pb-6">
-            {(['home','products','feed','about','contact','images'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
+            {(['home','products','feed','about','contact','images','stats'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
             <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
           </div>
           <div className="mt-6 flex gap-3">{(['bg','en'] as const).map(lang => <button type="button" key={lang} onClick={() => setLanguage(lang)} aria-pressed={language === lang} className={`rounded-xl px-4 py-2 font-bold ${language === lang ? 'bg-[#211914] text-white' : 'bg-[#f1ede9]'}`}>{lang === 'bg' ? 'BG' : 'EN'}</button>)}</div>
           <h2 className="my-6 text-xl font-black">{sections[section]} · {name}</h2>
           <div className="grid gap-5">
+            {section === 'stats' && <div className="space-y-4 rounded-xl border border-[#e4ddd7] bg-[#f6f3ef] p-6 leading-7">
+              <p>Посещенията и разглежданията на продуктите се отчитат в Google Analytics 4 само след съгласие за статистика и настроен NEXT_PUBLIC_GOOGLE_ANALYTICS_ID в Render.</p>
+              <p>За посещенията отворете „Отчети → Ангажираност → Страници и екрани“. За най-разглежданите продукти направете изследване по „Item name“ / „Items viewed in list“ за събитието view_item_list. Категориите се отчитат като view_product_category. Продуктова карта се брои, когато поне половината от нея стане видима, най-много веднъж на отваряне на страницата.</p>
+              <a href="https://analytics.google.com/" target="_blank" rel="noopener noreferrer" className="inline-block rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">Отвори Google Analytics ↗</a>
+            </div>}
             {section === 'home' && <>
               {field('Надпис', c.home.eyebrow, v => change(d => d[language].home.eyebrow = v))}
               {field('Заглавие', c.home.title, v => change(d => d[language].home.title = v))}

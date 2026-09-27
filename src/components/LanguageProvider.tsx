@@ -40,7 +40,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = language;
-    window.localStorage.setItem("language", language);
   }, [language]);
 
   const setLanguage = (value: Language) => {
