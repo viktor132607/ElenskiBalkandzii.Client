@@ -43,8 +43,8 @@ export default function InformationHome() {
   ];
 
   return <main className="bg-[#faf8f5] text-[#211915]">
-    <section className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-0 py-8 lg:h-[620px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12 max-[620px]:w-[min(100%_-_28px,1460px)]">
-      <div className="flex min-h-[370px] min-w-0 flex-col justify-center bg-white p-8 md:p-12 lg:min-h-0 lg:rounded-l-[24px] lg:p-14">
+    <section className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-0 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12 max-[620px]:w-[min(100%_-_28px,1460px)]">
+      <div className="flex min-h-[370px] min-w-0 flex-col justify-center bg-white p-8 md:p-12 lg:min-h-[524px] lg:rounded-l-[24px] lg:p-14">
         <span className="text-xs font-black uppercase tracking-[.2em] text-[#08733a]">{content.home.eyebrow}</span>
         <h1 className="mt-5 line-clamp-3 text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{slide.title}</h1>
         <p className="mt-6 line-clamp-4 max-w-xl text-lg leading-relaxed text-[#625851]">{slide.description}</p>
@@ -53,13 +53,12 @@ export default function InformationHome() {
           <Link href={language === "bg" ? "/contact" : "/en/contact"} className="rounded-xl border border-[#a79a90] px-6 py-3 font-bold hover:border-[#08733a] hover:text-[#08733a]">{language === "bg" ? "Адрес и контакти" : "Address and contacts"}</Link>
         </div>
       </div>
-      <div className="group relative h-[330px] overflow-hidden bg-[#e8e1d7] md:h-[440px] lg:h-full lg:rounded-r-[24px]">
+      <div className="group relative h-[330px] overflow-hidden bg-[#e8e1d7] md:h-[440px] lg:h-auto lg:self-stretch lg:rounded-r-[24px]">
         <Image key={slide.image} src={imageUrl(slide.image)} alt={slide.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" />
         {slides.length > 1 && <>
-          <button type="button" onClick={() => setActiveSlide(current => (current - 1 + slides.length) % slides.length)} aria-label={language === "bg" ? "Предишен слайд" : "Previous slide"} className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[#211915]/65 text-4xl leading-none text-white opacity-100 shadow-lg transition-opacity hover:bg-[#211915]/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">‹</button>
-          <button type="button" onClick={() => setActiveSlide(current => (current + 1) % slides.length)} aria-label={language === "bg" ? "Следващ слайд" : "Next slide"} className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[#211915]/65 text-4xl leading-none text-white opacity-100 shadow-lg transition-opacity hover:bg-[#211915]/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">›</button>
+          <button type="button" onClick={() => setActiveSlide(current => (current - 1 + slides.length) % slides.length)} aria-label={language === "bg" ? "Предишен слайд" : "Previous slide"} className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m15 4-8 8 8 8" /></svg></button>
+          <button type="button" onClick={() => setActiveSlide(current => (current + 1) % slides.length)} aria-label={language === "bg" ? "Следващ слайд" : "Next slide"} className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m9 4 8 8-8 8" /></svg></button>
         </>}
-        {slides.length > 1 && <div className="absolute bottom-5 left-5 z-10 flex gap-2">{slides.map((entry, index) => <button key={`${entry.image}-${index}`} type="button" onClick={() => setActiveSlide(index)} aria-label={`${language === "bg" ? "Слайд" : "Slide"} ${index + 1}`} aria-current={index === activeSlide % slides.length ? "true" : undefined} className={`h-3 w-3 rounded-full border-2 border-white ${index === activeSlide % slides.length ? "bg-white" : "bg-transparent"}`} />)}</div>}
       </div>
     </section>
 
