@@ -28,7 +28,9 @@ export default function FeedArticle() {
     return () => controller.abort();
   }, []);
 
-  const item = (fresh || site).feed.find(entry => entry.id === id && entry.visible);
+  const content = fresh || site;
+  const today = new Date().toISOString().slice(0, 10);
+  const item = content.feed.find(entry => entry.id === id && entry.visible && (entry.type !== "raffle" || (content.rafflesEnabled && (!entry.endDate || entry.endDate >= today))));
   return <main className="min-h-[65vh] bg-[#faf8f5] px-5 py-12 text-[#211915] md:py-20">
     <div className="mx-auto max-w-[1180px]">
       <Link href={newsHref} className="inline-block border-b-2 border-[#08733a] pb-1 text-sm font-bold text-[#08733a]">← {language === "bg" ? "Всички новини и събития" : "All news and events"}</Link>

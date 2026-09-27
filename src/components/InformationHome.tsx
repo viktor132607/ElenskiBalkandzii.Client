@@ -18,7 +18,7 @@ export default function InformationHome() {
   const latest = visible.filter(item => item.type === "news").slice(0, 3);
   const today = new Date().toISOString().slice(0, 10);
   const events = visible.filter(item => item.type === "event" && item.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
-  const raffles = visible.filter(item => item.type === "raffle" && (!item.endDate || item.endDate >= today)).slice(0, 3);
+  const raffles = site.rafflesEnabled ? visible.filter(item => item.type === "raffle" && (!item.endDate || item.endDate >= today)).slice(0, 3) : [];
   const featured = visible.filter(item => item.featured && (feedMediaType(item) === "slideshow" ? item.images?.[0] : feedMediaType(item) === "image" ? item.image : false));
   const slides = featured.length ? featured.map(item => ({ image: feedMediaType(item) === "slideshow" ? item.images![0] : item.image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg })) : [
     { image: site.media.store, title: content.home.title, description: content.about.copy.slice(0, 190) + "…" },
@@ -33,9 +33,9 @@ export default function InformationHome() {
   }, [slides.length]);
 
   const sections = [
+    ...(raffles.length ? [{ id: "raffles", title: language === "bg" ? "Томболи" : "Raffles", items: raffles, empty: "" }] : []),
     { id: "latest-news", title: language === "bg" ? "Последни новини" : "Latest news", items: latest, empty: language === "bg" ? "Все още няма публикувани новини." : "No news has been published yet." },
     { id: "events", title: language === "bg" ? "Предстоящи събития" : "Upcoming events", items: events, empty: language === "bg" ? "Няма обявени предстоящи събития." : "There are no upcoming events." },
-    { id: "raffles", title: language === "bg" ? "Томболи" : "Raffles", items: raffles, empty: language === "bg" ? "В момента няма активни томболи." : "There are no active raffles." },
   ];
 
   return <main className="bg-[#faf8f5] text-[#211915]">

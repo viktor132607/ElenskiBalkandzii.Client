@@ -155,6 +155,10 @@ export default function SiteControl() {
               <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
             </>}
             {section === 'feed' && <>
+              <label className="mb-6 flex items-start gap-3 rounded-xl border border-[#e4ddd7] bg-[#f6f3ef] p-4 text-sm font-bold text-[#211915]">
+                <input type="checkbox" checked={draft.rafflesEnabled === true} onChange={event => change(d => { d.rafflesEnabled = event.target.checked; })} className="mt-1 h-4 w-4 accent-[#08733a]" />
+                <span>Показвай томболите на сайта<span className="mt-1 block font-normal text-[#625851]">Секцията се появява над новините и събитията, ако има поне една публикувана активна томбола.</span></span>
+              </label>
               <p className="text-sm leading-relaxed text-[#625851]">Всяка публикация е отделна секция със заглавие, текст и избор на медия. При избрана снимка, видео или слайдшоу без добавен файл се показва плейсхолдър. Подредбата е по дата. За началното слайдшоу е нужна реална снимка. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
               {[...draft.feed].sort((a, b) => b.date.localeCompare(a.date)).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2"><h3 className="mr-auto text-lg font-black">{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'}</h3>

@@ -17,7 +17,7 @@ export type LocaleContent = {
   contact: { heading: string; address: string; phone: string; note: string; hours: { day: string; hours: string }[] };
   products: { categories: CatalogCategory[] };
 };
-export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
+export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; rafflesEnabled?: boolean; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
 const aboutText = {
   bg: {
     copy: 'Фабриката на „Еленските балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производство на висококачествени местни продукти по стари домашни рецепти от Еленския край. За производството на техните специалитети балканджиите използват само висококачествено българско месо, при това незамразено. В магазините наред с прясното месо и вкусните свински, телешки и биволски мезенца се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и омайно вино с тяхна собствена марка.',
@@ -71,6 +71,7 @@ function seedPublishedContent(site: SiteContent): SiteContent {
 export const defaults: SiteContent = {
   media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg', about: '/elenski-balkandzhii-fresh-meat.webp' },
   feed: structuredClone(seededFeed),
+  rafflesEnabled: false,
   seedVersion: 1,
   aboutCopyVersion: 2,
   catalogVersion: 1,
@@ -130,6 +131,7 @@ export function normalizeContent(value: unknown): SiteContent | null {
   if (!value || typeof value !== 'object') return null;
   try {
     const site = value as SiteContent;
+    if (site.rafflesEnabled !== undefined && typeof site.rafflesEnabled !== 'boolean') return null;
     if (!(['logo', 'store', 'products'] as const).every(key => typeof site.media[key] === 'string')) return null;
     for (const lang of ['bg', 'en'] as const) {
       const section = site[lang];
