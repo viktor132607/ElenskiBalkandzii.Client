@@ -121,13 +121,13 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
   return (
     <main className="bg-white text-[#211915]">
       <header className="border-b border-[#e4ddd7] bg-[#f6f3ef] py-16 max-[620px]:py-12">
-        <div className="mx-auto w-[min(980px,calc(100%_-_40px))] max-[620px]:w-[min(100%_-_28px,980px)]">
+        <div className="mx-auto w-[min(1460px,calc(100%_-_40px))] max-[620px]:w-[min(100%_-_28px,1460px)]">
           <span className="text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">{data.eyebrow}</span>
           <h1 className="mt-3 text-[clamp(38px,6vw,64px)] font-black uppercase leading-[.95] tracking-[-.02em]">{data.title}</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-[#665c55]">{data.intro}</p>
         </div>
       </header>
-      <div className="mx-auto grid w-[min(980px,calc(100%_-_40px))] gap-8 py-16 max-[620px]:w-[min(100%_-_28px,980px)] max-[620px]:py-12">
+      <div className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-8 py-16 max-[620px]:w-[min(100%_-_28px,1460px)] max-[620px]:py-12">
         {data.sections.map(([title, text]) => (
           <section key={title} className="border-b border-[#e4ddd7] pb-8 last:border-b-0">
             <h2 className="text-2xl font-black tracking-[-.01em]">{title}</h2>

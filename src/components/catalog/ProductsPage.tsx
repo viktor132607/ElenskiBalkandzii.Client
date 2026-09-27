@@ -24,8 +24,8 @@ export default function ProductsPage() {
 
   return <div className="bg-[#faf8f5] text-[#211915]">
     <ProductImpressions signature={categories.map(category => `${category.id}:${category.items.map(item => item.id).join(',')}`).join('|')} />
-    <section id="categories" aria-labelledby="products-heading" className="scroll-mt-24 border-b border-[#e7ded5] bg-white px-5 py-8 md:py-10">
-      <div className="mx-auto max-w-[1180px]">
+    <section id="categories" aria-labelledby="products-heading" className="scroll-mt-24 border-b border-[#e7ded5] bg-white py-8 md:py-10">
+      <div className="mx-auto w-[min(1460px,calc(100%_-_40px))] max-[620px]:w-[min(100%_-_28px,1460px)]">
         <h1 id="products-heading" className="sr-only">{language === "bg" ? "Асортимент" : "Selection"}</h1>
         <div className="flex flex-wrap gap-3 border-b border-[#e7ded5] pb-7">
           <a href="#selection" className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white transition-colors hover:bg-[#0b8d47]">{content.home.view}</a>
@@ -37,7 +37,7 @@ export default function ProductsPage() {
       </div>
     </section>
 
-    <div id="selection" className="mx-auto max-w-[1180px] scroll-mt-24 px-5 pb-16 md:pb-24">
+    <div id="selection" className="mx-auto w-[min(1460px,calc(100%_-_40px))] scroll-mt-24 pb-16 md:pb-24 max-[620px]:w-[min(100%_-_28px,1460px)]">
       {categories.map((category, categoryIndex) => {
         const products = category.items.filter(product => product.visible);
         const accent = accents[categoryIndex % accents.length];

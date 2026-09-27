@@ -39,7 +39,7 @@ export default function InformationHome() {
   ];
 
   return <main className="bg-[#faf8f5] text-[#211915]">
-    <section className="mx-auto grid max-w-[1280px] gap-0 px-5 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12">
+    <section className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-0 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12 max-[620px]:w-[min(100%_-_28px,1460px)]">
       <div className="flex min-h-[370px] flex-col justify-center bg-white p-8 md:p-12 lg:rounded-l-[24px] lg:p-14">
         <span className="text-xs font-black uppercase tracking-[.2em] text-[#08733a]">{content.home.eyebrow}</span>
         <h1 className="mt-5 text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{slide.title}</h1>
@@ -55,7 +55,7 @@ export default function InformationHome() {
       </div>
     </section>
 
-    <div className="mx-auto max-w-[1180px] px-5 pb-20">
+    <div className="mx-auto w-[min(1460px,calc(100%_-_40px))] pb-20 max-[620px]:w-[min(100%_-_28px,1460px)]">
       {sections.map(section => <section id={section.id} key={section.id} className="scroll-mt-28 border-t border-[#e4ddd7] py-12 md:py-16">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><h2 className="text-3xl font-black uppercase md:text-4xl">{section.title}</h2><Link href={language === "bg" ? "/news" : "/en/news"} className="border-b-2 border-[#08733a] pb-1 text-sm font-bold text-[#08733a]">{language === "bg" ? "Виж всички" : "View all"} →</Link></div>
         {section.items.length ? <div>{section.items.map((item, index) => <FeedStory key={item.id} item={item} language={language} linked reverse={index % 2 === 1} />)}</div> : <p className="py-7 text-[#625851]">{section.empty}</p>}
