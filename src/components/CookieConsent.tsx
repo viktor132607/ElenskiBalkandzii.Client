@@ -47,10 +47,10 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
   }
 
   const t = english ? {
-    title: "Cookie preferences", body: "Essential storage remembers your choice. Accept all enables Google Analytics and the embedded map. Essential only and reject all disable analytics; you can still open the map yourself. Change your choice at any time.",
+    title: "Cookie preferences", body: "Choose whether to allow analytics cookies and external content. Essential storage remembers your choice.",
     accept: "Accept all", essential: "Essential only", reject: "Reject all", policy: "Cookie policy", close: "Close",
   } : {
-    title: "Настройки за бисквитки", body: "Задължителното съхранение пази избора ви. „Приемам всички“ включва Google Analytics и вградената карта. „Само задължителни“ и „Отказвам всички“ изключват статистиката; картата може да се отвори отделно. Можете да промените избора си по всяко време.",
+    title: "Настройки за бисквитки", body: "Изберете дали да разрешите статистика и външно съдържание. Задължителното съхранение пази избора ви.",
     accept: "Приемам всички", essential: "Само задължителни", reject: "Отказвам всички", policy: "Политика за бисквитки", close: "Затвори",
   };
 
