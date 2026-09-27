@@ -4,3 +4,26 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 320px;
 }
+
+@keyframes hero-copy-appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-page-next {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes hero-page-previous {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.hero-copy-fade { animation: hero-copy-appear 450ms ease-out both; }
+.hero-photo-next { animation: hero-page-next 550ms cubic-bezier(.2,.75,.25,1) both; }
+.hero-photo-previous { animation: hero-page-previous 550ms cubic-bezier(.2,.75,.25,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy-fade, .hero-photo-next, .hero-photo-previous { animation: none; }
+}

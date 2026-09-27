@@ -30,12 +30,25 @@ export default function InformationHome() {
     { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: content.about.copy.slice(0, 190) + "…" },
   ];
   const slide = slides[activeSlide % slides.length];
+  const [previousSlide, setPreviousSlide] = useState<typeof slide | null>(null);
+  const [direction, setDirection] = useState<"next" | "previous">("next");
+
+  function showSlide(index: number, step: "next" | "previous") {
+    if (index === activeSlide % slides.length) return;
+    setPreviousSlide(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? null : slide);
+    setDirection(step);
+    setActiveSlide(index);
+  }
 
   useEffect(() => {
     if (slides.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const interval = window.setInterval(() => setActiveSlide(current => (current + 1) % slides.length), 6500);
+    const interval = window.setInterval(() => {
+      setPreviousSlide(slide);
+      setDirection("next");
+      setActiveSlide((activeSlide + 1) % slides.length);
+    }, 6500);
     return () => window.clearInterval(interval);
-  }, [slides.length]);
+  }, [activeSlide, slide, slides.length]);
 
   const sections = [
     ...(raffles.length ? [{ id: "raffles", title: language === "bg" ? "Томболи" : "Raffles", items: raffles, empty: "" }] : []),
@@ -46,18 +59,23 @@ export default function InformationHome() {
     <section className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-0 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-12 max-[620px]:w-[min(100%_-_28px,1460px)]">
       <div className="flex min-h-[370px] min-w-0 flex-col justify-center bg-white p-8 md:p-12 lg:min-h-[524px] lg:rounded-l-[24px] lg:p-14">
         <span className="text-xs font-black uppercase tracking-[.2em] text-[#08733a]">{content.home.eyebrow}</span>
-        <h1 className="mt-5 line-clamp-3 text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{slide.title}</h1>
-        <p className="mt-6 line-clamp-4 max-w-xl text-lg leading-relaxed text-[#625851]">{slide.description}</p>
+        <div key={`${activeSlide}-${language}`} className="hero-copy-fade">
+          <h1 className="mt-5 line-clamp-3 min-h-[3.09em] text-[clamp(34px,4vw,58px)] font-black uppercase leading-[1.03]">{slide.title}</h1>
+          <p className="mt-6 line-clamp-4 min-h-[6.5em] max-w-xl text-lg leading-relaxed text-[#625851]">{slide.description}</p>
+        </div>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href={language === "bg" ? "/about" : "/en/about"} className="rounded-xl bg-[#08733a] px-6 py-3 font-bold text-white hover:bg-[#0b8d47]">{language === "bg" ? "За нас" : "About us"}</Link>
           <Link href={language === "bg" ? "/contact" : "/en/contact"} className="rounded-xl border border-[#a79a90] px-6 py-3 font-bold hover:border-[#08733a] hover:text-[#08733a]">{language === "bg" ? "Адрес и контакти" : "Address and contacts"}</Link>
         </div>
       </div>
       <div className="group relative h-[330px] overflow-hidden bg-[#e8e1d7] md:h-[440px] lg:h-auto lg:self-stretch lg:rounded-r-[24px]">
-        <Image key={slide.image} src={imageUrl(slide.image)} alt={slide.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" />
+        {previousSlide && <Image src={imageUrl(previousSlide.image)} alt="" fill sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" aria-hidden="true" />}
+        <div key={`${activeSlide}-${slide.image}`} className={`absolute inset-0 ${previousSlide ? direction === "next" ? "hero-photo-next" : "hero-photo-previous" : ""}`} onAnimationEnd={() => setPreviousSlide(null)}>
+          <Image src={imageUrl(slide.image)} alt={slide.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" />
+        </div>
         {slides.length > 1 && <>
-          <button type="button" onClick={() => setActiveSlide(current => (current - 1 + slides.length) % slides.length)} aria-label={language === "bg" ? "Предишен слайд" : "Previous slide"} className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m15 4-8 8 8 8" /></svg></button>
-          <button type="button" onClick={() => setActiveSlide(current => (current + 1) % slides.length)} aria-label={language === "bg" ? "Следващ слайд" : "Next slide"} className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m9 4 8 8-8 8" /></svg></button>
+          <button type="button" onClick={() => showSlide((activeSlide - 1 + slides.length) % slides.length, "previous")} aria-label={language === "bg" ? "Предишен слайд" : "Previous slide"} className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m15 4-8 8 8 8" /></svg></button>
+          <button type="button" onClick={() => showSlide((activeSlide + 1) % slides.length, "next")} aria-label={language === "bg" ? "Следващ слайд" : "Next slide"} className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m9 4 8 8-8 8" /></svg></button>
         </>}
       </div>
     </section>
