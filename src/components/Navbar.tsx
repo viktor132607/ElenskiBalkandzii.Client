@@ -57,7 +57,7 @@ export default function Navbar() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2.5">
-            <button type="button" onClick={toggleLanguage} className="flex h-9 min-w-10 items-center justify-center border border-white/60 px-2 text-xs font-bold tracking-[0.08em] transition-colors hover:border-white hover:bg-white/10" aria-label={language === "bg" ? "Switch to English" : "Превключи на български"}>
+            <button type="button" onClick={toggleLanguage} className="flex h-9 min-w-10 items-center justify-center px-2 text-xs font-bold tracking-[0.08em] transition-colors hover:text-[#e6bd7e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label={language === "bg" ? "Switch to English" : "Превключи на български"}>
               {language === "bg" ? "EN" : "BG"}
             </button>
             <button type="button" aria-label={open ? (language === "bg" ? "Затвори меню" : "Close menu") : (language === "bg" ? "Отвори меню" : "Open menu")} aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="hidden h-9 w-10 flex-col items-center justify-center gap-[5px] border border-white/60 max-[900px]:flex">
