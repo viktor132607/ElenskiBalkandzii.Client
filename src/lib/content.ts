@@ -11,19 +11,17 @@ export type LocaleContent = {
 export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
 const aboutText = {
   bg: {
-    copy: 'Фабриката на „Еленски Балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производството на висококачествени местни продукти по стари домашни рецепти от Еленския край. За специалитетите се използва само висококачествено незамразено българско месо. В магазините наред с прясното месо и свинските, телешките и биволските мезета се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и вино със собствена марка.',
+    copy: 'Фабриката на „Еленските балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производство на висококачествени местни продукти по стари домашни рецепти от Еленския край. За производството на техните специалитети балканджиите използват само висококачествено българско месо, при това незамразено. В магазините наред с прясното месо и вкусните свински, телешки и биволски мезенца се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и омайно вино с тяхна собствена марка.',
     rows: [
-      { label: 'Мезета', copy: 'Мезетата носят имената на Балкана и са над 30 вида. Сред тях са „Мийковска луканка“, „Блъсковска луканка“, „Биволска луканка“, „Еленски суджук“, „Болярски суджук“, „Балканджийски суджук“, „Вълчевско мезе“, „Кайзерована пастърма“ и филе „Елена“.' },
-      { label: 'Прясно месо', copy: 'Амбицията на младия екип е да покаже, че българинът може да похапне нещо наистина прясно, което не е минавало през фризер, без цените на месото и пържолите да са прекомерни.' },
-      { label: 'Вина', copy: 'Към специалитетите се предлагат и вина със собствената марка на дружеството. Да ни е сладко и пивко!' },
+      { label: 'Мезета', copy: 'Мезетата на фирмата пък носят уникалните имена на Балкана и са над 30. Сред тях са „Мийковска луканка“, „Блъсковска луканка“, „Биволска луканка“, „Еленски суджук“, „Болярски суджук“, „Балканджийски суджук“, „Вълчевско мезе“, „Кайзерована пастърма“, филе „Елена“.' },
+      { label: 'Нашата амбиция', copy: 'Амбицията на младия колектив на фирмата е да покаже, че без бомбастични цени на месото и пържолата българинът може да похапне наистина нещо прясно, което не е минало през фризера. Към всичко това винаги се добавят прекрасни вина, които носят същата марка на дружеството. Както се казва, да ни е сладко и пивко!' },
     ],
   },
   en: {
-    copy: 'The Elenski Balkandzhii factory is located in an environmentally clean area on the outskirts of Elena. It specialises in high-quality local products made from traditional recipes from the Elena region. Its specialities are prepared with high-quality Bulgarian meat that has never been frozen. Alongside fresh meat and pork, beef and buffalo delicacies, the shops offer homemade cheeses, dried mushrooms, herbs and fruit, nuts, homemade lutenitsa and pickles, as well as wine under the company’s own label.',
+    copy: 'The Elenski Balkandzhii factory is located in an environmentally clean area on the outskirts of Elena and specialises in producing high-quality local products from traditional home recipes of the Elena region. Only high-quality Bulgarian meat, never frozen, is used to make its specialities. Alongside fresh meat and tasty pork, beef and buffalo delicacies, the shops offer homemade cheeses, dried mushrooms, herbs and fruit, nuts, homemade lutenitsa and pickles, as well as delightful wine under the company’s own label.',
     rows: [
-      { label: 'Delicacies', copy: 'More than 30 delicacies bear names from the Balkan region, including Miykovska, Blaskovska and Buffalo lukanka, Elenski, Bolyarski and Balkandzhiyski sudzhuk, Valchevsko meze, Kaiser-style pastrami and Elena fillet.' },
-      { label: 'Fresh meat', copy: 'The young team aims to show that people can enjoy truly fresh meat that has never been frozen, without inflated prices for meat and steaks.' },
-      { label: 'Wines', copy: 'The company also offers wines under its own label to accompany the specialities. Enjoy your meal and your glass of wine!' },
+      { label: 'Delicacies', copy: 'The company’s delicacies carry the unique names of the Balkan region and number more than 30. They include Miykovska lukanka, Blaskovska lukanka, Buffalo lukanka, Elenski sudzhuk, Bolyarski sudzhuk, Balkandzhiyski sudzhuk, Valchevsko meze, Kaiser-style pastrami and Elena fillet.' },
+      { label: 'Our ambition', copy: 'The young team aims to show that Bulgarians can enjoy truly fresh meat that has never been through a freezer without inflated prices for meat and steaks. The company’s own wines are always offered alongside its specialities. As the saying goes, enjoy your food and drink!' },
     ],
   },
 };
@@ -65,7 +63,7 @@ export const defaults: SiteContent = {
   media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg', about: '/elenski-balkandzhii-fresh-meat.webp' },
   feed: structuredClone(seededFeed),
   seedVersion: 1,
-  aboutCopyVersion: 1,
+  aboutCopyVersion: 2,
   catalogVersion: 1,
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
@@ -168,12 +166,12 @@ export function normalizeContent(value: unknown): SiteContent | null {
         if (bg.items[item].id !== en.items[item].id || typeof bg.items[item].title !== 'string' || typeof en.items[item].title !== 'string') return null;
       }
     }
-    if (site.aboutCopyVersion !== 1 || typeof site.media.about !== 'string') {
+    if (site.aboutCopyVersion !== 2 || typeof site.media.about !== 'string') {
       const updated = structuredClone(site);
-      if (site.aboutCopyVersion !== 1) {
+      if (site.aboutCopyVersion !== 2) {
         updated.bg.about = { ...updated.bg.about, ...structuredClone(aboutText.bg) };
         updated.en.about = { ...updated.en.about, ...structuredClone(aboutText.en) };
-        updated.aboutCopyVersion = 1;
+        updated.aboutCopyVersion = 2;
       }
       if (typeof updated.media.about !== 'string') updated.media.about = defaults.media.about;
       return normalizeContent(updated);
