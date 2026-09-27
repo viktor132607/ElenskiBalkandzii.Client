@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Choice = "accepted" | "rejected" | null;
+type Choice = "accepted" | "essential" | "rejected" | null;
 type ConsentContext = { choice: Choice; ready: boolean; choose: (value: Exclude<Choice, null>) => void; openSettings: () => void };
 const Context = createContext<ConsentContext | null>(null);
 const cookieName = "elenski_cookie_choice";
 
 function readChoice(): Choice {
   const value = document.cookie.split("; ").find(part => part.startsWith(`${cookieName}=`))?.split("=")[1];
-  return value === "accepted" || value === "rejected" ? value : null;
+  return value === "accepted" || value === "essential" || value === "rejected" ? value : null;
 }
 
 export function CookieConsentProvider({ children }: { children: React.ReactNode }) {
@@ -31,7 +31,7 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
     document.cookie = `${cookieName}=${value}; Max-Age=15552000; Path=/; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
     setChoice(value);
     setSettingsOpen(false);
-    if (wasAccepted && value === "rejected") {
+    if (wasAccepted && value !== "accepted") {
       for (const part of document.cookie.split("; ")) {
         const name = part.split("=")[0];
         if (/^_ga(?:_|$)|^_gid$|^_gat(?:_|$)/.test(name)) {
@@ -47,11 +47,11 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
   }
 
   const t = english ? {
-    title: "Cookie preferences", body: "Essential storage keeps your cookie choice. With your permission, Google Analytics measures page visits and which product cards are viewed. You can change your choice at any time.",
-    accept: "Accept analytics", reject: "Reject analytics", policy: "Cookie policy", close: "Close",
+    title: "Cookie preferences", body: "Essential storage remembers your choice. Accept all enables Google Analytics and the embedded map. Essential only and reject all disable analytics; you can still open the map yourself. Change your choice at any time.",
+    accept: "Accept all", essential: "Essential only", reject: "Reject all", policy: "Cookie policy", close: "Close",
   } : {
-    title: "Настройки за бисквитки", body: "Задължителното съхранение пази избора ви. С ваше съгласие Google Analytics измерва посещенията на страници и разглежданията на продуктови карти. Можете да промените избора си по всяко време.",
-    accept: "Приемам статистиката", reject: "Отказвам статистиката", policy: "Политика за бисквитки", close: "Затвори",
+    title: "Настройки за бисквитки", body: "Задължителното съхранение пази избора ви. „Приемам всички“ включва Google Analytics и вградената карта. „Само задължителни“ и „Отказвам всички“ изключват статистиката; картата може да се отвори отделно. Можете да промените избора си по всяко време.",
+    accept: "Приемам всички", essential: "Само задължителни", reject: "Отказвам всички", policy: "Политика за бисквитки", close: "Затвори",
   };
 
   return <Context.Provider value={{ choice, ready, choose, openSettings: () => setSettingsOpen(true) }}>
@@ -59,7 +59,7 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
     {ready && (choice === null || settingsOpen) && <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-3xl rounded-2xl border border-[#d8d0c8] bg-white p-5 text-[#211915] shadow-[0_14px_45px_rgba(0,0,0,.23)] sm:p-6" role="dialog" aria-modal="false" aria-label={t.title}>
       <div className="flex items-start justify-between gap-4"><h2 className="text-xl font-black">{t.title}</h2>{choice !== null && <button type="button" onClick={() => setSettingsOpen(false)} aria-label={t.close} className="rounded p-1 text-xl">×</button>}</div>
       <p className="mt-2 text-sm leading-6 text-[#514943]">{t.body} <Link href={english ? "/en/cookies" : "/cookies"} className="font-bold text-[#08733a] underline">{t.policy}</Link>.</p>
-      <div className="mt-5 flex flex-wrap gap-3"><button type="button" onClick={() => choose("rejected")} className="rounded-xl border border-[#08733a] px-5 py-3 font-bold text-[#08733a]">{t.reject}</button><button type="button" onClick={() => choose("accepted")} className="rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">{t.accept}</button></div>
+      <div className="mt-5 flex flex-wrap gap-3"><button type="button" onClick={() => choose("essential")} className="rounded-xl border border-[#08733a] px-5 py-3 font-bold text-[#08733a]">{t.essential}</button><button type="button" onClick={() => choose("accepted")} className="rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">{t.accept}</button><button type="button" onClick={() => choose("rejected")} className="rounded-xl border border-[#08733a] px-5 py-3 font-bold text-[#08733a]">{t.reject}</button></div>
     </div>}
   </Context.Provider>;
 }

@@ -6,34 +6,7 @@ import { useEffect, useState } from "react";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { imageUrl } from "@/lib/api";
-import type { FeedItem } from "@/lib/content";
-
-export function formatFeedDate(value: string, language: "bg" | "en") {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return "";
-  return new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", {
-    day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
-  }).format(new Date(`${value}T12:00:00Z`));
-}
-
-export function FeedCard({ item, language }: { item: FeedItem; language: "bg" | "en" }) {
-  const title = language === "bg" ? item.titleBg : item.titleEn || item.titleBg;
-  const body = language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg;
-  const href = `${language === "bg" ? "/news" : "/en/news"}#${item.id}`;
-  const label = language === "bg"
-    ? { news: "Новина", event: "Събитие", raffle: "Томбола" }[item.type]
-    : { news: "News", event: "Event", raffle: "Raffle" }[item.type];
-
-  return <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#e4ddd7] bg-white shadow-[0_8px_28px_rgba(33,25,20,.05)]">
-    {item.image && <Link href={href} className="relative block aspect-[16/9] bg-[#eee9e4]"><Image src={imageUrl(item.image)} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" /></Link>}
-    <div className="flex flex-1 flex-col p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase tracking-wide text-[#08733a]"><span>{label}</span><time dateTime={item.date}>{formatFeedDate(item.date, language)}</time></div>
-      <h3 className="mt-4 text-xl font-black leading-tight"><Link href={href} className="hover:text-[#08733a]">{title}</Link></h3>
-      <p className="mt-3 line-clamp-3 flex-1 leading-relaxed text-[#625851]">{body}</p>
-      {item.type === "raffle" && item.endDate && <p className="mt-4 text-sm font-bold text-[#08733a]">{language === "bg" ? "Край на томболата: " : "Raffle ends: "}{formatFeedDate(item.endDate, language)}</p>}
-      <Link href={href} className="mt-5 self-start border-b-2 border-[#08733a] pb-1 text-sm font-bold text-[#08733a]">{language === "bg" ? "Прочети повече" : "Read more"} →</Link>
-    </div>
-  </article>;
-}
+import FeedStory from "@/components/FeedStory";
 
 export default function InformationHome() {
   const { language } = useLanguage();
@@ -45,10 +18,10 @@ export default function InformationHome() {
   const today = new Date().toISOString().slice(0, 10);
   const events = visible.filter(item => item.type === "event" && item.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
   const raffles = visible.filter(item => item.type === "raffle" && (!item.endDate || item.endDate >= today)).slice(0, 3);
-  const featured = visible.filter(item => item.featured && item.image);
-  const slides = featured.length ? featured.map(item => ({ image: item.image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg })) : [
-    { image: site.media.store, title: content.home.title, description: content.about.copy },
-    { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: content.about.copy },
+  const featured = visible.filter(item => item.featured && (item.images?.[0] || item.image));
+  const slides = featured.length ? featured.map(item => ({ image: item.images?.[0] || item.image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg })) : [
+    { image: site.media.store, title: content.home.title, description: content.about.copy.slice(0, 190) + "…" },
+    { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: content.about.copy.slice(0, 190) + "…" },
   ];
   const slide = slides[activeSlide % slides.length];
 
@@ -84,7 +57,7 @@ export default function InformationHome() {
     <div className="mx-auto max-w-[1180px] px-5 pb-20">
       {sections.map(section => <section id={section.id} key={section.id} className="scroll-mt-28 border-t border-[#e4ddd7] py-12 md:py-16">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><h2 className="text-3xl font-black uppercase md:text-4xl">{section.title}</h2><Link href={language === "bg" ? "/news" : "/en/news"} className="border-b-2 border-[#08733a] pb-1 text-sm font-bold text-[#08733a]">{language === "bg" ? "Виж всички" : "View all"} →</Link></div>
-        {section.items.length ? <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{section.items.map(item => <FeedCard key={item.id} item={item} language={language} />)}</div> : <p className="rounded-2xl border border-dashed border-[#d9d0c6] bg-white p-7 text-[#625851]">{section.empty}</p>}
+        {section.items.length ? <div>{section.items.map((item, index) => <FeedStory key={item.id} item={item} language={language} linked reverse={index % 2 === 1} />)}</div> : <p className="py-7 text-[#625851]">{section.empty}</p>}
       </section>)}
     </div>
   </main>;

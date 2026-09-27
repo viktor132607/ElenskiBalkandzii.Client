@@ -46,6 +46,7 @@ export default function SiteControl() {
       setMessage('За публикуваните записи попълнете дата, заглавие и текст на двата езика.');
       return;
     }
+    if (draft.feed.some(item => item.images && item.images.length > 12)) { setMessage('Максимум 12 снимки за публикация.'); return; }
     setBusy(true); setMessage('');
     try {
       const response = await fetch(apiUrl('/api/admin/content'), { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(draft) });
@@ -154,7 +155,7 @@ export default function SiteControl() {
               <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
             </>}
             {section === 'feed' && <>
-              <p className="text-sm leading-relaxed text-[#625851]">Новините, събитията и томболите се показват на началната страница по дата. Избраните за слайдшоу записи със снимка се редуват автоматично. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
+              <p className="text-sm leading-relaxed text-[#625851]">Всяка публикация е отделна секция със заглавие, текст и снимка, слайдшоу или видео. Подредбата е по дата. Записите, избрани за началното слайдшоу, трябва да имат снимка. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
               {[...draft.feed].sort((a, b) => b.date.localeCompare(a.date)).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2"><h3 className="mr-auto text-lg font-black">{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'}</h3>
                   <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.visible = !item.visible; })} className="rounded-lg border px-3 py-2">{item.visible ? 'Публикувана · скрий' : 'Чернова · публикувай'}</button>
@@ -168,7 +169,21 @@ export default function SiteControl() {
                 </div>
                 {field(`Заглавие · ${name}`, language === 'bg' ? item.titleBg : item.titleEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'titleBg' : 'titleEn'] = value; }))}
                 {field(`Текст · ${name}`, language === 'bg' ? item.bodyBg : item.bodyEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'bodyBg' : 'bodyEn'] = value; }), true)}
-                {imagePicker('Снимка за публикацията и слайдшоуто', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
+                {imagePicker('Основна снимка (ако няма отделно слайдшоу)', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
+                <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
+                  <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
+                  {(item.images || []).map((url, index) => <div key={`${url}-${index}`} className="flex flex-wrap items-center gap-3 border-b pb-3 last:border-0">
+                    <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt={`Слайд ${index + 1}`} width={96} height={64} unoptimized className="h-16 w-24 rounded object-cover" />
+                    <span className="mr-auto text-sm">Снимка {index + 1}</span>
+                    <button type="button" disabled={index === 0} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index - 1], photos[index]] = [photos[index], photos[index - 1]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката наляво">←</button>
+                    <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
+                    <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.images!.splice(index, 1); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
+                  </div>)}
+                  <label className="block text-sm font-bold">Добави снимки от устройство
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || (item.images?.length || 0) >= 12} className="mt-2 block w-full font-normal" onChange={async event => { const files = Array.from(event.target.files || []).slice(0, 12 - (item.images?.length || 0)); event.target.value = ''; for (const file of files) await upload(file, (d, url) => { const photos = d.feed.find(post => post.id === item.id)!; photos.images = [...(photos.images || []), url]; }); }} />
+                  </label>
+                </div>
+                {field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
               </div>)}
               <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
             </>}
@@ -188,9 +203,9 @@ export default function SiteControl() {
               {c.contact.hours.map((row, index) => <div key={index} className="grid gap-3 md:grid-cols-2">{field(`Ден ${index + 1}`, row.day, v => change(d => d[language].contact.hours[index].day = v))}{field('Часове', row.hours, v => change(d => d[language].contact.hours[index].hours = v))}</div>)}
               {field('Бележка', c.contact.note, v => change(d => d[language].contact.note = v))}
             </>}
-            {section === 'images' && (['logo', 'store', 'products'] as const).map(key => <div key={key} className="rounded-xl border p-5">
-              <h3 className="mb-3 font-black">{{logo:'Лого',store:'Снимка на магазина',products:'Снимка на продуктите'}[key]}</h3>
-              {imagePicker(`Качи ${key}`, draft.media[key], (d, url) => { d.media[key] = url; })}
+            {section === 'images' && (['logo', 'store', 'products', 'about'] as const).map(key => <div key={key} className="rounded-xl border p-5">
+              <h3 className="mb-3 font-black">{{logo:'Лого',store:'Снимка на магазина',products:'Снимка на продуктите',about:'Снимка за „За нас“'}[key]}</h3>
+              {imagePicker(`Качи ${key}`, draft.media[key] || '', (d, url) => { d.media[key] = url; })}
             </div>)}
           </div>
           <button type="button" disabled={busy} onClick={save} className="mt-8 rounded-xl bg-[#08733a] px-7 py-3 font-black text-white disabled:opacity-50">Запази промените</button>

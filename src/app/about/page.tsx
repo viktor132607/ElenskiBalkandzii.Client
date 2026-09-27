@@ -24,7 +24,7 @@ export default function AboutPage() {
             {rows.map(({label, copy}) => <div key={label} className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2"><dt className="font-black uppercase text-[#08733a]">{label}</dt><dd className="m-0 leading-[1.65] text-[#514943]">{copy}</dd></div>)}
           </dl>
         </article>
-        <figure className="m-0 h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:w-full max-[1100px]:aspect-[728/688]"><Image src={imageUrl(media.products)} alt={language === "bg" ? "Традиционни продукти на Еленски Балканджии" : "Traditional products from Elenski Balkandzhii"} width={728} height={688} priority sizes="(max-width: 1100px) calc(100vw - 40px), 728px" className="h-full w-full object-cover" /></figure>
+        <figure className="m-0 h-full min-h-[688px] w-[728px] overflow-hidden rounded-2xl border border-[#e4ddd7] bg-[#f6f3ef] max-[1100px]:h-auto max-[1100px]:min-h-0 max-[1100px]:w-full max-[1100px]:aspect-[903/1024]"><Image src={imageUrl(media.about || '/elenski-balkandzhii-fresh-meat.webp')} alt={language === "bg" ? "Прясно месо на Еленски Балканджии" : "Fresh meat from Elenski Balkandzhii"} width={903} height={1024} priority sizes="(max-width: 1100px) calc(100vw - 40px), 728px" className="h-full w-full object-cover" /></figure>
       </div>
     </section>
   );

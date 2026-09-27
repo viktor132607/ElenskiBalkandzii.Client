@@ -1,6 +1,6 @@
 export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
 export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
-export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; videoUrl?: string; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
 
 export type LocaleContent = {
   home: { eyebrow: string; title: string; view: string };
@@ -8,7 +8,25 @@ export type LocaleContent = {
   contact: { heading: string; address: string; phone: string; note: string; hours: { day: string; hours: string }[] };
   products: { categories: CatalogCategory[] };
 };
-export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string }; feed: FeedItem[]; seedVersion?: number };
+export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; seedVersion?: number; aboutCopyVersion?: number };
+const aboutText = {
+  bg: {
+    copy: 'Фабриката на „Еленски Балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производството на висококачествени местни продукти по стари домашни рецепти от Еленския край. За специалитетите се използва само висококачествено незамразено българско месо. В магазините наред с прясното месо и свинските, телешките и биволските мезета се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и вино със собствена марка.',
+    rows: [
+      { label: 'Мезета', copy: 'Мезетата носят имената на Балкана и са над 30 вида. Сред тях са „Мийковска луканка“, „Блъсковска луканка“, „Биволска луканка“, „Еленски суджук“, „Болярски суджук“, „Балканджийски суджук“, „Вълчевско мезе“, „Кайзерована пастърма“ и филе „Елена“.' },
+      { label: 'Прясно месо', copy: 'Амбицията на младия екип е да покаже, че българинът може да похапне нещо наистина прясно, което не е минавало през фризер, без цените на месото и пържолите да са прекомерни.' },
+      { label: 'Вина', copy: 'Към специалитетите се предлагат и вина със собствената марка на дружеството. Да ни е сладко и пивко!' },
+    ],
+  },
+  en: {
+    copy: 'The Elenski Balkandzhii factory is located in an environmentally clean area on the outskirts of Elena. It specialises in high-quality local products made from traditional recipes from the Elena region. Its specialities are prepared with high-quality Bulgarian meat that has never been frozen. Alongside fresh meat and pork, beef and buffalo delicacies, the shops offer homemade cheeses, dried mushrooms, herbs and fruit, nuts, homemade lutenitsa and pickles, as well as wine under the company’s own label.',
+    rows: [
+      { label: 'Delicacies', copy: 'More than 30 delicacies bear names from the Balkan region, including Miykovska, Blaskovska and Buffalo lukanka, Elenski, Bolyarski and Balkandzhiyski sudzhuk, Valchevsko meze, Kaiser-style pastrami and Elena fillet.' },
+      { label: 'Fresh meat', copy: 'The young team aims to show that people can enjoy truly fresh meat that has never been frozen, without inflated prices for meat and steaks.' },
+      { label: 'Wines', copy: 'The company also offers wines under its own label to accompany the specialities. Enjoy your meal and your glass of wine!' },
+    ],
+  },
+};
 const seededFeed: FeedItem[] = [
   { id: 'urban-wine-fest-ruse-2026', type: 'event', date: '2026-10-02', endDate: '2026-10-03', image: '', visible: true, featured: false,
     titleBg: 'Urban Wine Fest – Русе 2026', titleEn: 'Urban Wine Fest – Ruse 2026',
@@ -44,12 +62,13 @@ function seedPublishedContent(site: SiteContent): SiteContent {
   return copy;
 }
 export const defaults: SiteContent = {
-  media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg' },
+  media: { logo: '/elenski-balkandzhii-logo.jpg', store: '/elenski-balkandzhii-store-ruse.jpg', products: '/elenski-balkandzhii-traditional-products.jpg', about: '/elenski-balkandzhii-fresh-meat.webp' },
   feed: structuredClone(seededFeed),
   seedVersion: 1,
+  aboutCopyVersion: 1,
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
-    about: { eyebrow: 'За нас', title: 'Вкус с корен.', copy: 'Магазини "Еленски Балканджии" предлагат на своите клиенти продукти от Еленския Балкан, съдържащи само натурални подправки. За направата им се използва единствено българско месо.', rows: [{ label: 'Произход', copy: 'Продукти от Еленския Балкан.' }, { label: 'Подправки', copy: 'За направата им се използват само натурални подправки.' }, { label: 'Месо', copy: 'Използва се единствено българско месо.' }] },
+    about: { eyebrow: 'За нас', title: 'Вкус с корен.', ...aboutText.bg },
     contact: { heading: 'Еленски Балканджии — Контакти', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}] },
     products: { categories: [
       { id: 'meso', title: 'Месо', description: 'Разгледайте асортимента от месо в нашия магазин.', image: '', visible: true, items: [
@@ -73,7 +92,7 @@ export const defaults: SiteContent = {
   },
   en: {
     home: { eyebrow: 'Elenski Balkandzhii · Ruse', title: 'Traditional flavours from the Elena Balkan', view: 'Explore the selection' },
-    about: { eyebrow: 'About us', title: 'Taste with roots.', copy: 'Elenski Balkandzhii stores offer products from the Elena Balkan region, made only with natural spices. Only Bulgarian meat is used in their preparation.', rows: [{label:'Origin',copy:'Products from the Elena Balkan region.'},{label:'Spices',copy:'Only natural spices are used in their preparation.'},{label:'Meat',copy:'Only Bulgarian meat is used.'}] },
+    about: { eyebrow: 'About us', title: 'Taste with roots.', ...aboutText.en },
     contact: { heading: 'Elenski Balkandzhii — Contacts', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}] },
     products: { categories: [
       { id: 'meso', title: 'Meat', description: 'Explore the selection of meat in our store.', image: '', visible: true, items: [
@@ -119,7 +138,9 @@ export function normalizeContent(value: unknown): SiteContent | null {
       typeof item.id !== 'string' || !['news', 'event', 'raffle'].includes(item.type) ||
       typeof item.date !== 'string' || typeof item.endDate !== 'string' || typeof item.image !== 'string' ||
       typeof item.visible !== 'boolean' || typeof item.featured !== 'boolean' ||
-      ['titleBg', 'titleEn', 'bodyBg', 'bodyEn'].some(key => typeof item[key as keyof FeedItem] !== 'string')) ||
+      ['titleBg', 'titleEn', 'bodyBg', 'bodyEn'].some(key => typeof item[key as keyof FeedItem] !== 'string') ||
+      (item.images !== undefined && (!Array.isArray(item.images) || item.images.length > 12 || item.images.some(image => typeof image !== 'string'))) ||
+      (item.videoUrl !== undefined && typeof item.videoUrl !== 'string')) ||
       new Set(site.feed.map(item => item.id)).size !== site.feed.length) return null;
     // Convert content saved before product details were introduced.
     if (site.bg.products.categories.some(category => !category.id)) {
@@ -143,6 +164,16 @@ export function normalizeContent(value: unknown): SiteContent | null {
       for (let item = 0; item < bg.items.length; item++) {
         if (bg.items[item].id !== en.items[item].id || typeof bg.items[item].title !== 'string' || typeof en.items[item].title !== 'string') return null;
       }
+    }
+    if (site.aboutCopyVersion !== 1 || typeof site.media.about !== 'string') {
+      const updated = structuredClone(site);
+      if (site.aboutCopyVersion !== 1) {
+        updated.bg.about = { ...updated.bg.about, ...structuredClone(aboutText.bg) };
+        updated.en.about = { ...updated.en.about, ...structuredClone(aboutText.en) };
+        updated.aboutCopyVersion = 1;
+      }
+      if (typeof updated.media.about !== 'string') updated.media.about = defaults.media.about;
+      return normalizeContent(updated);
     }
     return seedPublishedContent(site);
   } catch { return null; }
