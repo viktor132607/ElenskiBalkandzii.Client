@@ -44,8 +44,7 @@ export default function ProductsPage() {
         return <section key={category.id} id={category.id} aria-labelledby={`${category.id}-heading`} className="scroll-mt-28 pt-16 md:pt-24">
           <div data-category-id={category.id} data-category-name={category.title} className="grid overflow-hidden rounded-[24px] border border-[#e4ddd7] bg-white md:grid-cols-[minmax(0,1fr)_minmax(300px,44%)]">
             <div className="flex flex-col justify-center p-7 md:p-12">
-              <span className="text-xs font-black uppercase tracking-[.2em]" style={{color:accent}}>{String(categoryIndex + 1).padStart(2, '0')} / {String(categories.length).padStart(2, '0')}</span>
-              <h2 id={`${category.id}-heading`} className="mt-4 text-[clamp(32px,4vw,52px)] font-black uppercase leading-tight">{category.title}</h2>
+              <h2 id={`${category.id}-heading`} className="text-[clamp(32px,4vw,52px)] font-black uppercase leading-tight">{category.title}</h2>
               {category.description && <p className="mt-4 max-w-[550px] text-lg leading-relaxed text-[#625851]">{category.description}</p>}
               <a href={`#${category.id}-items`} className="mt-8 self-start border-b-2 pb-1 text-sm font-black uppercase tracking-wide" style={{borderColor:accent}}>{t.products} ↓</a>
             </div>
