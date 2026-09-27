@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { apiUrl } from '@/lib/api';
-import { defaults, normalizeContent, type SiteContent } from '@/lib/content';
+import { defaults, feedMediaType, normalizeContent, type FeedMediaType, type SiteContent } from '@/lib/content';
 
 type Lang = 'bg' | 'en';
 const tokenKey = 'elenski-admin-session';
@@ -155,7 +155,7 @@ export default function SiteControl() {
               <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
             </>}
             {section === 'feed' && <>
-              <p className="text-sm leading-relaxed text-[#625851]">Всяка публикация е отделна секция със заглавие, текст и снимка, слайдшоу или видео. Подредбата е по дата. Записите, избрани за началното слайдшоу, трябва да имат снимка. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
+              <p className="text-sm leading-relaxed text-[#625851]">Всяка публикация е отделна секция със заглавие, текст и избор на медия. При избрана снимка, видео или слайдшоу без добавен файл се показва плейсхолдър. Подредбата е по дата. За началното слайдшоу е нужна реална снимка. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
               {[...draft.feed].sort((a, b) => b.date.localeCompare(a.date)).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2"><h3 className="mr-auto text-lg font-black">{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'}</h3>
                   <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.visible = !item.visible; })} className="rounded-lg border px-3 py-2">{item.visible ? 'Публикувана · скрий' : 'Чернова · публикувай'}</button>
@@ -169,8 +169,16 @@ export default function SiteControl() {
                 </div>
                 {field(`Заглавие · ${name}`, language === 'bg' ? item.titleBg : item.titleEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'titleBg' : 'titleEn'] = value; }))}
                 {field(`Текст · ${name}`, language === 'bg' ? item.bodyBg : item.bodyEn, value => change(d => { d.feed.find(post => post.id === item.id)![language === 'bg' ? 'bodyBg' : 'bodyEn'] = value; }), true)}
-                {imagePicker('Основна снимка (ако няма отделно слайдшоу)', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
-                <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
+                <fieldset className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
+                  <legend className="px-1 text-sm font-black">Медия в публикацията</legend>
+                  <div className="flex flex-wrap gap-x-5 gap-y-2">
+                    {([['none', 'Без медия'], ['image', 'Снимка'], ['video', 'Видео'], ['slideshow', 'Слайдшоу']] as const).map(([value, label]) => <label key={value} className="inline-flex cursor-pointer items-center gap-2 text-sm font-bold">
+                      <input type="radio" name={`feed-media-${item.id}`} value={value} checked={feedMediaType(item) === value} onChange={() => change(d => { d.feed.find(post => post.id === item.id)!.mediaType = value as FeedMediaType; })} className="accent-[#08733a]" />{label}
+                    </label>)}
+                  </div>
+                </fieldset>
+                {feedMediaType(item) === 'image' && imagePicker('Снимка на публикацията', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
+                {feedMediaType(item) === 'slideshow' && <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
                   <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
                   {(item.images || []).map((url, index) => <div key={`${url}-${index}`} className="flex flex-wrap items-center gap-3 border-b pb-3 last:border-0">
                     <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt={`Слайд ${index + 1}`} width={96} height={64} unoptimized className="h-16 w-24 rounded object-cover" />
@@ -182,10 +190,10 @@ export default function SiteControl() {
                   <label className="block text-sm font-bold">Добави снимки от устройство
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || (item.images?.length || 0) >= 12} className="mt-2 block w-full font-normal" onChange={async event => { const files = Array.from(event.target.files || []).slice(0, 12 - (item.images?.length || 0)); event.target.value = ''; for (const file of files) await upload(file, (d, url) => { const photos = d.feed.find(post => post.id === item.id)!; photos.images = [...(photos.images || []), url]; }); }} />
                   </label>
-                </div>
-                {field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
+                </div>}
+                {feedMediaType(item) === 'video' && field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
               </div>)}
-              <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
+              <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', mediaType: 'image', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
             </>}
             {section === 'about' && <>
               {field('Надпис', c.about.eyebrow, v => change(d => d[language].about.eyebrow = v))}

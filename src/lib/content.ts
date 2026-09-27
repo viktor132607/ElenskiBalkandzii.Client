@@ -1,6 +1,15 @@
 export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
 export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
-export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; videoUrl?: string; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+export type FeedMediaType = 'none' | 'image' | 'video' | 'slideshow';
+export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+
+export function feedMediaType(item: FeedItem): FeedMediaType {
+  if (item.mediaType) return item.mediaType;
+  if (item.images?.length) return 'slideshow';
+  if (item.videoUrl) return 'video';
+  if (item.image || item.id === 'urban-wine-fest-ruse-2026' || item.id === 'third-store-veliko-tarnovo-2025') return 'image';
+  return 'none';
+}
 
 export type LocaleContent = {
   home: { eyebrow: string; title: string; view: string };
@@ -26,7 +35,7 @@ const aboutText = {
   },
 };
 const seededFeed: FeedItem[] = [
-  { id: 'urban-wine-fest-ruse-2026', type: 'event', date: '2026-10-02', endDate: '2026-10-03', image: '', visible: true, featured: false,
+  { id: 'urban-wine-fest-ruse-2026', type: 'event', date: '2026-10-02', endDate: '2026-10-03', image: '', mediaType: 'image', visible: true, featured: false,
     titleBg: 'Urban Wine Fest – Русе 2026', titleEn: 'Urban Wine Fest – Ruse 2026',
     bodyBg: 'На 2 и 3 октомври Еленски Балканджии са сред участниците в Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира българско вино, музика и кулинарни щандове. Входът е свободен; консумацията се заплаща на място. Програма: 2 октомври, 14:00–22:00 ч.; 3 октомври, 12:00–22:00 ч. Източник: Туристически информационен център – Русе (visitruse.bg/location/1305).',
     bodyEn: 'Elenski Balkandzhii is among the participants at Urban Wine Fest in Ruse, on Freedom Square, October 2–3. The festival features Bulgarian wine, music and food stands. Entry is free; food and drinks are paid for on site. Hours: October 2, 14:00–22:00; October 3, 12:00–22:00. Source: Ruse Tourist Information Centre (visitruse.bg/location/1305).' },
@@ -141,7 +150,8 @@ export function normalizeContent(value: unknown): SiteContent | null {
       typeof item.visible !== 'boolean' || typeof item.featured !== 'boolean' ||
       ['titleBg', 'titleEn', 'bodyBg', 'bodyEn'].some(key => typeof item[key as keyof FeedItem] !== 'string') ||
       (item.images !== undefined && (!Array.isArray(item.images) || item.images.length > 12 || item.images.some(image => typeof image !== 'string'))) ||
-      (item.videoUrl !== undefined && typeof item.videoUrl !== 'string')) ||
+      (item.videoUrl !== undefined && typeof item.videoUrl !== 'string') ||
+      (item.mediaType !== undefined && !['none', 'image', 'video', 'slideshow'].includes(item.mediaType))) ||
       new Set(site.feed.map(item => item.id)).size !== site.feed.length) return null;
     // Convert content saved before product details were introduced.
     if (site.bg.products.categories.some(category => !category.id)) {

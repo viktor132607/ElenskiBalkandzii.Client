@@ -7,6 +7,7 @@ import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { imageUrl } from "@/lib/api";
 import FeedStory from "@/components/FeedStory";
+import { feedMediaType } from "@/lib/content";
 
 export default function InformationHome() {
   const { language } = useLanguage();
@@ -18,8 +19,8 @@ export default function InformationHome() {
   const today = new Date().toISOString().slice(0, 10);
   const events = visible.filter(item => item.type === "event" && item.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
   const raffles = visible.filter(item => item.type === "raffle" && (!item.endDate || item.endDate >= today)).slice(0, 3);
-  const featured = visible.filter(item => item.featured && (item.images?.[0] || item.image));
-  const slides = featured.length ? featured.map(item => ({ image: item.images?.[0] || item.image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg })) : [
+  const featured = visible.filter(item => item.featured && (feedMediaType(item) === "slideshow" ? item.images?.[0] : feedMediaType(item) === "image" ? item.image : false));
+  const slides = featured.length ? featured.map(item => ({ image: feedMediaType(item) === "slideshow" ? item.images![0] : item.image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg })) : [
     { image: site.media.store, title: content.home.title, description: content.about.copy.slice(0, 190) + "…" },
     { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: content.about.copy.slice(0, 190) + "…" },
   ];
