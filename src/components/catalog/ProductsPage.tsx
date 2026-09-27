@@ -49,13 +49,19 @@ export default function ProductsPage() {
               {category.description && <p className="mt-4 max-w-[550px] text-lg leading-relaxed text-[#625851]">{category.description}</p>}
               <a href={`#${category.id}-items`} className="mt-8 self-start border-b-2 pb-1 text-sm font-black uppercase tracking-wide" style={{borderColor:accent}}>{t.products} ↓</a>
             </div>
-            <div className="relative min-h-[230px] bg-[#eae4dd] md:min-h-[350px]">
-              {category.image ? <Image src={imageUrl(category.image)} alt={category.title} fill sizes="(max-width: 767px) 100vw, 44vw" className="object-cover" /> : <div className="flex h-full min-h-[230px] items-end bg-[radial-gradient(circle_at_70%_25%,#d7d0c5,transparent_45%),linear-gradient(135deg,#efe9e1,#d6cbc0)] p-8 md:min-h-[350px]"><span className="max-w-full break-words text-[clamp(28px,4vw,50px)] font-black uppercase leading-none text-[#665548]/30">{category.title}</span></div>}
+            <div className="relative aspect-[5/4] bg-[#eae4dd]">
+              {category.image ? <Image src={imageUrl(category.image)} alt={category.title} fill sizes="(max-width: 767px) 100vw, 44vw" className="object-cover" /> : <div className="flex h-full items-end bg-[radial-gradient(circle_at_70%_25%,#d7d0c5,transparent_45%),linear-gradient(135deg,#efe9e1,#d6cbc0)] p-8"><span className="max-w-full break-words text-[clamp(28px,4vw,50px)] font-black uppercase leading-none text-[#665548]/30">{category.title}</span></div>}
             </div>
           </div>
           <div id={`${category.id}-items`} className="grid scroll-mt-28 gap-5 pt-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.length ? products.map(product => <article key={product.id} data-category-id={category.id} data-category-name={category.title} data-product-id={product.id} data-product-name={product.title} className="overflow-hidden rounded-2xl border border-[#e4ddd7] bg-white shadow-[0_8px_26px_rgba(33,25,20,.04)]">
-              {product.image && <div className="relative aspect-[4/3] bg-[#eee9e4]"><Image src={imageUrl(product.image)} alt={product.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" /></div>}
+              <div className="relative aspect-[5/4] overflow-hidden bg-[#eee9e4]">
+                {product.image ? <Image src={imageUrl(product.image)} alt={product.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
+                  : <div className="flex h-full flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_72%_24%,#f9f7f2,transparent_45%),linear-gradient(145deg,#f2eee8,#e1d8cc)] p-6 text-center">
+                    <Image src="/elenski-balkandzhii-logo.jpg" alt="" width={112} height={112} className="h-24 w-24 rounded-full border border-[#d4c9bb] object-cover opacity-65 sm:h-28 sm:w-28" />
+                    <span className="text-xs font-black uppercase tracking-[.18em] text-[#776b61]">{language === 'bg' ? 'Снимка предстои' : 'Photo coming soon'}</span>
+                  </div>}
+              </div>
               <div className="border-t-4 p-6" style={{borderTopColor:accent}}><h3 className="text-[22px] font-black uppercase leading-tight">{product.title}</h3>{product.description && <p className="mt-3 leading-relaxed text-[#625851]">{product.description}</p>}</div>
             </article>) : <p className="col-span-full py-8 text-[#625851]">{t.empty}</p>}
           </div>
