@@ -37,12 +37,12 @@ const aboutText = {
 const seededFeed: FeedItem[] = [
   { id: 'urban-wine-fest-ruse-2026', type: 'event', date: '2026-10-02', endDate: '2026-10-03', image: '', mediaType: 'image', visible: true, featured: false,
     titleBg: 'Urban Wine Fest – Русе 2026', titleEn: 'Urban Wine Fest – Ruse 2026',
-    bodyBg: 'На 2 и 3 октомври Еленски Балканджии са сред участниците в Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира българско вино, музика и кулинарни щандове. Входът е свободен; консумацията се заплаща на място. Програма: 2 октомври, 14:00–22:00 ч.; 3 октомври, 12:00–22:00 ч. Източник: Туристически информационен център – Русе (visitruse.bg/location/1305).',
-    bodyEn: 'Elenski Balkandzhii is among the participants at Urban Wine Fest in Ruse, on Freedom Square, October 2–3. The festival features Bulgarian wine, music and food stands. Entry is free; food and drinks are paid for on site. Hours: October 2, 14:00–22:00; October 3, 12:00–22:00. Source: Ruse Tourist Information Centre (visitruse.bg/location/1305).' },
+    bodyBg: 'На 2 и 3 октомври ще ни откриете на Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира български вина, музика и кулинарни щандове. Входът е свободен, а консумацията се заплаща на място. Заповядайте на 2 октомври от 14:00 до 22:00 ч. и на 3 октомври от 12:00 до 22:00 ч.',
+    bodyEn: 'Join Elenski Balkandzhii at Urban Wine Fest on Freedom Square in Ruse on October 2 and 3. Explore Bulgarian wines, music and food stands. Admission is free; food and drinks are paid for on site. Visit on October 2 from 14:00 to 22:00 or on October 3 from 12:00 to 22:00.' },
   { id: 'third-store-veliko-tarnovo-2025', type: 'news', date: '2025-03-10', endDate: '', image: '', visible: true, featured: false,
     titleBg: 'Трети магазин във Велико Търново', titleEn: 'Third store opens in Veliko Tarnovo',
-    bodyBg: 'В публично съобщение от 10 март 2025 г. „Еленски Балканджии“ обявяват откриването на третия си магазин във Велико Търново — на Централния кооперативен пазар. Това е новина от архива на марката, не ново откриване в Русе. Източник: публичната публикация на „Еленски Балканджии“ (findglocal.com/BG/Elena/100648771375825/).',
-    bodyEn: 'In a public announcement dated March 10, 2025, Elenski Balkandzhii reported the opening of its third store in Veliko Tarnovo at the Central Cooperative Market. This is an archived brand update, not a new opening in Ruse. Source: the public Elenski Balkandzhii post (findglocal.com/BG/Elena/100648771375825/).' },
+    bodyBg: 'През март 2025 г. „Еленски Балканджии“ обявиха откриването на третия си магазин във Велико Търново. Новата локация е на Централния кооперативен пазар и събира вкусовете на Еленския Балкан на още едно място.',
+    bodyEn: 'In March 2025, Elenski Balkandzhii announced the opening of its third store in Veliko Tarnovo. Located at the Central Cooperative Market, the new shop brings the flavours of the Elena Balkan to another part of the city.' },
 ];
 const seededProducts = [
   { category: 'meso', id: 'pork-neck-boneless', bg: 'Свински врат без кост', en: 'Boneless pork neck' },
@@ -77,7 +77,7 @@ export const defaults: SiteContent = {
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
     about: { eyebrow: 'За нас', title: 'Вкус с корен.', ...aboutText.bg },
-    contact: { heading: 'Еленски Балканджии — Контакти', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}] },
+    contact: { heading: 'Еленски Балканджии', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}] },
     products: { categories: [
       { id: 'meso', title: 'Месо', description: 'Разгледайте асортимента от месо в нашия магазин.', image: '', visible: true, items: [
         { id: 'pork', title: 'Свинско месо', description: '', image: '', visible: true },
@@ -102,7 +102,7 @@ export const defaults: SiteContent = {
   en: {
     home: { eyebrow: 'Elenski Balkandzhii · Ruse', title: 'Traditional flavours from the Elena Balkan', view: 'Explore the selection' },
     about: { eyebrow: 'About us', title: 'Taste with roots.', ...aboutText.en },
-    contact: { heading: 'Elenski Balkandzhii — Contacts', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}] },
+    contact: { heading: 'Elenski Balkandzhii', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}] },
     products: { categories: [
       { id: 'meso', title: 'Meat', description: 'Explore the selection of meat in our store.', image: '', visible: true, items: [
         { id: 'pork', title: 'Pork', description: '', image: '', visible: true },
@@ -184,6 +184,27 @@ export function normalizeContent(value: unknown): SiteContent | null {
         updated.aboutCopyVersion = 2;
       }
       if (typeof updated.media.about !== 'string') updated.media.about = defaults.media.about;
+      return normalizeContent(updated);
+    }
+    // Refresh the original seeded announcements and the redundant contact heading without replacing admin edits.
+    if (site.bg.contact.heading === 'Еленски Балканджии — Контакти' ||
+        site.en.contact.heading === 'Elenski Balkandzhii — Contacts' ||
+        site.feed.some(item =>
+          (item.id === 'urban-wine-fest-ruse-2026' || item.id === 'third-store-veliko-tarnovo-2025') &&
+          (item.bodyBg === 'На 2 и 3 октомври Еленски Балканджии са сред участниците в Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира българско вино, музика и кулинарни щандове. Входът е свободен; консумацията се заплаща на място. Програма: 2 октомври, 14:00–22:00 ч.; 3 октомври, 12:00–22:00 ч. Източник: Туристически информационен център – Русе (visitruse.bg/location/1305).' || item.bodyBg === 'В публично съобщение от 10 март 2025 г. „Еленски Балканджии“ обявяват откриването на третия си магазин във Велико Търново — на Централния кооперативен пазар. Това е новина от архива на марката, не ново откриване в Русе. Източник: публичната публикация на „Еленски Балканджии“ (findglocal.com/BG/Elena/100648771375825/).'))) {
+      const updated = structuredClone(site);
+      if (updated.bg.contact.heading === 'Еленски Балканджии — Контакти') updated.bg.contact.heading = defaults.bg.contact.heading;
+      if (updated.en.contact.heading === 'Elenski Balkandzhii — Contacts') updated.en.contact.heading = defaults.en.contact.heading;
+      for (const item of updated.feed) {
+        if (item.id === 'urban-wine-fest-ruse-2026') {
+          if (item.bodyBg === 'На 2 и 3 октомври Еленски Балканджии са сред участниците в Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира българско вино, музика и кулинарни щандове. Входът е свободен; консумацията се заплаща на място. Програма: 2 октомври, 14:00–22:00 ч.; 3 октомври, 12:00–22:00 ч. Източник: Туристически информационен център – Русе (visitruse.bg/location/1305).') item.bodyBg = 'На 2 и 3 октомври ще ни откриете на Urban Wine Fest на площад „Свобода“ в Русе. Фестивалът събира български вина, музика и кулинарни щандове. Входът е свободен, а консумацията се заплаща на място. Заповядайте на 2 октомври от 14:00 до 22:00 ч. и на 3 октомври от 12:00 до 22:00 ч.';
+          if (item.bodyEn === 'Elenski Balkandzhii is among the participants at Urban Wine Fest in Ruse, on Freedom Square, October 2–3. The festival features Bulgarian wine, music and food stands. Entry is free; food and drinks are paid for on site. Hours: October 2, 14:00–22:00; October 3, 12:00–22:00. Source: Ruse Tourist Information Centre (visitruse.bg/location/1305).') item.bodyEn = 'Join Elenski Balkandzhii at Urban Wine Fest on Freedom Square in Ruse on October 2 and 3. Explore Bulgarian wines, music and food stands. Admission is free; food and drinks are paid for on site. Visit on October 2 from 14:00 to 22:00 or on October 3 from 12:00 to 22:00.';
+        }
+        if (item.id === 'third-store-veliko-tarnovo-2025') {
+          if (item.bodyBg === 'В публично съобщение от 10 март 2025 г. „Еленски Балканджии“ обявяват откриването на третия си магазин във Велико Търново — на Централния кооперативен пазар. Това е новина от архива на марката, не ново откриване в Русе. Източник: публичната публикация на „Еленски Балканджии“ (findglocal.com/BG/Elena/100648771375825/).') item.bodyBg = 'През март 2025 г. „Еленски Балканджии“ обявиха откриването на третия си магазин във Велико Търново. Новата локация е на Централния кооперативен пазар и събира вкусовете на Еленския Балкан на още едно място.';
+          if (item.bodyEn === 'In a public announcement dated March 10, 2025, Elenski Balkandzhii reported the opening of its third store in Veliko Tarnovo at the Central Cooperative Market. This is an archived brand update, not a new opening in Ruse. Source: the public Elenski Balkandzhii post (findglocal.com/BG/Elena/100648771375825/).') item.bodyEn = 'In March 2025, Elenski Balkandzhii announced the opening of its third store in Veliko Tarnovo. Located at the Central Cooperative Market, the new shop brings the flavours of the Elena Balkan to another part of the city.';
+        }
+      }
       return normalizeContent(updated);
     }
     if (site.catalogVersion !== 1) {

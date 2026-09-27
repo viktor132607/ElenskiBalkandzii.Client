@@ -19,7 +19,7 @@ export default function NewsPage() {
       const items = feed.filter(item => item.type === group.type);
       return items.length ? <section key={group.type} className="py-10" aria-label={group.title}>
         <h2 className="border-b border-[#d9d0c6] pb-5 text-3xl font-black uppercase md:text-4xl">{group.title}</h2>
-        {items.map((item, index) => <FeedStory key={item.id} item={item} language={language} reverse={index % 2 === 1} />)}
+        {items.map((item, index) => <FeedStory key={item.id} item={item} language={language} linked reverse={index % 2 === 1} />)}
       </section> : null;
     })}
     {!feed.length && <p className="py-12 text-[#625851]">{language === "bg" ? "Все още няма публикувани новини, събития или томболи." : "No news, events or raffles have been published yet."}</p>}
