@@ -22,7 +22,7 @@ export default function ContactPage() {
             <Image src={imageUrl(media.logo)} alt={language === "bg" ? "Лого на Еленски Балканджии" : "Elenski Balkandzhii logo"} width={112} height={112} priority className="h-28 w-28 shrink-0 rounded-full border border-[#d9d1ca] bg-white object-cover max-[620px]:h-24 max-[620px]:w-24" />
             <div><span className="mb-2 inline-block text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">{t.contacts}</span><h1 id="contact-heading" className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">{data.heading}</h1></div>
           </div>
-          <dl className="divide-y divide-[#e4ddd7] border-y border-[#e4ddd7]">
+          <dl className="mt-auto divide-y divide-[#e4ddd7] border-y border-[#e4ddd7]">
             <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2">
               <dt className="font-black uppercase text-[#08733a]">{t.address}</dt>
               <dd className="m-0"><address className="not-italic text-lg leading-[1.65] text-[#514943]">{data.address}</address></dd>
