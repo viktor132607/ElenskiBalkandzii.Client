@@ -1,5 +1,6 @@
 export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
 export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
+export type SpecialHours = { id: string; date: string; label: string; hours: string };
 export type FeedMediaType = 'none' | 'image' | 'video' | 'slideshow';
 export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
 
@@ -14,7 +15,7 @@ export function feedMediaType(item: FeedItem): FeedMediaType {
 export type LocaleContent = {
   home: { eyebrow: string; title: string; view: string };
   about: { eyebrow: string; title: string; copy: string; rows: { label: string; copy: string }[] };
-  contact: { heading: string; address: string; phone: string; note: string; hours: { day: string; hours: string }[] };
+  contact: { heading: string; address: string; phone: string; phone2?: string; email?: string; note: string; hours: { day: string; hours: string }[]; specialHours?: SpecialHours[] };
   products: { categories: CatalogCategory[] };
 };
 export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; rafflesEnabled?: boolean; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
@@ -78,7 +79,7 @@ export const defaults: SiteContent = {
   bg: {
     home: { eyebrow: 'Еленски Балканджии · Русе', title: 'Традиционни вкусове от Еленския Балкан', view: 'Разгледай асортимента' },
     about: { eyebrow: 'За нас', title: 'Вкус с корен.', ...aboutText.bg },
-    contact: { heading: 'Еленски Балканджии', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}] },
+    contact: { heading: 'Еленски Балканджии', address: 'ж.к. Родина 3, ул. „Шипка“ 12, 7012 Русе', phone: '087 878 8897', phone2: '', email: '', note: 'По празници работното време може да бъде различно.', hours: [{day:'Понеделник',hours:'09:00–20:00'},{day:'Вторник',hours:'09:00–20:00'},{day:'Сряда',hours:'09:00–20:00'},{day:'Четвъртък',hours:'09:00–20:00'},{day:'Петък',hours:'09:00–20:00'},{day:'Събота',hours:'09:00–18:00'},{day:'Неделя',hours:'09:00–14:00'}], specialHours: [] },
     products: { categories: [
       { id: 'meso', title: 'Месо', description: 'Разгледайте асортимента от месо в нашия магазин.', image: '', visible: true, items: [
         { id: 'pork', title: 'Свинско месо', description: '', image: '', visible: true },
@@ -103,7 +104,7 @@ export const defaults: SiteContent = {
   en: {
     home: { eyebrow: 'Elenski Balkandzhii · Ruse', title: 'Traditional flavours from the Elena Balkan', view: 'Explore the selection' },
     about: { eyebrow: 'About us', title: 'Taste with roots.', ...aboutText.en },
-    contact: { heading: 'Elenski Balkandzhii', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}] },
+    contact: { heading: 'Elenski Balkandzhii', address: 'Rodina 3, 12 Shipka St., 7012 Ruse, Bulgaria', phone: '087 878 8897', phone2: '', email: '', note: 'Opening hours may vary on public holidays.', hours: [{day:'Monday',hours:'09:00–20:00'},{day:'Tuesday',hours:'09:00–20:00'},{day:'Wednesday',hours:'09:00–20:00'},{day:'Thursday',hours:'09:00–20:00'},{day:'Friday',hours:'09:00–20:00'},{day:'Saturday',hours:'09:00–18:00'},{day:'Sunday',hours:'09:00–14:00'}], specialHours: [] },
     products: { categories: [
       { id: 'meso', title: 'Meat', description: 'Explore the selection of meat in our store.', image: '', visible: true, items: [
         { id: 'pork', title: 'Pork', description: '', image: '', visible: true },
@@ -137,7 +138,17 @@ export function normalizeContent(value: unknown): SiteContent | null {
       const section = site[lang];
       if (typeof section.home.title !== 'string' || typeof section.about.copy !== 'string' ||
           !Array.isArray(section.contact.hours) || !Array.isArray(section.products.categories)) return null;
+      const contact = section.contact;
+      if ((contact.phone2 !== undefined && typeof contact.phone2 !== 'string') ||
+          (contact.email !== undefined && typeof contact.email !== 'string') ||
+          (contact.specialHours !== undefined && (!Array.isArray(contact.specialHours) || contact.specialHours.length > 30 ||
+            contact.specialHours.some(row => typeof row.id !== 'string' || typeof row.date !== 'string' || typeof row.label !== 'string' || typeof row.hours !== 'string') ||
+            new Set(contact.specialHours.map(row => row.id)).size !== contact.specialHours.length ||
+            new Set(contact.specialHours.map(row => row.date)).size !== contact.specialHours.length))) return null;
     }
+    const bgSpecial = site.bg.contact.specialHours || [];
+    const enSpecial = site.en.contact.specialHours || [];
+    if (bgSpecial.length !== enSpecial.length || bgSpecial.some((row, index) => row.id !== enSpecial[index].id || row.date !== enSpecial[index].date)) return null;
     // Existing content predates the separate home and news pages.
     if (!Array.isArray(site.feed) || site.bg.home.title === "Нашият асортимент" || site.en.home.title === "Our selection") {
       const migrated = structuredClone(site);

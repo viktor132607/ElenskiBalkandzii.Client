@@ -50,6 +50,15 @@ export default function SiteControl() {
   }
 
   async function save() {
+    for (const lang of ['bg', 'en'] as const) {
+      const contact = draft[lang].contact;
+      if (contact.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim())) { setMessage('Въведете валиден имейл адрес.'); return; }
+      const special = contact.specialHours || [];
+      if (special.length > 30 || new Set(special.map(row => row.date)).size !== special.length ||
+          special.some(row => { const day = new Date(`${row.date}T12:00:00Z`); return !/^\d{4}-\d{2}-\d{2}$/.test(row.date) || Number.isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== row.date || !row.label.trim() || !row.hours.trim(); })) {
+        setMessage('За всяка специална дата попълнете валидна дата, повод и работно време на BG и EN. Датите не трябва да се повтарят.'); return;
+      }
+    }
     if (draft.feed.some(item => item.visible && (!item.titleBg.trim() || !item.titleEn.trim() || !item.bodyBg.trim() || !item.bodyEn.trim() || !item.date))) {
       setMessage('За публикуваните записи попълнете дата, заглавие и текст на двата езика.');
       return;
@@ -149,6 +158,22 @@ export default function SiteControl() {
   function removeAboutRow(index: number) {
     if (!window.confirm('Да изтрия ли етикета и текста му на двата езика?')) return;
     change(d => { for (const lang of ['bg', 'en'] as const) d[lang].about.rows.splice(index, 1); });
+  }
+
+  function addSpecialHours() {
+    if ((draft.bg.contact.specialHours?.length || 0) >= 30) { setMessage('Максимум 30 специални дати.'); return; }
+    change(d => {
+      const id = crypto.randomUUID();
+      for (const lang of ['bg', 'en'] as const) {
+        d[lang].contact.specialHours ||= [];
+        d[lang].contact.specialHours.push({ id, date: '', label: lang === 'bg' ? 'Празник' : 'Holiday', hours: '' });
+      }
+    });
+  }
+
+  function removeSpecialHours(id: string) {
+    if (!window.confirm('Да изтрия ли специалното работно време за тази дата?')) return;
+    change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.specialHours = (d[lang].contact.specialHours || []).filter(row => row.id !== id); });
   }
 
   const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false, zoneId = label) => <div className="space-y-2">
@@ -331,8 +356,27 @@ export default function SiteControl() {
             {section === 'contact' && <>
               {field('Заглавие', c.contact.heading, v => change(d => d[language].contact.heading = v))}
               {field('Адрес', c.contact.address, v => change(d => d[language].contact.address = v))}
-              {field('Телефон', c.contact.phone, v => change(d => d[language].contact.phone = v))}
+              <div className="grid gap-4 md:grid-cols-2">
+                {field('Основен телефон', c.contact.phone, v => change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.phone = v; }))}
+                {field('Втори телефон (по избор)', c.contact.phone2 || '', v => change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.phone2 = v; }))}
+              </div>
+              <label className="block text-sm font-bold text-[#332923]">Имейл (по избор)
+                <input type="email" value={c.contact.email || ''} onChange={event => change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.email = event.target.value; })} placeholder="info@example.com" className="mt-2 w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal outline-none focus:border-[#08733a]" />
+              </label>
+              <h3 className="border-t border-[#e4ddd7] pt-5 text-lg font-black">Стандартно работно време</h3>
               {c.contact.hours.map((row, index) => <div key={index} className="grid gap-3 md:grid-cols-2">{field(`Ден ${index + 1}`, row.day, v => change(d => d[language].contact.hours[index].day = v))}{field('Часове', row.hours, v => change(d => d[language].contact.hours[index].hours = v))}</div>)}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#d5e7db] bg-[#f1f8f3] p-4">
+                <div><strong>Работно време за конкретни дати ({c.contact.specialHours?.length || 0})</strong><p className="mt-1 text-sm text-[#625851]">Например 25.12 — 10:00–14:00 или „Почивен ден“. Датата се задава веднъж, поводът и часовете се попълват на BG и EN.</p></div>
+                <button type="button" disabled={(c.contact.specialHours?.length || 0) >= 30} onClick={addSpecialHours} className="rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">+ Добави дата</button>
+              </div>
+              {(c.contact.specialHours || []).map((row, index) => <div key={row.id} className="space-y-4 rounded-xl border border-[#e4ddd7] p-4">
+                <div className="flex items-center justify-between gap-3"><strong>Специална дата {index + 1}</strong><button type="button" onClick={() => removeSpecialHours(row.id)} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button></div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <label className="block text-sm font-bold">Дата<input type="date" value={row.date} onChange={event => change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.specialHours!.find(entry => entry.id === row.id)!.date = event.target.value; })} className="mt-2 w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal" /></label>
+                  {field('Повод', row.label, v => change(d => d[language].contact.specialHours!.find(entry => entry.id === row.id)!.label = v))}
+                  {field('Часове или почивен ден', row.hours, v => change(d => d[language].contact.specialHours!.find(entry => entry.id === row.id)!.hours = v))}
+                </div>
+              </div>)}
               {field('Бележка', c.contact.note, v => change(d => d[language].contact.note = v))}
             </>}
             {section === 'images' && (['logo', 'store', 'products', 'about'] as const).map(key => <div key={key} className="rounded-xl border p-5">

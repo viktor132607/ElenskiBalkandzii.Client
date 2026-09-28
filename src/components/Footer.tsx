@@ -93,6 +93,8 @@ export default function Footer() {
             <address className="grid gap-2 text-sm not-italic leading-6 text-[#efe9e5]">
               <a href="https://www.google.com/maps/search/?api=1&query=%D1%83%D0%BB.+%D0%A8%D0%B8%D0%BF%D0%BA%D0%B0+12%2C+%D0%A0%D1%83%D1%81%D0%B5" target="_blank" rel="noopener noreferrer" className="hover:text-white">{contact.address}</a>
               <a href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`} className="hover:text-white">{contact.phone}</a>
+              {contact.phone2?.trim() && <a href={`tel:${contact.phone2.replace(/[^+\d]/g, "")}`} className="hover:text-white">{contact.phone2}</a>}
+              {contact.email?.trim() && <a href={`mailto:${contact.email.trim()}`} className="break-all hover:text-white">{contact.email.trim()}</a>}
             </address>
           </div>
         </div>

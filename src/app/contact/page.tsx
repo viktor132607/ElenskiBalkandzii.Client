@@ -6,14 +6,19 @@ import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import ConsentMap from "@/components/ConsentMap";
 
+function formatDate(value: string, language: "bg" | "en") {
+  return new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T12:00:00Z`));
+}
+
 export default function ContactPage() {
   const { language } = useLanguage();
   const media = useSiteContent().media;
   const data = useSiteContent()[language].contact;
   const workingHours = data.hours;
+  const specialHours = [...(data.specialHours || [])].sort((a, b) => a.date.localeCompare(b.date));
   const t = language === "bg" ? {
-    contacts: "Контакти", address: "Адрес", phone: "Телефон", hours: "Работно време", alt: "Магазин Еленски Балканджии в Русе"
-  } : { contacts: "Contacts", address: "Address", phone: "Phone", hours: "Opening hours", alt: "Elenski Balkandzhii store in Ruse" };
+    contacts: "Контакти", address: "Адрес", phone: "Телефон", email: "Имейл", hours: "Обичайно работно време", special: "Специално работно време", alt: "Магазин Еленски Балканджии в Русе"
+  } : { contacts: "Contacts", address: "Address", phone: "Phone", email: "Email", hours: "Regular opening hours", special: "Special opening hours", alt: "Elenski Balkandzhii store in Ruse" };
 
   return (
     <section className="min-h-[68vh] bg-white py-[72px] max-[620px]:py-[48px]" aria-labelledby="contact-heading">
@@ -30,12 +35,23 @@ export default function ContactPage() {
             </div>
             <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2">
               <dt className="font-black uppercase text-[#08733a]">{t.phone}</dt>
-              <dd className="m-0"><a href={`tel:${data.phone.replace(/[^+\d]/g, "")}`} className="text-lg font-bold text-[#211915] transition-colors hover:text-[#08733a]" aria-label={language === "bg" ? "Обадете се на Еленски Балканджии на 087 878 8897" : "Call Elenski Balkandzhii at 087 878 8897"}>{data.phone}</a></dd>
+              <dd className="m-0 flex flex-col gap-2">{[data.phone, data.phone2].filter((number): number is string => !!number?.trim()).map(number => <a key={number} href={`tel:${number.replace(/[^+\d]/g, "")}`} className="w-fit text-lg font-bold text-[#211915] transition-colors hover:text-[#08733a]" aria-label={`${language === "bg" ? "Обадете се на" : "Call"} ${number}`}>{number}</a>)}</dd>
             </div>
+            {data.email?.trim() && <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-2">
+              <dt className="font-black uppercase text-[#08733a]">{t.email}</dt>
+              <dd className="m-0 break-all"><a href={`mailto:${data.email.trim()}`} className="text-lg font-bold text-[#211915] transition-colors hover:text-[#08733a]">{data.email.trim()}</a></dd>
+            </div>}
             <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-3">
               <dt className="font-black uppercase text-[#08733a]">{t.hours}</dt>
               <dd className="m-0 space-y-2 text-[#514943]">{workingHours.map(({day, hours}) => <div key={day} className="flex max-w-[360px] items-center justify-between gap-6 border-b border-[#eee9e4] pb-2 last:border-0 last:pb-0"><span>{day}</span><time>{hours}</time></div>)}<p className="pt-2 text-sm text-[#8a817a]">{data.note}</p></dd>
             </div>
+            {specialHours.length > 0 && <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-5 py-5 max-[620px]:grid-cols-1 max-[620px]:gap-3">
+              <dt className="font-black uppercase text-[#08733a]">{t.special}</dt>
+              <dd className="m-0 space-y-3 text-[#514943]">{specialHours.map(entry => <div key={entry.id} className="max-w-[430px] border-b border-[#eee9e4] pb-3 last:border-0 last:pb-0">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"><span className="font-bold text-[#211915]">{entry.label}</span><time dateTime={entry.date} className="text-sm">{formatDate(entry.date, language)}</time></div>
+                <p className="mt-1 font-semibold text-[#08733a]">{entry.hours}</p>
+              </div>)}</dd>
+            </div>}
           </dl>
         </article>
         <div className="flex w-[728px] flex-col gap-[20px] max-[1100px]:w-full">
