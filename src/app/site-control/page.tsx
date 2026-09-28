@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import FeedStory from '@/components/FeedStory';
 import { apiUrl } from '@/lib/api';
-import { defaults, feedMediaType, frameRatios, imagePlacementFor, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
+import { defaultImagePlacement, defaults, feedMediaType, frameRatios, imagePlacementFor, imagePlacementStyle, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
 import './site-control.css';
 
 type Lang = 'bg' | 'en';
@@ -16,27 +16,58 @@ function removeUnusedPlacement(post: FeedItem, url: string) {
 }
 
 function ImagePlacementControls({ url, frame, placement, onChange }: { url: string; frame: ImageFrame; placement: ImagePlacement; onChange: (value: ImagePlacement) => void }) {
-  const [naturalRatio, setNaturalRatio] = useState<{ url: string; value: string } | null>(null);
-  const aspectRatio = frame === 'original' ? naturalRatio?.url === url ? naturalRatio.value : '16 / 9' : frameRatios[frame];
-  return <div className="grid gap-4 rounded-xl border border-[#d5e7db] bg-[#f7fbf8] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,1fr)]">
-    <div className="relative overflow-hidden rounded-lg bg-[#eee9e4]" style={{ aspectRatio }}>
-      <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized sizes="(max-width: 1023px) 100vw, 50vw" onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setNaturalRatio({ url, value: `${image.naturalWidth} / ${image.naturalHeight}` }); }} style={{ objectFit: placement.fit, objectPosition: `${placement.x}% ${placement.y}%` }} />
-    </div>
-    <div className="space-y-4 self-center">
-      <p className="text-sm font-black">Наместване на снимката</p>
+  const [dimensions, setDimensions] = useState<{ url: string; width: number; height: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const drag = useRef<{ pointerId: number; startX: number; startY: number; placement: ImagePlacement; gapX: number; gapY: number } | null>(null);
+  const ratio = frame === 'original' ? dimensions?.url === url ? dimensions.width / dimensions.height : 16 / 9 : Number(frameRatios[frame].split(' / ')[0]) / Number(frameRatios[frame].split(' / ')[1]);
+  const clamp = (value: number) => Math.max(0, Math.min(100, Math.round(value * 100) / 100));
+
+  function startDrag(event: React.PointerEvent<HTMLDivElement>) {
+    if (!dimensions || dimensions.url !== url) return;
+    const { width, height } = event.currentTarget.getBoundingClientRect();
+    const factor = (placement.fit === 'cover' ? Math.max(width / dimensions.width, height / dimensions.height) : Math.min(width / dimensions.width, height / dimensions.height)) * (placement.zoom ?? 1);
+    drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, placement, gapX: width - dimensions.width * factor, gapY: height - dimensions.height * factor };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  }
+
+  function moveDrag(event: React.PointerEvent<HTMLDivElement>) {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    onChange({ ...current.placement,
+      x: Math.abs(current.gapX) < 0.5 ? current.placement.x : clamp(current.placement.x + (event.clientX - current.startX) * 100 / current.gapX),
+      y: Math.abs(current.gapY) < 0.5 ? current.placement.y : clamp(current.placement.y + (event.clientY - current.startY) * 100 / current.gapY),
+    });
+  }
+
+  function stopDrag(event: React.PointerEvent<HTMLDivElement>) {
+    if (drag.current?.pointerId !== event.pointerId) return;
+    drag.current = null;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  }
+
+  return <div className="rounded-xl border border-[#d5e7db] bg-[#f7fbf8] p-4">
+    <div className="grid max-w-[1020px] items-start gap-5 md:grid-cols-[minmax(0,1fr)_minmax(240px,330px)]">
+      <div role="group" tabIndex={0} aria-label="Плъзни снимката, за да избереш изрязване" className={`relative mx-auto overflow-hidden rounded-lg bg-[#eee9e4] ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ aspectRatio: ratio, width: `min(100%, ${Math.min(620, Math.round(460 * ratio))}px)`, touchAction: 'none' }} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag}
+        onKeyDown={event => { const step = event.shiftKey ? 10 : 2; if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return; event.preventDefault(); onChange({ ...placement, x: clamp(placement.x + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0)), y: clamp(placement.y + (event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0)) }); }}>
+        <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized draggable={false} sizes="(max-width: 1023px) 100vw, 620px" onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setDimensions({ url, width: image.naturalWidth, height: image.naturalHeight }); }} style={{ ...imagePlacementStyle(placement), pointerEvents: 'none', userSelect: 'none' }} />
+        <span className="pointer-events-none absolute bottom-3 left-3 rounded-lg bg-[#211914]/80 px-3 py-2 text-xs font-bold text-white">Плъзни снимката за наместване</span>
+      </div>
+      <div className="space-y-4 self-center">
+        <p className="text-sm font-black">Изрязване на снимката</p>
       <label className="block text-sm font-bold">Показване
         <select value={placement.fit} onChange={event => onChange({ ...placement, fit: event.target.value as ImagePlacement['fit'] })} className="mt-2 w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal">
           <option value="cover">Запълни рамката (възможно изрязване)</option>
           <option value="contain">Покажи цялата снимка</option>
         </select>
       </label>
-      <label className="block text-sm font-bold">Хоризонтално · {placement.x}%
-        <input type="range" min="0" max="100" value={placement.x} onChange={event => onChange({ ...placement, x: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
+      <label className="block text-sm font-bold">Приближаване · {Math.round((placement.zoom ?? 1) * 100)}%
+        <input type="range" min="1" max="3" step="0.05" value={placement.zoom ?? 1} onChange={event => onChange({ ...placement, zoom: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
       </label>
-      <label className="block text-sm font-bold">Вертикално · {placement.y}%
-        <input type="range" min="0" max="100" value={placement.y} onChange={event => onChange({ ...placement, y: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
-      </label>
-      <p className="text-xs text-[#625851]">Промяната се вижда веднага в превюто и след записване на сайта.</p>
+        <button type="button" onClick={() => onChange({ ...defaultImagePlacement })} className="rounded-lg border border-[#08733a] px-3 py-2 text-sm font-bold text-[#08733a]">Нулирай изрязването</button>
+        <p className="text-xs text-[#625851]">Плъзни с мишка или пръст. Резултатът се вижда и в превюто отдолу.</p>
+      </div>
     </div>
   </div>;
 }

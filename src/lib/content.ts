@@ -1,8 +1,8 @@
 export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
 export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
 export type SpecialHours = { id: string; date: string; label: string; hours: string };
-export type ImagePlacement = { fit: 'cover' | 'contain'; x: number; y: number };
-export const defaultImagePlacement: ImagePlacement = { fit: 'cover', x: 50, y: 50 };
+export type ImagePlacement = { fit: 'cover' | 'contain'; x: number; y: number; zoom?: number };
+export const defaultImagePlacement: ImagePlacement = { fit: 'cover', x: 50, y: 50, zoom: 1 };
 export type FeedMediaType = 'none' | 'image' | 'video' | 'slideshow';
 export type ImageFrame = 'original' | 'wide' | 'landscape' | 'square' | 'portrait';
 export const frameRatios: Record<Exclude<ImageFrame, 'original'>, string> = { wide: '16 / 9', landscape: '4 / 3', square: '1 / 1', portrait: '3 / 4' };
@@ -10,6 +10,15 @@ export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: st
 
 export function imagePlacementFor(item: FeedItem, url: string): ImagePlacement {
   return item.imagePlacements?.[url] || defaultImagePlacement;
+}
+
+export function imagePlacementStyle(placement: ImagePlacement) {
+  return {
+    objectFit: placement.fit,
+    objectPosition: `${placement.x}% ${placement.y}%`,
+    transform: `scale(${placement.zoom ?? 1})`,
+    transformOrigin: `${placement.x}% ${placement.y}%`,
+  };
 }
 
 export function feedMediaType(item: FeedItem): FeedMediaType {
@@ -176,7 +185,8 @@ export function normalizeContent(value: unknown): SiteContent | null {
         Object.keys(item.imagePlacements).length > 13 || Object.entries(item.imagePlacements).some(([url, placement]) =>
           ![item.image, ...(item.images || [])].includes(url) || !placement || !['cover', 'contain'].includes(placement.fit) ||
           !Number.isFinite(placement.x) || placement.x < 0 || placement.x > 100 ||
-          !Number.isFinite(placement.y) || placement.y < 0 || placement.y > 100))) ||
+          !Number.isFinite(placement.y) || placement.y < 0 || placement.y > 100 ||
+          (placement.zoom !== undefined && (!Number.isFinite(placement.zoom) || placement.zoom < 1 || placement.zoom > 3))))) ||
       (item.videoUrl !== undefined && typeof item.videoUrl !== 'string') ||
       (item.mediaType !== undefined && !['none', 'image', 'video', 'slideshow'].includes(item.mediaType))) ||
       new Set(site.feed.map(item => item.id)).size !== site.feed.length) return null;
