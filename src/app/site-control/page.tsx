@@ -205,7 +205,7 @@ export default function SiteControl() {
   const sections = { home: 'Начало', products: 'Асортимент', feed: 'Новини, събития и томболи', about: 'За нас', contact: 'Контакти', images: 'Изображения', stats: 'Статистика' };
 
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
-    <div className="admin-panel mx-auto w-full max-w-[1500px] rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
+    <div className="admin-panel w-full rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
       {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
           <div className="mt-7 flex flex-wrap items-center gap-3 border-b border-[#e4ddd7] pb-6 xl:flex-nowrap">
