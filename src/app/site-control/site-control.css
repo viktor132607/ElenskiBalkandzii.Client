@@ -70,6 +70,11 @@
   background: #e8f5eb;
 }
 
+.admin-feed-preview article {
+  border-bottom: 0;
+  padding-block: 24px 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .admin-panel button, .admin-dropzone { transition: none; }
 }

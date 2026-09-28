@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import FeedStory from '@/components/FeedStory';
 import { apiUrl } from '@/lib/api';
 import { defaults, feedMediaType, normalizeContent, type FeedMediaType, type SiteContent } from '@/lib/content';
 import './site-control.css';
@@ -20,6 +21,7 @@ export default function SiteControl() {
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
   const [dragZone, setDragZone] = useState('');
+  const [previewMode, setPreviewMode] = useState<'list' | 'detail'>('list');
 
   useEffect(() => {
     const saved = sessionStorage.getItem(tokenKey);
@@ -265,6 +267,21 @@ export default function SiteControl() {
                   </div>
                 </div>}
                 {feedMediaType(item) === 'video' && field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
+                <div className="admin-feed-preview rounded-2xl border border-[#c9dfcf] bg-white p-5 md:p-8" aria-label={`Превю на ${(language === 'bg' ? item.titleBg : item.titleEn) || 'нова публикация'}`}>
+                  <div className="flex flex-wrap items-center gap-3 border-b border-[#e4ddd7] pb-4">
+                    <h4 className="mr-auto text-lg font-black">Превю · {name}</h4>
+                    {!item.visible && <span className="rounded-full bg-[#f1ede9] px-3 py-1 text-xs font-bold">Чернова</span>}
+                    <button type="button" onClick={() => setPreviewMode('list')} aria-pressed={previewMode === 'list'} className={`rounded-lg px-3 py-2 text-sm font-bold ${previewMode === 'list' ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>В списъка</button>
+                    <button type="button" onClick={() => setPreviewMode('detail')} aria-pressed={previewMode === 'detail'} className={`rounded-lg px-3 py-2 text-sm font-bold ${previewMode === 'detail' ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>Цяла публикация</button>
+                  </div>
+                  <FeedStory key={`${item.id}-${feedMediaType(item)}-${item.image}-${item.images?.join('|') || ''}-${item.videoUrl || ''}`} item={{
+                    ...item,
+                    titleBg: item.titleBg || 'Заглавие на публикацията',
+                    titleEn: item.titleEn || 'Post title',
+                    bodyBg: item.bodyBg || 'Текстът на публикацията ще се покаже тук.',
+                    bodyEn: item.bodyEn || 'Post text will appear here.',
+                  }} language={language} linked={previewMode === 'list'} detail={previewMode === 'detail'} preview />
+                </div>
               </div>)}
               <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', mediaType: 'image', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
             </>}

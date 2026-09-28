@@ -29,7 +29,7 @@ function videoSource(value: string): { src: string; embedded: boolean } | null {
   return null;
 }
 
-export default function FeedStory({ item, language, linked = false, reverse = false, detail = false }: { item: FeedItem; language: "bg" | "en"; linked?: boolean; reverse?: boolean; detail?: boolean }) {
+export default function FeedStory({ item, language, linked = false, reverse = false, detail = false, preview = false }: { item: FeedItem; language: "bg" | "en"; linked?: boolean; reverse?: boolean; detail?: boolean; preview?: boolean }) {
   const title = language === "bg" ? item.titleBg : item.titleEn || item.titleBg;
   const body = language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg;
   const mediaType = feedMediaType(item);
@@ -53,10 +53,10 @@ export default function FeedStory({ item, language, linked = false, reverse = fa
   return <article id={item.id} className={`grid scroll-mt-28 items-center gap-8 border-b border-[#e4ddd7] py-12 md:gap-12 md:py-16 ${hasMedia ? "lg:grid-cols-2" : ""}`}>
     <div className={`max-w-2xl ${reverse && hasMedia ? "lg:order-2" : ""}`}>
       <div className="flex flex-wrap items-center gap-4 text-xs font-black uppercase tracking-[.14em] text-[#08733a]"><span>{label}</span><time dateTime={item.date}>{formatFeedDate(item.date, language)}</time></div>
-      {detail ? <h1 className="mt-4 text-[clamp(32px,4vw,52px)] font-black leading-tight">{title}</h1> : <h3 className="mt-4 text-[clamp(28px,3vw,44px)] font-black leading-tight">{linked ? <Link href={articleHref} className="hover:text-[#08733a]">{title}</Link> : title}</h3>}
+      {detail ? <h1 className="mt-4 text-[clamp(32px,4vw,52px)] font-black leading-tight">{title}</h1> : <h3 className="mt-4 text-[clamp(28px,3vw,44px)] font-black leading-tight">{linked && !preview ? <Link href={articleHref} className="hover:text-[#08733a]">{title}</Link> : title}</h3>}
       <p className="mt-5 whitespace-pre-line text-lg leading-8 text-[#625851]">{excerpt}</p>
       {item.type === "raffle" && item.endDate && <p className="mt-5 font-bold text-[#08733a]">{language === "bg" ? "Край на томболата: " : "Raffle ends: "}{formatFeedDate(item.endDate, language)}</p>}
-      {linked && <Link href={articleHref} className="mt-6 inline-block border-b-2 border-[#08733a] pb-1 font-bold text-[#08733a]">{language === "bg" ? "Продължете да четете" : "Continue reading"} →</Link>}
+      {linked && (preview ? <span className="mt-6 inline-block border-b-2 border-[#08733a] pb-1 font-bold text-[#08733a]">{language === "bg" ? "Продължете да четете" : "Continue reading"} →</span> : <Link href={articleHref} className="mt-6 inline-block border-b-2 border-[#08733a] pb-1 font-bold text-[#08733a]">{language === "bg" ? "Продължете да четете" : "Continue reading"} →</Link>)}
     </div>
     {hasMedia && <div className={`relative overflow-hidden rounded-2xl bg-[#eee9e4] ${reverse ? "lg:order-1" : ""}`}>
       <div className="relative aspect-[5/4]">
