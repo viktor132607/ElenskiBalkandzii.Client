@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { apiUrl } from '@/lib/api';
 import { defaults, feedMediaType, normalizeContent, type FeedMediaType, type SiteContent } from '@/lib/content';
+import './site-control.css';
 
 type Lang = 'bg' | 'en';
 const tokenKey = 'elenski-admin-session';
@@ -18,6 +19,7 @@ export default function SiteControl() {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
+  const [dragZone, setDragZone] = useState('');
 
   useEffect(() => {
     const saved = sessionStorage.getItem(tokenKey);
@@ -56,17 +58,49 @@ export default function SiteControl() {
     finally { setBusy(false); }
   }
 
-  async function upload(file: File, apply: (draft: SiteContent, url: string) => void) {
+  async function uploadFiles(files: File[], apply: (draft: SiteContent, url: string) => void, limit = 1) {
+    const selected = files.slice(0, limit);
+    if (!selected.length) { setMessage('Поставете или пуснете изображение JPEG, PNG или WebP.'); return; }
+    if (selected.some(file => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)) {
+      setMessage('Изберете JPEG, PNG или WebP до 5 MB.'); return;
+    }
     setBusy(true); setMessage('');
     try {
-      const data = new FormData(); data.append('file', file);
-      const response = await fetch(apiUrl('/api/images'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: data });
-      if (!response.ok) { setMessage(response.status === 401 ? 'Сесията изтече. Влезте отново.' : 'Качването не успя. Изберете JPEG, PNG или WebP до 5 MB.'); return; }
-      const result = await response.json();
-      change(d => apply(d, result.url));
-      setMessage('Снимката е качена. Натиснете „Запази промените“, за да я покажете на сайта.');
+      for (const file of selected) {
+        const data = new FormData(); data.append('file', file);
+        const response = await fetch(apiUrl('/api/images'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: data });
+        if (!response.ok) { setMessage(response.status === 401 ? 'Сесията изтече. Влезте отново.' : 'Качването не успя. Изберете JPEG, PNG или WebP до 5 MB.'); return; }
+        const result = await response.json();
+        change(d => apply(d, result.url));
+      }
+      setMessage('Снимките са качени. Натиснете „Запази промените“, за да ги покажете на сайта.');
     } catch { setMessage('API не е достъпен.'); }
     finally { setBusy(false); }
+  }
+
+  async function pasteFromClipboard(apply: (draft: SiteContent, url: string) => void, limit = 1) {
+    try {
+      if (!navigator.clipboard?.read) { setMessage('Кликнете в полето за снимка и натиснете Ctrl+V.'); return; }
+      const entries = await navigator.clipboard.read();
+      const files: File[] = [];
+      for (const entry of entries) {
+        const type = entry.types.find(value => ['image/png', 'image/jpeg', 'image/webp'].includes(value));
+        if (type) files.push(new File([await entry.getType(type)], 'clipboard-image', { type }));
+      }
+      await uploadFiles(files, apply, limit);
+    } catch { setMessage('Разрешете достъп до клипборда или кликнете в полето и натиснете Ctrl+V.'); }
+  }
+
+  function uploadSlideFiles(files: File[], itemId: string) {
+    const remaining = 12 - (draft.feed.find(item => item.id === itemId)?.images?.length || 0);
+    if (remaining <= 0) { setMessage('Максимум 12 снимки за публикация.'); return; }
+    void uploadFiles(files, (d, url) => { const post = d.feed.find(item => item.id === itemId)!; post.images = [...(post.images || []), url]; }, remaining);
+  }
+
+  function pasteSlides(itemId: string) {
+    const remaining = 12 - (draft.feed.find(item => item.id === itemId)?.images?.length || 0);
+    if (remaining <= 0) { setMessage('Максимум 12 снимки за публикация.'); return; }
+    void pasteFromClipboard((d, url) => { const post = d.feed.find(item => item.id === itemId)!; post.images = [...(post.images || []), url]; }, remaining);
   }
 
   function moveCategory(index: number, delta: number) {
@@ -85,10 +119,25 @@ export default function SiteControl() {
     }});
   }
 
-  const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false) => <div>
+  function addCategory() {
+    if (draft.bg.products.categories.length >= 24) { setMessage('Максимум 24 категории.'); return; }
+    change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.unshift({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); });
+  }
+
+  const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false, zoneId = label) => <div className="space-y-2">
     <label className="mb-2 block text-sm font-bold">{label}</label>
     {path && <Image src={path.startsWith('/api/') ? apiUrl(path) : path} alt="Преглед" width={160} height={112} unoptimized className="mb-3 h-28 max-w-full rounded-lg object-contain" />}
-    <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} aria-label={label} onChange={event => { const file = event.target.files?.[0]; if (file) void upload(file, apply); event.target.value = ''; }} className="block w-full text-sm" />
+    <div role="group" aria-label={label} tabIndex={0} className={`admin-dropzone ${dragZone === zoneId ? 'admin-dropzone-active' : ''}`}
+      onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(zoneId); }}
+      onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragZone(''); }}
+      onDrop={event => { event.preventDefault(); setDragZone(''); if (!busy) void uploadFiles(Array.from(event.dataTransfer.files), apply); }}
+      onPaste={event => { const files = Array.from(event.clipboardData.items).map(item => item.getAsFile()).filter((file): file is File => !!file); if (files.length) { event.preventDefault(); if (!busy) void uploadFiles(files, apply); } }}>
+      <p className="text-sm font-medium">Пуснете снимка тук или кликнете в полето и натиснете Ctrl+V</p>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} aria-label={`Избор от устройство: ${label}`} onChange={event => { const file = event.target.files?.[0]; if (file) void uploadFiles([file], apply); event.target.value = ''; }} className="max-w-full text-sm" />
+        <button type="button" disabled={busy} onClick={() => void pasteFromClipboard(apply)} className="rounded-lg border border-[#08733a] px-3 py-2 text-sm font-bold text-[#08733a]">Постави от клипборда</button>
+      </div>
+    </div>
     {path && removable && <button type="button" onClick={() => change(d => apply(d, ''))} className="mt-2 text-sm font-bold text-[#8d2e2b]">Премахни снимката</button>}
   </div>;
 
@@ -104,10 +153,10 @@ export default function SiteControl() {
   const sections = { home: 'Начало', products: 'Асортимент', feed: 'Новини, събития и томболи', about: 'За нас', contact: 'Контакти', images: 'Изображения', stats: 'Статистика' };
 
   return <section className="min-h-[70vh] bg-[#f6f3ef] px-4 py-12">
-    <div className="mx-auto max-w-5xl rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
+    <div className="admin-panel mx-auto w-full max-w-[1500px] rounded-2xl border border-[#e4ddd7] bg-white p-6 shadow-sm md:p-10">
       <h1 className="text-3xl font-black uppercase">Управление на сайта</h1>
       {!ready || !token ? <p className="mt-6">Проверка на достъпа…</p> : <>
-          <div className="mt-7 flex flex-wrap gap-3 border-b border-[#e4ddd7] pb-6">
+          <div className="mt-7 flex flex-wrap items-center gap-3 border-b border-[#e4ddd7] pb-6 xl:flex-nowrap">
             {(['home','products','feed','about','contact','images','stats'] as const).map(key => <button type="button" key={key} onClick={() => setSection(key)} aria-pressed={section === key} className={`rounded-xl px-4 py-2 font-bold ${section === key ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>{sections[key]}</button>)}
             <button type="button" onClick={() => { sessionStorage.removeItem(tokenKey); setToken(''); router.replace('/adminlogin'); }} className="ml-auto rounded-xl border px-4 py-2 font-bold">Изход</button>
           </div>
@@ -127,6 +176,10 @@ export default function SiteControl() {
             {section === 'products' && <>
               {field('Текст на бутона към категориите', c.home.view, v => change(d => d[language].home.view = v))}
               <p className="text-sm leading-relaxed text-[#625851]">Категориите и продуктите се подреждат еднакво за BG и EN. Редактирайте имената и описанията на двата езика. Няма количка, плащания или онлайн поръчки.</p>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#d5e7db] bg-[#f1f8f3] p-4">
+                <strong>Категории ({c.products.categories.length})</strong>
+                <button type="button" disabled={c.products.categories.length >= 24} onClick={addCategory} className="rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">+ Добави категория</button>
+              </div>
               {c.products.categories.map((category, index) => <div key={category.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="mr-auto text-lg font-black uppercase">{category.title || `Категория ${index + 1}`}</h3>
@@ -135,9 +188,11 @@ export default function SiteControl() {
                   <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.visible = !category.visible; })} className="rounded-lg border px-3 py-2">{category.visible ? 'Скрий' : 'Покажи'}</button>
                   <button type="button" onClick={() => { if (window.confirm('Да изтрия ли категорията и продуктите ѝ?')) change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories = d[lang].products.categories.filter(item => item.id !== category.id); }); }} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button>
                 </div>
-                {field('Име на категорията', category.title, v => change(d => d[language].products.categories[index].title = v))}
-                {field('Описание на категорията', category.description, v => change(d => d[language].products.categories[index].description = v), true)}
-                {imagePicker('Снимка на категорията', category.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.image = url; }, true)}
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {field('Име на категорията', category.title, v => change(d => d[language].products.categories[index].title = v))}
+                  {field('Описание на категорията', category.description, v => change(d => d[language].products.categories[index].description = v), true)}
+                </div>
+                {imagePicker('Снимка на категорията', category.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.image = url; }, true, category.id)}
                 <h4 className="border-t pt-5 font-black uppercase">Продукти ({category.items.length})</h4>
                 {category.items.map((product, itemIndex) => <div key={product.id} className="space-y-3 rounded-xl border border-[#e4ddd7] bg-white p-4">
                   <div className="flex flex-wrap items-center gap-2"><strong className="mr-auto">{product.title || `Продукт ${itemIndex + 1}`}</strong>
@@ -146,13 +201,15 @@ export default function SiteControl() {
                     <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.visible = !product.visible; })} className="rounded-lg border px-3 py-1">{product.visible ? 'Скрий' : 'Покажи'}</button>
                     <button type="button" onClick={() => change(d => { for (const lang of ['bg','en'] as const) { const items = d[lang].products.categories.find(item => item.id === category.id)!.items; items.splice(items.findIndex(item => item.id === product.id), 1); } })} className="rounded-lg border border-[#c88982] px-3 py-1 text-[#8d2e2b]" aria-label={`Изтрий ${product.title}`}>Изтрий</button>
                   </div>
-                  {field('Име на продукта', product.title, v => change(d => d[language].products.categories[index].items[itemIndex].title = v))}
-                  {field('Описание (по избор)', product.description, v => change(d => d[language].products.categories[index].items[itemIndex].description = v), true)}
-                  {imagePicker(`Снимка на ${product.title}`, product.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.image = url; }, true)}
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    {field('Име на продукта', product.title, v => change(d => d[language].products.categories[index].items[itemIndex].title = v))}
+                    {field('Описание (по избор)', product.description, v => change(d => d[language].products.categories[index].items[itemIndex].description = v), true)}
+                  </div>
+                  {imagePicker(`Снимка на ${product.title}`, product.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.image = url; }, true, product.id)}
                 </div>)}
                 <button type="button" onClick={() => change(d => { const id = crypto.randomUUID(); for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.push({ id, title: lang === 'bg' ? 'Нов продукт' : 'New product', description: '', image: '', visible: true }); })} className="rounded-xl border border-[#08733a] px-4 py-2 font-bold text-[#08733a]">+ Добави продукт</button>
               </div>)}
-              <button type="button" onClick={() => change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.push({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white">+ Добави категория</button>
+              <button type="button" disabled={c.products.categories.length >= 24} onClick={addCategory} className="w-fit rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">+ Добави категория</button>
             </>}
             {section === 'feed' && <>
               <label className="mb-6 flex items-start gap-3 rounded-xl border border-[#e4ddd7] bg-[#f6f3ef] p-4 text-sm font-bold text-[#211915]">
@@ -181,7 +238,7 @@ export default function SiteControl() {
                     </label>)}
                   </div>
                 </fieldset>
-                {feedMediaType(item) === 'image' && imagePicker('Снимка на публикацията', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true)}
+                {feedMediaType(item) === 'image' && imagePicker('Снимка на публикацията', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true, item.id)}
                 {feedMediaType(item) === 'slideshow' && <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
                   <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
                   {(item.images || []).map((url, index) => <div key={`${url}-${index}`} className="flex flex-wrap items-center gap-3 border-b pb-3 last:border-0">
@@ -191,9 +248,17 @@ export default function SiteControl() {
                     <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
                     <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.images!.splice(index, 1); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
                   </div>)}
-                  <label className="block text-sm font-bold">Добави снимки от устройство
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || (item.images?.length || 0) >= 12} className="mt-2 block w-full font-normal" onChange={async event => { const files = Array.from(event.target.files || []).slice(0, 12 - (item.images?.length || 0)); event.target.value = ''; for (const file of files) await upload(file, (d, url) => { const photos = d.feed.find(post => post.id === item.id)!; photos.images = [...(photos.images || []), url]; }); }} />
-                  </label>
+                  <div role="group" aria-label="Добави снимки към слайдшоуто" tabIndex={0} className={`admin-dropzone ${dragZone === item.id ? 'admin-dropzone-active' : ''}`}
+                    onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(item.id); }}
+                    onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragZone(''); }}
+                    onDrop={event => { event.preventDefault(); setDragZone(''); if (!busy) uploadSlideFiles(Array.from(event.dataTransfer.files), item.id); }}
+                    onPaste={event => { const files = Array.from(event.clipboardData.items).map(entry => entry.getAsFile()).filter((file): file is File => !!file); if (files.length) { event.preventDefault(); if (!busy) uploadSlideFiles(files, item.id); } }}>
+                    <p className="text-sm font-medium">Пуснете снимки тук или кликнете в полето и натиснете Ctrl+V</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <input type="file" aria-label="Избери снимки за слайдшоу" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || (item.images?.length || 0) >= 12} className="max-w-full text-sm" onChange={event => { uploadSlideFiles(Array.from(event.target.files || []), item.id); event.target.value = ''; }} />
+                      <button type="button" disabled={busy || (item.images?.length || 0) >= 12} onClick={() => pasteSlides(item.id)} className="rounded-lg border border-[#08733a] px-3 py-2 text-sm font-bold text-[#08733a]">Постави от клипборда</button>
+                    </div>
+                  </div>
                 </div>}
                 {feedMediaType(item) === 'video' && field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
               </div>)}

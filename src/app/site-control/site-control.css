@@ -1,0 +1,75 @@
+.admin-panel button:not(:disabled) {
+  cursor: pointer;
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.admin-panel button:not(:disabled):hover {
+  box-shadow: 0 4px 12px rgb(8 115 58 / 16%);
+  transform: translateY(-2px);
+  border-color: #08733a;
+}
+
+.admin-panel button:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.admin-panel button:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+  box-shadow: none;
+}
+
+.admin-panel button:focus-visible,
+.admin-panel a:focus-visible,
+.admin-panel input:focus-visible,
+.admin-panel textarea:focus-visible,
+.admin-panel select:focus-visible,
+.admin-dropzone:focus-visible {
+  outline: 3px solid #08733a;
+  outline-offset: 3px;
+}
+
+.admin-panel input:not([type='file']):not([type='radio']):not([type='checkbox']):hover,
+.admin-panel textarea:hover,
+.admin-panel select:hover {
+  border-color: #08733a;
+}
+
+.admin-panel input[type='file'] {
+  cursor: pointer;
+}
+
+.admin-panel input[type='file']::file-selector-button {
+  cursor: pointer;
+  border: 1px solid #08733a;
+  border-radius: 8px;
+  background: #f1f8f3;
+  color: #075e32;
+  padding: 8px 12px;
+  margin-right: 10px;
+  font-weight: 700;
+}
+
+.admin-panel input[type='file']:hover::file-selector-button {
+  background: #dcefe2;
+}
+
+.admin-dropzone {
+  border: 2px dashed #a4c6ae;
+  border-radius: 14px;
+  background: #f7fbf8;
+  padding: 18px;
+  transition: border-color .18s ease, background-color .18s ease;
+}
+
+.admin-dropzone:hover,
+.admin-dropzone:focus-within,
+.admin-dropzone-active {
+  border-color: #08733a;
+  background: #e8f5eb;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-panel button, .admin-dropzone { transition: none; }
+}
