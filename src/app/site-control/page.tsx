@@ -33,7 +33,11 @@ export default function SiteControl() {
   useEffect(() => {
     if (!token) return;
     fetch(apiUrl('/api/content'), { cache: 'no-store' })
-      .then(r => r.ok ? r.json() : null)
+      .then(r => {
+        if (r.status === 204) return null;
+        if (!r.ok) throw new Error(`Content API returned ${r.status}`);
+        return r.json();
+      })
       .then(data => { const parsed = normalizeContent(data); if (parsed) setDraft(parsed); })
       .catch(() => setMessage('Съдържанието не се зареди. Проверете връзката с API.'));
   }, [token]);

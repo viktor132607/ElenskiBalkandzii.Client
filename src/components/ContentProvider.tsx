@@ -11,7 +11,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const controller = new AbortController();
     fetch(apiUrl('/api/content'), { signal: controller.signal, cache: 'no-store' })
-      .then(r => r.ok ? r.json() : null)
+      .then(r => r.ok && r.status !== 204 ? r.json() : null)
       .then(value => { const parsed = normalizeContent(value); if (parsed) setContent(parsed); })
       .catch(() => {});
     return () => controller.abort();

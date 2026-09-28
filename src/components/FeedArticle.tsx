@@ -21,7 +21,7 @@ export default function FeedArticle() {
   useEffect(() => {
     const controller = new AbortController();
     fetch(apiUrl("/api/content"), { cache: "no-store", signal: controller.signal })
-      .then(response => response.ok ? response.json() : null)
+      .then(response => response.ok && response.status !== 204 ? response.json() : null)
       .then(value => setFresh(normalizeContent(value)))
       .catch(() => {})
       .finally(() => { if (!controller.signal.aborted) setReady(true); });
