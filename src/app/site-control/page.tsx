@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { apiUrl } from '@/lib/api';
-import { defaultImagePlacement, defaults, feedMediaType, frameRatios, imagePlacementFor, imagePlacementStyle, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
+import { defaults, feedMediaType, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
 import './site-control.css';
 
 type Lang = 'bg' | 'en';
@@ -12,63 +12,6 @@ const tokenKey = 'elenski-admin-session';
 
 function removeUnusedPlacement(post: FeedItem, url: string) {
   if (url && url !== post.image && !post.images?.includes(url) && post.imagePlacements) delete post.imagePlacements[url];
-}
-
-function ImagePlacementControls({ url, frame, placement, onChange }: { url: string; frame: ImageFrame; placement: ImagePlacement; onChange: (value: ImagePlacement) => void }) {
-  const [dimensions, setDimensions] = useState<{ url: string; width: number; height: number } | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const drag = useRef<{ pointerId: number; startX: number; startY: number; placement: ImagePlacement; gapX: number; gapY: number } | null>(null);
-  const ratio = frame === 'original' ? dimensions?.url === url ? dimensions.width / dimensions.height : 16 / 9 : Number(frameRatios[frame].split(' / ')[0]) / Number(frameRatios[frame].split(' / ')[1]);
-  const clamp = (value: number) => Math.max(0, Math.min(100, Math.round(value * 100) / 100));
-
-  function startDrag(event: React.PointerEvent<HTMLDivElement>) {
-    if (!dimensions || dimensions.url !== url) return;
-    const { width, height } = event.currentTarget.getBoundingClientRect();
-    const factor = (placement.fit === 'cover' ? Math.max(width / dimensions.width, height / dimensions.height) : Math.min(width / dimensions.width, height / dimensions.height)) * (placement.zoom ?? 1);
-    drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, placement, gapX: width - dimensions.width * factor, gapY: height - dimensions.height * factor };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragging(true);
-  }
-
-  function moveDrag(event: React.PointerEvent<HTMLDivElement>) {
-    const current = drag.current;
-    if (!current || current.pointerId !== event.pointerId) return;
-    onChange({ ...current.placement,
-      x: Math.abs(current.gapX) < 0.5 ? current.placement.x : clamp(current.placement.x + (event.clientX - current.startX) * 100 / current.gapX),
-      y: Math.abs(current.gapY) < 0.5 ? current.placement.y : clamp(current.placement.y + (event.clientY - current.startY) * 100 / current.gapY),
-    });
-  }
-
-  function stopDrag(event: React.PointerEvent<HTMLDivElement>) {
-    if (drag.current?.pointerId !== event.pointerId) return;
-    drag.current = null;
-    setDragging(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-  }
-
-  return <div className="rounded-xl border border-[#d5e7db] bg-[#f7fbf8] p-4">
-    <div className="grid max-w-[1020px] items-start gap-5 md:grid-cols-[minmax(0,1fr)_minmax(240px,330px)]">
-      <div role="group" tabIndex={0} aria-label="Плъзни снимката, за да избереш изрязване" className={`relative mx-auto overflow-hidden rounded-lg bg-[#eee9e4] ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ aspectRatio: ratio, width: `min(100%, ${Math.min(620, Math.round(460 * ratio))}px)`, touchAction: 'none' }} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag}
-        onKeyDown={event => { const step = event.shiftKey ? 10 : 2; if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return; event.preventDefault(); onChange({ ...placement, x: clamp(placement.x + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0)), y: clamp(placement.y + (event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0)) }); }}>
-        <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized draggable={false} sizes="(max-width: 1023px) 100vw, 620px" onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setDimensions({ url, width: image.naturalWidth, height: image.naturalHeight }); }} style={{ ...imagePlacementStyle(placement), pointerEvents: 'none', userSelect: 'none' }} />
-        <span className="pointer-events-none absolute bottom-3 left-3 rounded-lg bg-[#211914]/80 px-3 py-2 text-xs font-bold text-white">Плъзни снимката за наместване</span>
-      </div>
-      <div className="space-y-4 self-center">
-        <p className="text-sm font-black">Изрязване на снимката</p>
-      <label className="block text-sm font-bold">Показване
-        <select value={placement.fit} onChange={event => onChange({ ...placement, fit: event.target.value as ImagePlacement['fit'] })} className="mt-2 w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal">
-          <option value="cover">Запълни рамката (възможно изрязване)</option>
-          <option value="contain">Покажи цялата снимка</option>
-        </select>
-      </label>
-      <label className="block text-sm font-bold">Приближаване · {Math.round((placement.zoom ?? 1) * 100)}%
-        <input type="range" min="1" max="3" step="0.05" value={placement.zoom ?? 1} onChange={event => onChange({ ...placement, zoom: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
-      </label>
-        <button type="button" onClick={() => onChange({ ...defaultImagePlacement })} className="rounded-lg border border-[#08733a] px-3 py-2 text-sm font-bold text-[#08733a]">Нулирай изрязването</button>
-        <p className="text-xs text-[#625851]">Плъзни с мишка или пръст. Резултатът се вижда и в превюто отдолу.</p>
-      </div>
-    </div>
-  </div>;
 }
 
 export default function SiteControl() {
@@ -106,6 +49,11 @@ export default function SiteControl() {
       .catch(() => setMessage('Съдържанието не се зареди. Проверете връзката с API.'));
   }, [token]);
 
+  function change(update: (copy: SiteContent) => void) {
+    setDraft(current => { const copy = structuredClone(current); update(copy); return copy; });
+    setMessage('Има незаписани промени.');
+  }
+
   const sortedFeed = [...draft.feed].sort((a, b) => b.date.localeCompare(a.date));
   const selectedFeedId = sortedFeed.some(item => item.id === activeFeedId) ? activeFeedId : sortedFeed[0]?.id;
   const selectedFeed = sortedFeed.find(item => item.id === selectedFeedId);
@@ -124,19 +72,28 @@ export default function SiteControl() {
   useEffect(() => {
     if (section !== 'feed') return;
     updatePagePreview();
-    function handleReady(event: MessageEvent) {
-      if (event.origin === window.location.origin && event.source === previewFrame.current?.contentWindow && event.data?.type === 'site-control-preview-ready') updatePagePreview();
+    function handlePreviewMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin || event.source !== previewFrame.current?.contentWindow) return;
+      const data = event.data;
+      if (data?.type === 'site-control-preview-ready') { updatePagePreview(); return; }
+      if (!selectedFeed || data?.itemId !== selectedFeed.id) return;
+      if (data?.type === 'site-control-preview-frame') {
+        if (!['original', 'wide', 'landscape', 'square', 'portrait'].includes(data.frame)) return;
+        change(d => { d.feed.find(item => item.id === data.itemId)!.imageFrame = data.frame as ImageFrame; });
+      }
+      if (data?.type === 'site-control-preview-placement') {
+        const { url, placement } = data as { url: string; placement: ImagePlacement };
+        if (![selectedFeed.image, ...(selectedFeed.images || [])].includes(url) || !placement ||
+            !['cover', 'contain'].includes(placement.fit) || ![placement.x, placement.y, placement.zoom ?? 1].every(Number.isFinite) ||
+            placement.x < 0 || placement.x > 100 || placement.y < 0 || placement.y > 100 || (placement.zoom ?? 1) < 1 || (placement.zoom ?? 1) > 3) return;
+        change(d => { const post = d.feed.find(item => item.id === data.itemId)!; post.imagePlacements ||= {}; post.imagePlacements[url] = placement; });
+      }
     }
-    window.addEventListener('message', handleReady);
-    return () => window.removeEventListener('message', handleReady);
+    window.addEventListener('message', handlePreviewMessage);
+    return () => window.removeEventListener('message', handlePreviewMessage);
   // The preview must receive the latest draft on every edit, including image dragging.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft, section, selectedFeedId, language, previewMode]);
-
-  function change(update: (copy: SiteContent) => void) {
-    setDraft(current => { const copy = structuredClone(current); update(copy); return copy; });
-    setMessage('Има незаписани промени.');
-  }
 
   async function save() {
     for (const lang of ['bg', 'en'] as const) {
@@ -384,18 +341,8 @@ export default function SiteControl() {
                     </label>)}
                   </div>
                 </fieldset>
-                {(['image', 'slideshow'] as FeedMediaType[]).includes(feedMediaType(item)) && <label className="block text-sm font-bold">Размер на снимката в публикацията
-                  <select value={item.imageFrame || 'original'} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.imageFrame = event.target.value as ImageFrame; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal md:max-w-md">
-                    <option value="original">Оригинални пропорции на снимката</option>
-                    <option value="wide">Широка · 16:9</option>
-                    <option value="landscape">Хоризонтална · 4:3</option>
-                    <option value="square">Квадратна · 1:1</option>
-                    <option value="portrait">Вертикална · 3:4</option>
-                  </select>
-                </label>}
                 {feedMediaType(item) === 'image' && <>
                   {imagePicker('Снимка на публикацията', item.image, (d, url) => { const post = d.feed.find(entry => entry.id === item.id)!; const old = post.image; post.image = url; removeUnusedPlacement(post, old); }, true, item.id)}
-                  {item.image && <ImagePlacementControls url={item.image} frame={item.imageFrame || 'original'} placement={imagePlacementFor(item, item.image)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[item.image] = value; })} />}
                 </>}
                 {feedMediaType(item) === 'slideshow' && <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
                   <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
@@ -407,7 +354,6 @@ export default function SiteControl() {
                       <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
                       <button type="button" onClick={() => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.images!.splice(index, 1); removeUnusedPlacement(post, url); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
                     </div>
-                    <ImagePlacementControls url={url} frame={item.imageFrame || 'original'} placement={imagePlacementFor(item, url)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[url] = value; })} />
                   </div>)}
                   <div role="group" aria-label="Добави снимки към слайдшоуто" tabIndex={0} className={`admin-dropzone ${dragZone === item.id ? 'admin-dropzone-active' : ''}`}
                     onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(item.id); }}

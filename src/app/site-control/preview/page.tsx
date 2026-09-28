@@ -38,7 +38,9 @@ export default function SiteControlPreview() {
         <span className="text-xs font-black uppercase tracking-[.2em] text-[#08733a]">{language === 'bg' ? 'Еленски Балканджии · Русе' : 'Elenski Balkandzhii · Ruse'}</span>
         <h1 className="mt-4 text-4xl font-black uppercase md:text-5xl">{language === 'bg' ? 'Новини и събития' : 'News and events'}</h1>
       </header> : <div className="inline-block border-b-2 border-[#08733a] pb-1 text-sm font-bold text-[#08733a]">← {language === 'bg' ? 'Всички новини и събития' : 'All news and events'}</div>}
-      <FeedStory key={`${item.id}-${mode}-${item.image}-${item.images?.join('|') || ''}-${item.videoUrl || ''}`} item={item} language={language} linked={mode === 'list'} detail={mode === 'detail'} preview />
+      <FeedStory key={`${item.id}-${mode}-${item.image}-${item.images?.join('|') || ''}-${item.videoUrl || ''}`} item={item} language={language} linked={mode === 'list'} detail={mode === 'detail'} preview
+        onImagePlacementChange={(url, placement) => window.parent.postMessage({ type: 'site-control-preview-placement', itemId: item.id, url, placement }, window.location.origin)}
+        onImageFrameChange={frame => window.parent.postMessage({ type: 'site-control-preview-frame', itemId: item.id, frame }, window.location.origin)} />
     </div>
   </main>;
 }
