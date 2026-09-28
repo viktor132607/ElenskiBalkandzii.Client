@@ -7,7 +7,7 @@ import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { imageUrl } from "@/lib/api";
 import FeedStory from "@/components/FeedStory";
-import { feedMediaType } from "@/lib/content";
+import { defaultImagePlacement, feedMediaType, imagePlacementFor } from "@/lib/content";
 
 export default function InformationHome() {
   const { language } = useLanguage();
@@ -23,12 +23,12 @@ export default function InformationHome() {
   const featured = visible.filter(item => item.featured && (item.type !== "raffle" || (site.rafflesEnabled && (!item.endDate || item.endDate >= today))));
   const featuredSlides = featured.flatMap(item => {
     const photos = feedMediaType(item) === "slideshow" ? item.images || [] : feedMediaType(item) === "image" && item.image ? [item.image] : [];
-    return photos.filter(Boolean).map(image => ({ image, title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg }));
+    return photos.filter(Boolean).map(image => ({ image, placement: imagePlacementFor(item, image), title: language === "bg" ? item.titleBg : item.titleEn || item.titleBg, description: language === "bg" ? item.bodyBg : item.bodyEn || item.bodyBg }));
   });
   const intro = content.about.copy.match(/^.*?[.!?](?=\s|$)/u)?.[0] || content.about.copy;
   const slides = featuredSlides.length ? featuredSlides : [
-    { image: site.media.store, title: content.home.title, description: intro },
-    { image: site.media.products, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: intro },
+    { image: site.media.store, placement: defaultImagePlacement, title: content.home.title, description: intro },
+    { image: site.media.products, placement: defaultImagePlacement, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: intro },
   ];
   const slide = slides[activeSlide % slides.length];
   const [previousSlide, setPreviousSlide] = useState<typeof slide | null>(null);
@@ -72,9 +72,9 @@ export default function InformationHome() {
         </div>
       </div>
       <div className="group relative h-[330px] overflow-hidden bg-[#e8e1d7] md:h-[440px] lg:h-auto lg:self-stretch lg:rounded-r-[24px]">
-        {previousSlide && <Image src={imageUrl(previousSlide.image)} alt="" fill sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" aria-hidden="true" />}
+        {previousSlide && <Image src={imageUrl(previousSlide.image)} alt="" fill sizes="(max-width: 1023px) 100vw, 50vw" style={{ objectFit: previousSlide.placement.fit, objectPosition: `${previousSlide.placement.x}% ${previousSlide.placement.y}%` }} aria-hidden="true" />}
         <div key={`${activeSlide}-${slide.image}`} className={`absolute inset-0 ${previousSlide ? direction === "next" ? "hero-photo-next" : "hero-photo-previous" : ""}`} onAnimationEnd={() => setPreviousSlide(null)}>
-          <Image src={imageUrl(slide.image)} alt={slide.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" />
+          <Image src={imageUrl(slide.image)} alt={slide.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" style={{ objectFit: slide.placement.fit, objectPosition: `${slide.placement.x}% ${slide.placement.y}%` }} />
         </div>
         {slides.length > 1 && <>
           <button type="button" onClick={() => showSlide((activeSlide - 1 + slides.length) % slides.length, "previous")} aria-label={language === "bg" ? "Предишен слайд" : "Previous slide"} className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,.9)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-9 w-9"><path d="m15 4-8 8 8 8" /></svg></button>

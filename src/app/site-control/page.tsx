@@ -5,11 +5,39 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import FeedStory from '@/components/FeedStory';
 import { apiUrl } from '@/lib/api';
-import { defaults, feedMediaType, normalizeContent, type FeedMediaType, type SiteContent } from '@/lib/content';
+import { defaults, feedMediaType, imagePlacementFor, normalizeContent, type FeedItem, type FeedMediaType, type ImagePlacement, type SiteContent } from '@/lib/content';
 import './site-control.css';
 
 type Lang = 'bg' | 'en';
 const tokenKey = 'elenski-admin-session';
+
+function removeUnusedPlacement(post: FeedItem, url: string) {
+  if (url && url !== post.image && !post.images?.includes(url) && post.imagePlacements) delete post.imagePlacements[url];
+}
+
+function ImagePlacementControls({ url, placement, onChange }: { url: string; placement: ImagePlacement; onChange: (value: ImagePlacement) => void }) {
+  return <div className="grid gap-4 rounded-xl border border-[#d5e7db] bg-[#f7fbf8] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,1fr)]">
+    <div className="relative aspect-[5/4] overflow-hidden rounded-lg bg-[#eee9e4]">
+      <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized sizes="(max-width: 1023px) 100vw, 50vw" style={{ objectFit: placement.fit, objectPosition: `${placement.x}% ${placement.y}%` }} />
+    </div>
+    <div className="space-y-4 self-center">
+      <p className="text-sm font-black">Наместване на снимката</p>
+      <label className="block text-sm font-bold">Показване
+        <select value={placement.fit} onChange={event => onChange({ ...placement, fit: event.target.value as ImagePlacement['fit'] })} className="mt-2 w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal">
+          <option value="cover">Запълни рамката (възможно изрязване)</option>
+          <option value="contain">Покажи цялата снимка</option>
+        </select>
+      </label>
+      <label className="block text-sm font-bold">Хоризонтално · {placement.x}%
+        <input type="range" min="0" max="100" value={placement.x} onChange={event => onChange({ ...placement, x: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
+      </label>
+      <label className="block text-sm font-bold">Вертикално · {placement.y}%
+        <input type="range" min="0" max="100" value={placement.y} onChange={event => onChange({ ...placement, y: Number(event.target.value) })} className="mt-2 block w-full accent-[#08733a]" />
+      </label>
+      <p className="text-xs text-[#625851]">Промяната се вижда веднага в превюто и след записване на сайта.</p>
+    </div>
+  </div>;
+}
 
 export default function SiteControl() {
   const [token, setToken] = useState('');
@@ -290,15 +318,21 @@ export default function SiteControl() {
                     </label>)}
                   </div>
                 </fieldset>
-                {feedMediaType(item) === 'image' && imagePicker('Снимка на публикацията', item.image, (d, url) => { d.feed.find(post => post.id === item.id)!.image = url; }, true, item.id)}
+                {feedMediaType(item) === 'image' && <>
+                  {imagePicker('Снимка на публикацията', item.image, (d, url) => { const post = d.feed.find(entry => entry.id === item.id)!; const old = post.image; post.image = url; removeUnusedPlacement(post, old); }, true, item.id)}
+                  {item.image && <ImagePlacementControls url={item.image} placement={imagePlacementFor(item, item.image)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[item.image] = value; })} />}
+                </>}
                 {feedMediaType(item) === 'slideshow' && <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
                   <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
-                  {(item.images || []).map((url, index) => <div key={`${url}-${index}`} className="flex flex-wrap items-center gap-3 border-b pb-3 last:border-0">
-                    <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt={`Слайд ${index + 1}`} width={96} height={64} unoptimized className="h-16 w-24 rounded object-cover" />
-                    <span className="mr-auto text-sm">Снимка {index + 1}</span>
-                    <button type="button" disabled={index === 0} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index - 1], photos[index]] = [photos[index], photos[index - 1]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката наляво">←</button>
-                    <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
-                    <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.images!.splice(index, 1); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
+                  {(item.images || []).map((url, index) => <div key={`${url}-${index}`} className="space-y-3 border-b pb-4 last:border-0">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt={`Слайд ${index + 1}`} width={96} height={64} unoptimized className="h-16 w-24 rounded object-cover" />
+                      <span className="mr-auto text-sm">Снимка {index + 1}</span>
+                      <button type="button" disabled={index === 0} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index - 1], photos[index]] = [photos[index], photos[index - 1]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката наляво">←</button>
+                      <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
+                      <button type="button" onClick={() => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.images!.splice(index, 1); removeUnusedPlacement(post, url); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
+                    </div>
+                    <ImagePlacementControls url={url} placement={imagePlacementFor(item, url)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[url] = value; })} />
                   </div>)}
                   <div role="group" aria-label="Добави снимки към слайдшоуто" tabIndex={0} className={`admin-dropzone ${dragZone === item.id ? 'admin-dropzone-active' : ''}`}
                     onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(item.id); }}

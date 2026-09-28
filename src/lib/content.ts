@@ -1,8 +1,14 @@
 export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
 export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
 export type SpecialHours = { id: string; date: string; label: string; hours: string };
+export type ImagePlacement = { fit: 'cover' | 'contain'; x: number; y: number };
+export const defaultImagePlacement: ImagePlacement = { fit: 'cover', x: 50, y: 50 };
 export type FeedMediaType = 'none' | 'image' | 'video' | 'slideshow';
-export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; imagePlacements?: Record<string, ImagePlacement>; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+
+export function imagePlacementFor(item: FeedItem, url: string): ImagePlacement {
+  return item.imagePlacements?.[url] || defaultImagePlacement;
+}
 
 export function feedMediaType(item: FeedItem): FeedMediaType {
   if (item.mediaType) return item.mediaType;
@@ -163,6 +169,11 @@ export function normalizeContent(value: unknown): SiteContent | null {
       typeof item.visible !== 'boolean' || typeof item.featured !== 'boolean' ||
       ['titleBg', 'titleEn', 'bodyBg', 'bodyEn'].some(key => typeof item[key as keyof FeedItem] !== 'string') ||
       (item.images !== undefined && (!Array.isArray(item.images) || item.images.length > 12 || item.images.some(image => typeof image !== 'string'))) ||
+      (item.imagePlacements !== undefined && (typeof item.imagePlacements !== 'object' || item.imagePlacements === null || Array.isArray(item.imagePlacements) ||
+        Object.keys(item.imagePlacements).length > 13 || Object.entries(item.imagePlacements).some(([url, placement]) =>
+          ![item.image, ...(item.images || [])].includes(url) || !placement || !['cover', 'contain'].includes(placement.fit) ||
+          !Number.isFinite(placement.x) || placement.x < 0 || placement.x > 100 ||
+          !Number.isFinite(placement.y) || placement.y < 0 || placement.y > 100))) ||
       (item.videoUrl !== undefined && typeof item.videoUrl !== 'string') ||
       (item.mediaType !== undefined && !['none', 'image', 'video', 'slideshow'].includes(item.mediaType))) ||
       new Set(site.feed.map(item => item.id)).size !== site.feed.length) return null;
