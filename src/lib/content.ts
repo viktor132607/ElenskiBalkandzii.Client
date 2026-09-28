@@ -4,7 +4,9 @@ export type SpecialHours = { id: string; date: string; label: string; hours: str
 export type ImagePlacement = { fit: 'cover' | 'contain'; x: number; y: number };
 export const defaultImagePlacement: ImagePlacement = { fit: 'cover', x: 50, y: 50 };
 export type FeedMediaType = 'none' | 'image' | 'video' | 'slideshow';
-export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; imagePlacements?: Record<string, ImagePlacement>; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
+export type ImageFrame = 'original' | 'wide' | 'landscape' | 'square' | 'portrait';
+export const frameRatios: Record<Exclude<ImageFrame, 'original'>, string> = { wide: '16 / 9', landscape: '4 / 3', square: '1 / 1', portrait: '3 / 4' };
+export type FeedItem = { id: string; type: 'news' | 'event' | 'raffle'; date: string; endDate: string; image: string; images?: string[]; imagePlacements?: Record<string, ImagePlacement>; imageFrame?: ImageFrame; videoUrl?: string; mediaType?: FeedMediaType; visible: boolean; featured: boolean; titleBg: string; titleEn: string; bodyBg: string; bodyEn: string };
 
 export function imagePlacementFor(item: FeedItem, url: string): ImagePlacement {
   return item.imagePlacements?.[url] || defaultImagePlacement;
@@ -169,6 +171,7 @@ export function normalizeContent(value: unknown): SiteContent | null {
       typeof item.visible !== 'boolean' || typeof item.featured !== 'boolean' ||
       ['titleBg', 'titleEn', 'bodyBg', 'bodyEn'].some(key => typeof item[key as keyof FeedItem] !== 'string') ||
       (item.images !== undefined && (!Array.isArray(item.images) || item.images.length > 12 || item.images.some(image => typeof image !== 'string'))) ||
+      (item.imageFrame !== undefined && !['original', 'wide', 'landscape', 'square', 'portrait'].includes(item.imageFrame)) ||
       (item.imagePlacements !== undefined && (typeof item.imagePlacements !== 'object' || item.imagePlacements === null || Array.isArray(item.imagePlacements) ||
         Object.keys(item.imagePlacements).length > 13 || Object.entries(item.imagePlacements).some(([url, placement]) =>
           ![item.image, ...(item.images || [])].includes(url) || !placement || !['cover', 'contain'].includes(placement.fit) ||

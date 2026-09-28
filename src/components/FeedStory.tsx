@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { imageUrl } from "@/lib/api";
-import { feedMediaType, imagePlacementFor, type FeedItem } from "@/lib/content";
+import { feedMediaType, frameRatios, imagePlacementFor, type FeedItem } from "@/lib/content";
 
 export function formatFeedDate(value: string, language: "bg" | "en") {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return "";
@@ -38,7 +38,10 @@ export default function FeedStory({ item, language, linked = false, reverse = fa
   const count = photos.length + (video ? 1 : 0);
   const hasMedia = mediaType !== "none";
   const [active, setActive] = useState(0);
+  const [naturalRatios, setNaturalRatios] = useState<Record<string, string>>({});
   const [playVideo, setPlayVideo] = useState(false);
+  const activePhoto = photos[active];
+  const frameRatio = item.imageFrame && item.imageFrame !== "original" ? frameRatios[item.imageFrame] : activePhoto ? naturalRatios[activePhoto] || "16 / 9" : "16 / 9";
   const label = language === "bg" ? { news: "Новина", event: "Събитие", raffle: "Томбола" }[item.type] : { news: "News", event: "Event", raffle: "Raffle" }[item.type];
   const articleHref = `${language === "bg" ? "/news/read" : "/en/news/read"}?post=${encodeURIComponent(item.id)}`;
   const excerpt = linked && body.length > 260 ? body.slice(0, 260).trimEnd().replace(/\s+\S*$/, "") + "…" : body;
@@ -59,8 +62,8 @@ export default function FeedStory({ item, language, linked = false, reverse = fa
       {linked && (preview ? <span className="mt-6 inline-block border-b-2 border-[#08733a] pb-1 font-bold text-[#08733a]">{language === "bg" ? "Продължете да четете" : "Continue reading"} →</span> : <Link href={articleHref} className="mt-6 inline-block border-b-2 border-[#08733a] pb-1 font-bold text-[#08733a]">{language === "bg" ? "Продължете да четете" : "Continue reading"} →</Link>)}
     </div>
     {hasMedia && <div className={`relative overflow-hidden rounded-2xl bg-[#eee9e4] ${reverse ? "lg:order-1" : ""}`}>
-      <div className="relative aspect-[5/4]">
-        {active < photos.length ? <Image src={imageUrl(photos[active])} alt={`${title} — ${active + 1}`} fill sizes="(max-width: 1023px) 100vw, 50vw" style={{ objectFit: imagePlacementFor(item, photos[active]).fit, objectPosition: `${imagePlacementFor(item, photos[active]).x}% ${imagePlacementFor(item, photos[active]).y}%` }} />
+      <div className="relative" style={{ aspectRatio: frameRatio }}>
+        {activePhoto ? <Image src={imageUrl(activePhoto)} alt={`${title} — ${active + 1}`} fill sizes="(max-width: 1023px) 100vw, 50vw" onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setNaturalRatios(current => ({ ...current, [activePhoto]: `${image.naturalWidth} / ${image.naturalHeight}` })); }} style={{ objectFit: imagePlacementFor(item, activePhoto).fit, objectPosition: `${imagePlacementFor(item, activePhoto).x}% ${imagePlacementFor(item, activePhoto).y}%` }} />
           : video ? (playVideo ? video.embedded ? <iframe title={title} src={video.src} className="h-full w-full" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /> : <video controls playsInline src={video.src} className="h-full w-full" />
             : <button type="button" onClick={() => setPlayVideo(true)} className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#211914] p-8 text-center font-bold text-white"><span className="text-5xl">▶</span>{language === "bg" ? "Пусни видеото" : "Play video"}</button>)
           : <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-[radial-gradient(circle_at_75%_20%,#f9f7f2,transparent_50%),linear-gradient(145deg,#f2eee8,#e1d8cc)] p-8 text-center">

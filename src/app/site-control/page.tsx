@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import FeedStory from '@/components/FeedStory';
 import { apiUrl } from '@/lib/api';
-import { defaults, feedMediaType, imagePlacementFor, normalizeContent, type FeedItem, type FeedMediaType, type ImagePlacement, type SiteContent } from '@/lib/content';
+import { defaults, feedMediaType, frameRatios, imagePlacementFor, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
 import './site-control.css';
 
 type Lang = 'bg' | 'en';
@@ -15,10 +15,12 @@ function removeUnusedPlacement(post: FeedItem, url: string) {
   if (url && url !== post.image && !post.images?.includes(url) && post.imagePlacements) delete post.imagePlacements[url];
 }
 
-function ImagePlacementControls({ url, placement, onChange }: { url: string; placement: ImagePlacement; onChange: (value: ImagePlacement) => void }) {
+function ImagePlacementControls({ url, frame, placement, onChange }: { url: string; frame: ImageFrame; placement: ImagePlacement; onChange: (value: ImagePlacement) => void }) {
+  const [naturalRatio, setNaturalRatio] = useState<{ url: string; value: string } | null>(null);
+  const aspectRatio = frame === 'original' ? naturalRatio?.url === url ? naturalRatio.value : '16 / 9' : frameRatios[frame];
   return <div className="grid gap-4 rounded-xl border border-[#d5e7db] bg-[#f7fbf8] p-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,1fr)]">
-    <div className="relative aspect-[5/4] overflow-hidden rounded-lg bg-[#eee9e4]">
-      <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized sizes="(max-width: 1023px) 100vw, 50vw" style={{ objectFit: placement.fit, objectPosition: `${placement.x}% ${placement.y}%` }} />
+    <div className="relative overflow-hidden rounded-lg bg-[#eee9e4]" style={{ aspectRatio }}>
+      <Image src={url.startsWith('/api/') ? apiUrl(url) : url} alt="Преглед на изрязването" fill unoptimized sizes="(max-width: 1023px) 100vw, 50vw" onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setNaturalRatio({ url, value: `${image.naturalWidth} / ${image.naturalHeight}` }); }} style={{ objectFit: placement.fit, objectPosition: `${placement.x}% ${placement.y}%` }} />
     </div>
     <div className="space-y-4 self-center">
       <p className="text-sm font-black">Наместване на снимката</p>
@@ -318,9 +320,18 @@ export default function SiteControl() {
                     </label>)}
                   </div>
                 </fieldset>
+                {(['image', 'slideshow'] as FeedMediaType[]).includes(feedMediaType(item)) && <label className="block text-sm font-bold">Размер на снимката в публикацията
+                  <select value={item.imageFrame || 'original'} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.imageFrame = event.target.value as ImageFrame; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] bg-white p-3 font-normal md:max-w-md">
+                    <option value="original">Оригинални пропорции на снимката</option>
+                    <option value="wide">Широка · 16:9</option>
+                    <option value="landscape">Хоризонтална · 4:3</option>
+                    <option value="square">Квадратна · 1:1</option>
+                    <option value="portrait">Вертикална · 3:4</option>
+                  </select>
+                </label>}
                 {feedMediaType(item) === 'image' && <>
                   {imagePicker('Снимка на публикацията', item.image, (d, url) => { const post = d.feed.find(entry => entry.id === item.id)!; const old = post.image; post.image = url; removeUnusedPlacement(post, old); }, true, item.id)}
-                  {item.image && <ImagePlacementControls url={item.image} placement={imagePlacementFor(item, item.image)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[item.image] = value; })} />}
+                  {item.image && <ImagePlacementControls url={item.image} frame={item.imageFrame || 'original'} placement={imagePlacementFor(item, item.image)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[item.image] = value; })} />}
                 </>}
                 {feedMediaType(item) === 'slideshow' && <div className="space-y-3 rounded-xl border border-[#e4ddd7] p-4">
                   <h4 className="font-black">Слайдшоу в секцията · до 12 снимки</h4>
@@ -332,7 +343,7 @@ export default function SiteControl() {
                       <button type="button" disabled={index === (item.images?.length || 0) - 1} onClick={() => change(d => { const photos = d.feed.find(post => post.id === item.id)!.images!; [photos[index], photos[index + 1]] = [photos[index + 1], photos[index]]; })} className="rounded border px-2 py-1 disabled:opacity-30" aria-label="Премести снимката надясно">→</button>
                       <button type="button" onClick={() => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.images!.splice(index, 1); removeUnusedPlacement(post, url); })} className="rounded border border-[#c88982] px-2 py-1 text-[#8d2e2b]">Изтрий</button>
                     </div>
-                    <ImagePlacementControls url={url} placement={imagePlacementFor(item, url)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[url] = value; })} />
+                    <ImagePlacementControls url={url} frame={item.imageFrame || 'original'} placement={imagePlacementFor(item, url)} onChange={value => change(d => { const post = d.feed.find(entry => entry.id === item.id)!; post.imagePlacements ||= {}; post.imagePlacements[url] = value; })} />
                   </div>)}
                   <div role="group" aria-label="Добави снимки към слайдшоуто" tabIndex={0} className={`admin-dropzone ${dragZone === item.id ? 'admin-dropzone-active' : ''}`}
                     onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(item.id); }}
