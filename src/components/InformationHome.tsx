@@ -27,8 +27,8 @@ export default function InformationHome() {
   });
   const intro = content.about.copy.match(/^.*?[.!?](?=\s|$)/u)?.[0] || content.about.copy;
   const slides = featuredSlides.length ? featuredSlides : [
-    { image: site.media.store, placement: defaultImagePlacement, title: content.home.title, description: intro },
-    { image: site.media.products, placement: defaultImagePlacement, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: intro },
+    { image: site.media.store, placement: site.mediaPlacements?.store || defaultImagePlacement, title: content.home.title, description: intro },
+    { image: site.media.products, placement: site.mediaPlacements?.products || defaultImagePlacement, title: language === "bg" ? "Продукти от Еленския Балкан" : "Products from the Elena Balkan", description: intro },
   ];
   const slide = slides[activeSlide % slides.length];
   const [previousSlide, setPreviousSlide] = useState<typeof slide | null>(null);

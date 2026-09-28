@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { imageUrl } from "@/lib/api";
+import { defaultImagePlacement, imagePlacementStyle } from "@/lib/content";
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -63,7 +64,7 @@ export default function Footer() {
       <div className="mx-auto grid w-[min(1180px,calc(100%_-_40px))] grid-cols-[1.2fr_1fr_1fr] gap-10 pt-9 max-[800px]:gap-6 max-[700px]:grid-cols-2 max-[620px]:w-[min(1180px,calc(100%_-_32px))] max-[620px]:grid-cols-1 max-[620px]:gap-8">
         <div className="max-[700px]:col-span-2 max-[620px]:col-span-1">
           <Link href={localizedHref("/")} className="inline-flex items-center gap-3.5" aria-label={language === "bg" ? "Еленски Балканджии — начало" : "Elenski Balkandzhii — home"}>
-            <Image src={imageUrl(site.media.logo)} alt="" width={62} height={62} className="h-[62px] w-[62px] shrink-0 rounded-full border-2 border-[#c4a87b] bg-white object-cover max-[620px]:h-[50px] max-[620px]:w-[50px]" />
+            <span className="h-[62px] w-[62px] shrink-0 overflow-hidden rounded-full border-2 border-[#c4a87b] bg-white max-[620px]:h-[50px] max-[620px]:w-[50px]"><Image src={imageUrl(site.media.logo)} alt="" width={62} height={62} className="h-full w-full" style={imagePlacementStyle(site.mediaPlacements?.logo || defaultImagePlacement)} /></span>
             <span className="flex flex-col font-serif text-[21px] font-bold uppercase leading-[1.05] tracking-[0.06em] text-[#f7f0e5] max-[620px]:text-[15px]"><span>Еленски</span><span>Балканджии</span></span>
           </Link>
           <a href="https://www.facebook.com/100057496117481/" target="_blank" rel="noopener noreferrer" aria-label={t.facebook} title={t.facebook} className="mt-4 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#211914] transition-colors hover:bg-[#e6bd7e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">

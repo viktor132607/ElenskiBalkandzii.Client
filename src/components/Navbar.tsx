@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { imageUrl } from "@/lib/api";
+import { defaultImagePlacement, imagePlacementStyle } from "@/lib/content";
 
 const links = [
   { href: "/", bg: "Начало", en: "Home" },
@@ -31,7 +32,7 @@ export default function Navbar() {
       <div className="bg-[#08733a]">
         <div className="mx-auto flex h-[84px] max-w-[1240px] items-center justify-between gap-5 px-6 max-[640px]:h-[70px] max-[640px]:px-4">
           <Link href={localizedHref("/")} onClick={closeMenu} aria-label={language === "bg" ? "Еленски Балканджии — начало" : "Elenski Balkandzhii — home"} className="flex min-w-0 shrink-0 items-center gap-3.5 max-[640px]:gap-2.5">
-            <Image src={imageUrl(content.media.logo)} alt="" width={62} height={62} priority className="h-[62px] w-[62px] rounded-full border-2 border-[#c4a87b] bg-white object-cover max-[640px]:h-[50px] max-[640px]:w-[50px]" />
+            <span className="h-[62px] w-[62px] shrink-0 overflow-hidden rounded-full border-2 border-[#c4a87b] bg-white max-[640px]:h-[50px] max-[640px]:w-[50px]"><Image src={imageUrl(content.media.logo)} alt="" width={62} height={62} priority className="h-full w-full" style={imagePlacementStyle(content.mediaPlacements?.logo || defaultImagePlacement)} /></span>
             <span className="flex flex-col font-serif text-[21px] font-bold uppercase leading-[1.05] tracking-[0.06em] text-[#f7f0e5] max-[640px]:text-[15px]">
               <span>Еленски</span><span>Балканджии</span>
             </span>

@@ -1,5 +1,5 @@
-export type CatalogProduct = { id: string; title: string; description: string; image: string; visible: boolean };
-export type CatalogCategory = { id: string; title: string; description: string; image: string; visible: boolean; items: CatalogProduct[] };
+export type CatalogProduct = { id: string; title: string; description: string; image: string; imagePlacement?: ImagePlacement; visible: boolean };
+export type CatalogCategory = { id: string; title: string; description: string; image: string; imagePlacement?: ImagePlacement; visible: boolean; items: CatalogProduct[] };
 export type SpecialHours = { id: string; date: string; label: string; hours: string };
 export type ImagePlacement = { fit: 'cover' | 'contain'; x: number; y: number; zoom?: number };
 export const defaultImagePlacement: ImagePlacement = { fit: 'cover', x: 50, y: 50, zoom: 1 };
@@ -21,6 +21,13 @@ export function imagePlacementStyle(placement: ImagePlacement) {
   };
 }
 
+export function validImagePlacement(placement: ImagePlacement): boolean {
+  return !!placement && ['cover', 'contain'].includes(placement.fit) &&
+    Number.isFinite(placement.x) && placement.x >= 0 && placement.x <= 100 &&
+    Number.isFinite(placement.y) && placement.y >= 0 && placement.y <= 100 &&
+    (placement.zoom === undefined || Number.isFinite(placement.zoom) && placement.zoom >= 1 && placement.zoom <= 3);
+}
+
 export function feedMediaType(item: FeedItem): FeedMediaType {
   if (item.mediaType) return item.mediaType;
   if (item.images?.length) return 'slideshow';
@@ -35,7 +42,7 @@ export type LocaleContent = {
   contact: { heading: string; address: string; phone: string; phone2?: string; email?: string; note: string; hours: { day: string; hours: string }[]; specialHours?: SpecialHours[] };
   products: { categories: CatalogCategory[] };
 };
-export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; feed: FeedItem[]; rafflesEnabled?: boolean; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
+export type SiteContent = { bg: LocaleContent; en: LocaleContent; media: { logo: string; store: string; products: string; about?: string }; mediaPlacements?: Partial<Record<'logo' | 'store' | 'products' | 'about', ImagePlacement>>; feed: FeedItem[]; rafflesEnabled?: boolean; seedVersion?: number; aboutCopyVersion?: number; catalogVersion?: number };
 const aboutText = {
   bg: {
     copy: 'Фабриката на „Еленските балканджии“ се намира в екологично чист район в покрайнините на град Елена и е специализирана в производство на висококачествени местни продукти по стари домашни рецепти от Еленския край. За производството на техните специалитети балканджиите използват само висококачествено българско месо, при това незамразено. В магазините наред с прясното месо и вкусните свински, телешки и биволски мезенца се предлагат домашни сирена, сушени гъби, билки и плодове, ядки, домашни лютеници и туршии, както и омайно вино с тяхна собствена марка.',
@@ -151,10 +158,15 @@ export function normalizeContent(value: unknown): SiteContent | null {
     const site = value as SiteContent;
     if (site.rafflesEnabled !== undefined && typeof site.rafflesEnabled !== 'boolean') return null;
     if (!(['logo', 'store', 'products'] as const).every(key => typeof site.media[key] === 'string')) return null;
+    if (site.mediaPlacements !== undefined && (!site.mediaPlacements || typeof site.mediaPlacements !== 'object' || Array.isArray(site.mediaPlacements) ||
+        Object.entries(site.mediaPlacements).some(([key, placement]) => !['logo', 'store', 'products', 'about'].includes(key) || !validImagePlacement(placement!)))) return null;
     for (const lang of ['bg', 'en'] as const) {
       const section = site[lang];
       if (typeof section.home.title !== 'string' || typeof section.about.copy !== 'string' ||
           !Array.isArray(section.contact.hours) || !Array.isArray(section.products.categories)) return null;
+      if (section.products.categories.some(category =>
+        category.imagePlacement !== undefined && !validImagePlacement(category.imagePlacement) ||
+        category.items?.some(product => product.imagePlacement !== undefined && !validImagePlacement(product.imagePlacement)))) return null;
       const contact = section.contact;
       if ((contact.phone2 !== undefined && typeof contact.phone2 !== 'string') ||
           (contact.email !== undefined && typeof contact.email !== 'string') ||

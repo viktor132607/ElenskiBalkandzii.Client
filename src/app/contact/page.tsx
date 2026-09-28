@@ -5,6 +5,7 @@ import { imageUrl } from "@/lib/api";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import ConsentMap from "@/components/ConsentMap";
+import { defaultImagePlacement, imagePlacementStyle } from "@/lib/content";
 
 function formatDate(value: string, language: "bg" | "en") {
   return new Intl.DateTimeFormat(language === "bg" ? "bg-BG" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T12:00:00Z`));
@@ -12,7 +13,8 @@ function formatDate(value: string, language: "bg" | "en") {
 
 export default function ContactPage() {
   const { language } = useLanguage();
-  const media = useSiteContent().media;
+  const site = useSiteContent();
+  const media = site.media;
   const data = useSiteContent()[language].contact;
   const workingHours = data.hours;
   const specialHours = [...(data.specialHours || [])].sort((a, b) => a.date.localeCompare(b.date));
@@ -25,7 +27,7 @@ export default function ContactPage() {
       <div className="mx-auto grid w-[min(1460px,calc(100%_-_40px))] gap-10 lg:grid-cols-[minmax(0,1fr)_728px] max-[620px]:w-[min(100%_-_28px,1460px)]">
         <article className="flex flex-col pt-6 max-[1100px]:pt-0">
           <div className="mb-8 flex items-center gap-5 max-[620px]:items-start">
-            <Image src={imageUrl(media.logo)} alt={language === "bg" ? "Лого на Еленски Балканджии" : "Elenski Balkandzhii logo"} width={112} height={112} priority className="h-28 w-28 shrink-0 rounded-full border border-[#d9d1ca] bg-white object-cover max-[620px]:h-24 max-[620px]:w-24" />
+            <span className="h-28 w-28 shrink-0 overflow-hidden rounded-full border border-[#d9d1ca] bg-white max-[620px]:h-24 max-[620px]:w-24"><Image src={imageUrl(media.logo)} alt={language === "bg" ? "Лого на Еленски Балканджии" : "Elenski Balkandzhii logo"} width={112} height={112} priority className="h-full w-full" style={imagePlacementStyle(site.mediaPlacements?.logo || defaultImagePlacement)} /></span>
             <div><span className="mb-2 inline-block text-[11px] font-black uppercase tracking-[.16em] text-[#08733a]">{t.contacts}</span><h1 id="contact-heading" className="text-[clamp(40px,5vw,68px)] font-black uppercase leading-[.95] tracking-[-.02em] text-[#211915]">{data.heading}</h1></div>
           </div>
           <dl className="mt-auto divide-y divide-[#e4ddd7] border-y border-[#e4ddd7]">
@@ -63,8 +65,8 @@ export default function ContactPage() {
               height={688}
               priority
               sizes="(max-width: 1100px) calc(100vw - 40px), 728px"
-              className="h-[calc(100%_+_50px)] w-full translate-y-[-20px] object-cover"
-              style={{ objectPosition: "center 40%" }}
+              className={site.mediaPlacements?.store ? "h-full w-full" : "h-[calc(100%_+_50px)] w-full translate-y-[-20px] object-cover"}
+              style={site.mediaPlacements?.store ? imagePlacementStyle(site.mediaPlacements.store) : { objectPosition: "center 40%" }}
             />
           </figure>
           <ConsentMap />

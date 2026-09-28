@@ -6,6 +6,7 @@ import { imageUrl } from "@/lib/api";
 import { useSiteContent } from "@/components/ContentProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import ProductImpressions from "@/components/catalog/ProductImpressions";
+import { defaultImagePlacement, imagePlacementStyle } from "@/lib/content";
 
 const accents = ["#cf2428", "#08733a", "#a77d36"];
 
@@ -49,13 +50,13 @@ export default function ProductsPage() {
               <a href={`#${category.id}-items`} className="mt-8 self-start border-b-2 pb-1 text-sm font-black uppercase tracking-wide" style={{borderColor:accent}}>{t.products} ↓</a>
             </div>
             <div className="relative aspect-[5/4] bg-[#eae4dd]">
-              {category.image ? <Image src={imageUrl(category.image)} alt={category.title} fill sizes="(max-width: 767px) 100vw, 44vw" className="object-cover" /> : <div className="flex h-full items-end bg-[radial-gradient(circle_at_70%_25%,#d7d0c5,transparent_45%),linear-gradient(135deg,#efe9e1,#d6cbc0)] p-8"><span className="max-w-full break-words text-[clamp(28px,4vw,50px)] font-black uppercase leading-none text-[#665548]/30">{category.title}</span></div>}
+              {category.image ? <Image src={imageUrl(category.image)} alt={category.title} fill sizes="(max-width: 767px) 100vw, 44vw" style={imagePlacementStyle(category.imagePlacement || defaultImagePlacement)} /> : <div className="flex h-full items-end bg-[radial-gradient(circle_at_70%_25%,#d7d0c5,transparent_45%),linear-gradient(135deg,#efe9e1,#d6cbc0)] p-8"><span className="max-w-full break-words text-[clamp(28px,4vw,50px)] font-black uppercase leading-none text-[#665548]/30">{category.title}</span></div>}
             </div>
           </div>
           <div id={`${category.id}-items`} className="grid scroll-mt-28 gap-5 pt-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.length ? products.map(product => <article key={product.id} data-category-id={category.id} data-category-name={category.title} data-product-id={product.id} data-product-name={product.title} className="overflow-hidden rounded-2xl border border-[#e4ddd7] bg-white shadow-[0_8px_26px_rgba(33,25,20,.04)]">
               <div className="relative aspect-[5/4] overflow-hidden bg-[#eee9e4]">
-                {product.image ? <Image src={imageUrl(product.image)} alt={product.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
+                {product.image ? <Image src={imageUrl(product.image)} alt={product.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" style={imagePlacementStyle(product.imagePlacement || defaultImagePlacement)} />
                   : <div className="flex h-full flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_72%_24%,#f9f7f2,transparent_45%),linear-gradient(145deg,#f2eee8,#e1d8cc)] p-6 text-center">
                     <Image src="/elenski-balkandzhii-logo.jpg" alt="" width={112} height={112} className="h-24 w-24 rounded-full border border-[#d4c9bb] object-cover opacity-65 sm:h-28 sm:w-28" />
                     <span className="text-xs font-black uppercase tracking-[.18em] text-[#776b61]">{language === 'bg' ? 'Снимка предстои' : 'Photo coming soon'}</span>

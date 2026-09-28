@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { apiUrl } from '@/lib/api';
-import { defaults, feedMediaType, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
+import { defaultImagePlacement, defaults, feedMediaType, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
+import EditableImage, { ImageEditActions } from '@/components/EditableImage';
 import './site-control.css';
 
 type Lang = 'bg' | 'en';
@@ -222,9 +223,14 @@ export default function SiteControl() {
     change(d => { for (const lang of ['bg', 'en'] as const) d[lang].contact.specialHours = (d[lang].contact.specialHours || []).filter(row => row.id !== id); });
   }
 
-  const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false, zoneId = label) => <div className="space-y-2">
+  const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false, zoneId = label, placement?: ImagePlacement, onPlacementChange?: (draft: SiteContent, placement: ImagePlacement) => void, ratio = '5 / 4') => <div className="space-y-2">
     <label className="mb-2 block text-sm font-bold">{label}</label>
-    {path && <Image src={path.startsWith('/api/') ? apiUrl(path) : path} alt="Преглед" width={160} height={112} unoptimized className="mb-3 h-28 max-w-full rounded-lg object-contain" />}
+    {path && (onPlacementChange ? <div className="max-w-xl space-y-3">
+      <div className="relative overflow-hidden rounded-xl bg-[#eae4dd]" style={{ aspectRatio: ratio }}>
+        <EditableImage key={path} url={path} alt={`Преглед: ${label}`} placement={placement || defaultImagePlacement} onChange={value => change(d => onPlacementChange(d, value))} />
+      </div>
+      <ImageEditActions placement={placement || defaultImagePlacement} onChange={value => change(d => onPlacementChange(d, value))} />
+    </div> : <Image src={path.startsWith('/api/') ? apiUrl(path) : path} alt="Преглед" width={160} height={112} unoptimized className="mb-3 h-28 max-w-full rounded-lg object-contain" />)}
     <div role="group" aria-label={label} tabIndex={0} className={`admin-dropzone ${dragZone === zoneId ? 'admin-dropzone-active' : ''}`}
       onDragOver={event => { event.preventDefault(); if (!busy) setDragZone(zoneId); }}
       onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragZone(''); }}
@@ -290,7 +296,7 @@ export default function SiteControl() {
                   {field('Име на категорията', category.title, v => change(d => d[language].products.categories[index].title = v))}
                   {field('Описание на категорията', category.description, v => change(d => d[language].products.categories[index].description = v), true)}
                 </div>
-                {imagePicker('Снимка на категорията', category.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.image = url; }, true, category.id)}
+                {imagePicker('Снимка на категорията', category.image, (d, url) => { for (const lang of ['bg','en'] as const) { const entry = d[lang].products.categories.find(item => item.id === category.id)!; entry.image = url; entry.imagePlacement = { ...defaultImagePlacement }; } }, true, category.id, category.imagePlacement, (d, value) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.imagePlacement = value; })}
                 <h4 className="border-t pt-5 font-black uppercase">Продукти ({category.items.length})</h4>
                 {category.items.map((product, itemIndex) => <div key={product.id} className="space-y-3 rounded-xl border border-[#e4ddd7] bg-white p-4">
                   <div className="flex flex-wrap items-center gap-2"><strong className="mr-auto">{product.title || `Продукт ${itemIndex + 1}`}</strong>
@@ -303,7 +309,7 @@ export default function SiteControl() {
                     {field('Име на продукта', product.title, v => change(d => d[language].products.categories[index].items[itemIndex].title = v))}
                     {field('Описание (по избор)', product.description, v => change(d => d[language].products.categories[index].items[itemIndex].description = v), true)}
                   </div>
-                  {imagePicker(`Снимка на ${product.title}`, product.image, (d, url) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.image = url; }, true, product.id)}
+                  {imagePicker(`Снимка на ${product.title}`, product.image, (d, url) => { for (const lang of ['bg','en'] as const) { const entry = d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!; entry.image = url; entry.imagePlacement = { ...defaultImagePlacement }; } }, true, product.id, product.imagePlacement, (d, value) => { for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.find(item => item.id === product.id)!.imagePlacement = value; })}
                 </div>)}
                 <button type="button" onClick={() => change(d => { const id = crypto.randomUUID(); for (const lang of ['bg','en'] as const) d[lang].products.categories.find(item => item.id === category.id)!.items.push({ id, title: lang === 'bg' ? 'Нов продукт' : 'New product', description: '', image: '', visible: true }); })} className="rounded-xl border border-[#08733a] px-4 py-2 font-bold text-[#08733a]">+ Добави продукт</button>
               </div>)}
@@ -432,7 +438,7 @@ export default function SiteControl() {
             </>}
             {section === 'images' && (['logo', 'store', 'products', 'about'] as const).map(key => <div key={key} className="rounded-xl border p-5">
               <h3 className="mb-3 font-black">{{logo:'Лого',store:'Снимка на магазина',products:'Снимка на продуктите',about:'Снимка за „За нас“'}[key]}</h3>
-              {imagePicker(`Качи ${key}`, draft.media[key] || '', (d, url) => { d.media[key] = url; })}
+              {imagePicker(`Качи ${key}`, draft.media[key] || '', (d, url) => { d.media[key] = url; d.mediaPlacements ||= {}; d.mediaPlacements[key] = { ...defaultImagePlacement }; }, false, key, draft.mediaPlacements?.[key], (d, value) => { d.mediaPlacements ||= {}; d.mediaPlacements[key] = value; }, key === 'logo' ? '1 / 1' : key === 'about' ? '903 / 1024' : '1 / 1')}
             </div>)}
           </div>
           <button type="button" disabled={busy} onClick={save} className="mt-8 rounded-xl bg-[#08733a] px-7 py-3 font-black text-white disabled:opacity-50">Запази промените</button>
