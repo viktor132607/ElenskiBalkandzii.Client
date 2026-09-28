@@ -130,6 +130,27 @@ export default function SiteControl() {
     change(d => { const id = `category-${crypto.randomUUID()}`; for (const lang of ['bg','en'] as const) d[lang].products.categories.unshift({ id, title: lang === 'bg' ? 'Нова категория' : 'New category', description: '', image: '', visible: true, items: [] }); });
   }
 
+  function addAboutRow() {
+    if (draft.bg.about.rows.length >= 20 || draft.en.about.rows.length >= 20) { setMessage('Максимум 20 етикета.'); return; }
+    change(d => {
+      d.bg.about.rows.push({ label: 'Нов етикет', copy: '' });
+      d.en.about.rows.push({ label: 'New label', copy: '' });
+    });
+  }
+
+  function moveAboutRow(index: number, delta: number) {
+    change(d => { for (const lang of ['bg', 'en'] as const) {
+      const rows = d[lang].about.rows;
+      if (index + delta < 0 || index + delta >= rows.length) continue;
+      [rows[index], rows[index + delta]] = [rows[index + delta], rows[index]];
+    }});
+  }
+
+  function removeAboutRow(index: number) {
+    if (!window.confirm('Да изтрия ли етикета и текста му на двата езика?')) return;
+    change(d => { for (const lang of ['bg', 'en'] as const) d[lang].about.rows.splice(index, 1); });
+  }
+
   const imagePicker = (label: string, path: string, apply: (draft: SiteContent, url: string) => void, removable = false, zoneId = label) => <div className="space-y-2">
     <label className="mb-2 block text-sm font-bold">{label}</label>
     {path && <Image src={path.startsWith('/api/') ? apiUrl(path) : path} alt="Преглед" width={160} height={112} unoptimized className="mb-3 h-28 max-w-full rounded-lg object-contain" />}
@@ -289,10 +310,23 @@ export default function SiteControl() {
               {field('Надпис', c.about.eyebrow, v => change(d => d[language].about.eyebrow = v))}
               {field('Заглавие', c.about.title, v => change(d => d[language].about.title = v))}
               {field('Описание', c.about.copy, v => change(d => d[language].about.copy = v), true)}
-              {c.about.rows.map((row, index) => <div key={index} className="grid gap-3 rounded-xl border p-4 md:grid-cols-2">
-                {field(`Ред ${index + 1} · етикет`, row.label, v => change(d => d[language].about.rows[index].label = v))}
-                {field('Текст', row.copy, v => change(d => d[language].about.rows[index].copy = v), true)}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#d5e7db] bg-[#f1f8f3] p-4">
+                <div><strong>Етикети ({c.about.rows.length}/20)</strong><p className="mt-1 text-sm text-[#625851]">Редът и броят са общи за BG и EN. Текстът се редактира отделно.</p></div>
+                <button type="button" disabled={draft.bg.about.rows.length >= 20 || draft.en.about.rows.length >= 20} onClick={addAboutRow} className="rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">+ Добави етикет</button>
+              </div>
+              {c.about.rows.map((row, index) => <div key={index} className="space-y-3 rounded-xl border p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong className="mr-auto">Етикет {index + 1}</strong>
+                  <button type="button" disabled={index === 0} onClick={() => moveAboutRow(index, -1)} aria-label={`Премести етикет ${index + 1} нагоре`} className="rounded-lg border px-3 py-2">↑</button>
+                  <button type="button" disabled={index === c.about.rows.length - 1} onClick={() => moveAboutRow(index, 1)} aria-label={`Премести етикет ${index + 1} надолу`} className="rounded-lg border px-3 py-2">↓</button>
+                  <button type="button" onClick={() => removeAboutRow(index)} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {field('Етикет', row.label, v => change(d => d[language].about.rows[index].label = v))}
+                  {field('Текст', row.copy, v => change(d => d[language].about.rows[index].copy = v), true)}
+                </div>
               </div>)}
+              <button type="button" disabled={draft.bg.about.rows.length >= 20 || draft.en.about.rows.length >= 20} onClick={addAboutRow} className="w-fit rounded-xl bg-[#08733a] px-5 py-3 font-bold text-white">+ Добави етикет</button>
             </>}
             {section === 'contact' && <>
               {field('Заглавие', c.contact.heading, v => change(d => d[language].contact.heading = v))}
