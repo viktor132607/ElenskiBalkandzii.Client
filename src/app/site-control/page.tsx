@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import FeedStory from '@/components/FeedStory';
 import { apiUrl } from '@/lib/api';
 import { defaultImagePlacement, defaults, feedMediaType, frameRatios, imagePlacementFor, imagePlacementStyle, normalizeContent, type FeedItem, type FeedMediaType, type ImageFrame, type ImagePlacement, type SiteContent } from '@/lib/content';
 import './site-control.css';
@@ -83,6 +82,8 @@ export default function SiteControl() {
   const [ready, setReady] = useState(false);
   const [dragZone, setDragZone] = useState('');
   const [previewMode, setPreviewMode] = useState<'list' | 'detail'>('list');
+  const [activeFeedId, setActiveFeedId] = useState('');
+  const previewFrame = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(tokenKey);
@@ -104,6 +105,33 @@ export default function SiteControl() {
       .then(data => { const parsed = normalizeContent(data); if (parsed) setDraft(parsed); })
       .catch(() => setMessage('Съдържанието не се зареди. Проверете връзката с API.'));
   }, [token]);
+
+  const sortedFeed = [...draft.feed].sort((a, b) => b.date.localeCompare(a.date));
+  const selectedFeedId = sortedFeed.some(item => item.id === activeFeedId) ? activeFeedId : sortedFeed[0]?.id;
+  const selectedFeed = sortedFeed.find(item => item.id === selectedFeedId);
+
+  function updatePagePreview() {
+    if (!selectedFeed) return;
+    previewFrame.current?.contentWindow?.postMessage({ type: 'site-control-preview', language, mode: previewMode, item: {
+      ...selectedFeed,
+      titleBg: selectedFeed.titleBg || 'Заглавие на публикацията',
+      titleEn: selectedFeed.titleEn || 'Post title',
+      bodyBg: selectedFeed.bodyBg || 'Текстът на публикацията ще се покаже тук.',
+      bodyEn: selectedFeed.bodyEn || 'Post text will appear here.',
+    } }, window.location.origin);
+  }
+
+  useEffect(() => {
+    if (section !== 'feed') return;
+    updatePagePreview();
+    function handleReady(event: MessageEvent) {
+      if (event.origin === window.location.origin && event.source === previewFrame.current?.contentWindow && event.data?.type === 'site-control-preview-ready') updatePagePreview();
+    }
+    window.addEventListener('message', handleReady);
+    return () => window.removeEventListener('message', handleReady);
+  // The preview must receive the latest draft on every edit, including image dragging.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft, section, selectedFeedId, language, previewMode]);
 
   function change(update: (copy: SiteContent) => void) {
     setDraft(current => { const copy = structuredClone(current); update(copy); return copy; });
@@ -330,13 +358,18 @@ export default function SiteControl() {
                 <span>Показвай томболите на сайта<span className="mt-1 block font-normal text-[#625851]">Секцията се появява над новините и събитията, ако има поне една публикувана активна томбола.</span></span>
               </label>
               <p className="text-sm leading-relaxed text-[#625851]">Всяка публикация е отделна секция със заглавие, текст и избор на медия. При избрана снимка, видео или слайдшоу без добавен файл се показва плейсхолдър. Подредбата е по дата. За началното слайдшоу е нужна реална снимка. Попълнете заглавие и текст на BG и EN преди публикуване.</p>
-              {[...draft.feed].sort((a, b) => b.date.localeCompare(a.date)).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
+              <div className="flex flex-wrap gap-2" aria-label="Избери публикация за редактиране">
+                {sortedFeed.map(item => <button key={item.id} type="button" onClick={() => setActiveFeedId(item.id)} aria-pressed={item.id === selectedFeedId} className={`rounded-xl border px-4 py-2 text-sm font-bold ${item.id === selectedFeedId ? 'border-[#08733a] bg-[#08733a] text-white' : 'border-[#e4ddd7] bg-white'}`}>{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'} · {item.date}</button>)}
+              </div>
+              {sortedFeed.filter(item => item.id === selectedFeedId).map(item => <div key={item.id} className="space-y-5 rounded-2xl border border-[#e4ddd7] bg-[#fffdfb] p-5">
                 <div className="flex flex-wrap items-center gap-2"><h3 className="mr-auto text-lg font-black">{(language === 'bg' ? item.titleBg : item.titleEn) || 'Нова публикация'}</h3>
                   <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.visible = !item.visible; })} className="rounded-lg border px-3 py-2">{item.visible ? 'Публикувана · скрий' : 'Чернова · публикувай'}</button>
                   <button type="button" onClick={() => change(d => { d.feed.find(post => post.id === item.id)!.featured = !item.featured; })} className="rounded-lg border px-3 py-2">{item.featured ? 'В слайдшоу ✓' : 'Добави в слайдшоу'}</button>
                   <button type="button" onClick={() => { if (window.confirm('Да изтрия ли публикацията?')) change(d => { d.feed = d.feed.filter(post => post.id !== item.id); }); }} className="rounded-lg border border-[#c88982] px-3 py-2 text-[#8d2e2b]">Изтрий</button>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-6 lg:grid-cols-2">
+                <div className="min-w-0 space-y-5">
+                <div className="grid gap-4 md:grid-cols-2">
                   <label className="text-sm font-bold">Вид<select value={item.type} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.type = event.target.value as typeof item.type; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] bg-white p-3"><option value="news">Новина</option><option value="event">Събитие</option><option value="raffle">Томбола</option></select></label>
                   <label className="text-sm font-bold">Дата<input type="date" value={item.date} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.date = event.target.value; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] p-3" /></label>
                   {item.type === 'raffle' && <label className="text-sm font-bold">Край на томболата<input type="date" value={item.endDate} min={item.date} onChange={event => change(d => { d.feed.find(post => post.id === item.id)!.endDate = event.target.value; })} className="mt-2 block w-full rounded-xl border border-[#d8d0c8] p-3" /></label>}
@@ -389,23 +422,19 @@ export default function SiteControl() {
                   </div>
                 </div>}
                 {feedMediaType(item) === 'video' && field('Видео URL (YouTube, Vimeo или HTTPS .mp4)', item.videoUrl || '', value => change(d => { d.feed.find(post => post.id === item.id)!.videoUrl = value.trim(); }))}
-                <div className="admin-feed-preview rounded-2xl border border-[#c9dfcf] bg-white p-5 md:p-8" aria-label={`Превю на ${(language === 'bg' ? item.titleBg : item.titleEn) || 'нова публикация'}`}>
-                  <div className="flex flex-wrap items-center gap-3 border-b border-[#e4ddd7] pb-4">
-                    <h4 className="mr-auto text-lg font-black">Превю · {name}</h4>
+                </div>
+                <div className="min-w-0 lg:sticky lg:top-24 lg:self-start" aria-label={`Превю на ${(language === 'bg' ? item.titleBg : item.titleEn) || 'нова публикация'}`}>
+                  <div className="flex flex-wrap items-center gap-2 rounded-t-xl border border-b-0 border-[#c9dfcf] bg-white p-3">
+                    <h4 className="mr-auto font-black">Страница · {name}</h4>
                     {!item.visible && <span className="rounded-full bg-[#f1ede9] px-3 py-1 text-xs font-bold">Чернова</span>}
                     <button type="button" onClick={() => setPreviewMode('list')} aria-pressed={previewMode === 'list'} className={`rounded-lg px-3 py-2 text-sm font-bold ${previewMode === 'list' ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>В списъка</button>
                     <button type="button" onClick={() => setPreviewMode('detail')} aria-pressed={previewMode === 'detail'} className={`rounded-lg px-3 py-2 text-sm font-bold ${previewMode === 'detail' ? 'bg-[#08733a] text-white' : 'bg-[#f1ede9]'}`}>Цяла публикация</button>
                   </div>
-                  <FeedStory key={`${item.id}-${feedMediaType(item)}-${item.image}-${item.images?.join('|') || ''}-${item.videoUrl || ''}`} item={{
-                    ...item,
-                    titleBg: item.titleBg || 'Заглавие на публикацията',
-                    titleEn: item.titleEn || 'Post title',
-                    bodyBg: item.bodyBg || 'Текстът на публикацията ще се покаже тук.',
-                    bodyEn: item.bodyEn || 'Post text will appear here.',
-                  }} language={language} linked={previewMode === 'list'} detail={previewMode === 'detail'} preview />
+                  <iframe ref={previewFrame} src={language === 'en' ? '/en/site-control/preview' : '/site-control/preview'} title={`Превю на цялата страница · ${name}`} onLoad={updatePagePreview} className="block h-[min(78vh,950px)] min-h-[500px] w-full rounded-b-xl border border-[#c9dfcf] bg-white" />
+                </div>
                 </div>
               </div>)}
-              <button type="button" disabled={draft.feed.length >= 30} onClick={() => change(d => { d.feed.unshift({ id: `post-${crypto.randomUUID()}`, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', mediaType: 'image', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); })} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
+              <button type="button" disabled={draft.feed.length >= 30} onClick={() => { const id = `post-${crypto.randomUUID()}`; change(d => { d.feed.unshift({ id, type: 'news', date: new Date().toISOString().slice(0, 10), endDate: '', image: '', mediaType: 'image', visible: false, featured: false, titleBg: '', titleEn: '', bodyBg: '', bodyEn: '' }); }); setActiveFeedId(id); }} className="rounded-xl bg-[#211914] px-5 py-3 font-bold text-white disabled:opacity-50">+ Добави публикация</button>
             </>}
             {section === 'about' && <>
               {field('Надпис', c.about.eyebrow, v => change(d => d[language].about.eyebrow = v))}
